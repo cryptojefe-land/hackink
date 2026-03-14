@@ -4,170 +4,175 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>$HACK — Claim</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Rajdhani:wght@400;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#000;color:#00ff41;font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden}
+  .scanlines{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:100}
+  .grid-bg{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,255,65,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,65,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+  .container{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:0 24px 80px}
+  nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid rgba(0,255,65,0.2);margin-bottom:60px;flex-wrap:wrap;gap:10px}
+  .nav-logo{font-family:'VT323',monospace;font-size:28px;color:#00ff41;letter-spacing:4px}
+  .nav-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .nav-status{font-size:11px;color:rgba(0,255,65,0.5);display:flex;align-items:center;gap:8px}
+  .dot{width:6px;height:6px;border-radius:50%;background:#00ff41;animation:blink 1.2s infinite;flex-shrink:0}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .connect-btn{background:transparent;border:1px solid rgba(0,255,65,0.4);color:rgba(0,255,65,0.7);font-family:'Share Tech Mono',monospace;font-size:11px;padding:8px 16px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+  .connect-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 12px rgba(0,255,65,0.2)}
+  .connect-btn.connected{border-color:rgba(0,255,65,0.3);color:rgba(0,255,65,0.5)}
+  .hero{text-align:center;margin-bottom:60px}
+  .hero-title{font-family:'VT323',monospace;font-size:clamp(56px,14vw,140px);color:#00ff41;letter-spacing:clamp(2px,2vw,8px);line-height:1;position:relative;text-shadow:0 0 20px rgba(0,255,65,0.5)}
+  .hero-title::before{content:attr(data-text);position:absolute;top:0;left:0;color:#ff0040;animation:glitch1 3s infinite;clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%);opacity:0}
+  .hero-title::after{content:attr(data-text);position:absolute;top:0;left:0;color:#00cfff;animation:glitch2 3s infinite;clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%);opacity:0}
+  @keyframes glitch1{0%,89%,100%{opacity:0;transform:translate(0)}90%{opacity:.8;transform:translate(-4px,2px)}93%{opacity:0;transform:translate(4px,-2px)}95%{opacity:.6;transform:translate(-2px,0)}97%{opacity:0}}
+  @keyframes glitch2{0%,91%,100%{opacity:0;transform:translate(0)}92%{opacity:.6;transform:translate(4px,-2px)}94%{opacity:0;transform:translate(-4px,2px)}96%{opacity:.4;transform:translate(2px,0)}98%{opacity:0}}
+  .hero-sub{font-size:clamp(9px,2.5vw,13px);color:rgba(0,255,65,0.6);letter-spacing:clamp(2px,1.5vw,6px);text-transform:uppercase;margin-top:20px;margin-bottom:32px}
+  .terminal-line{font-size:clamp(11px,2.5vw,12px);color:rgba(0,255,65,0.4);margin:0 auto 8px;text-align:left;max-width:500px}
+  .terminal-line span{color:#00ff41}
+  .stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:60px;border:1px solid rgba(0,255,65,0.15)}
+  .stat-block{padding:clamp(16px,4vw,28px) clamp(10px,2vw,20px);border-right:1px solid rgba(0,255,65,0.15);text-align:center;background:rgba(0,255,65,0.02);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+  .stat-block::before{content:'';position:absolute;top:0;left:-200%;width:200%;height:2px;background:linear-gradient(90deg,transparent,#00ff41,transparent);animation:sweep 4s linear infinite}
+  @keyframes sweep{0%{left:-200%}100%{left:100%}}
+  .stat-block-cyan{padding:clamp(16px,4vw,28px) clamp(10px,2vw,20px);border-right:1px solid rgba(0,255,65,0.15);text-align:center;background:rgba(0,255,65,0.02);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+  .stat-block-cyan::before{content:'';position:absolute;top:0;left:-200%;width:200%;height:2px;background:linear-gradient(90deg,transparent,#00cfff,transparent);animation:sweep-cyan 4s linear 1.3s infinite}
+  @keyframes sweep-cyan{0%{left:-200%}100%{left:100%}}
+  .ink-block{padding:clamp(16px,4vw,28px) clamp(10px,2vw,20px);text-align:center;background:rgba(0,255,65,0.02);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+  .ink-block::before{content:'';position:absolute;top:0;left:-200%;width:200%;height:2px;background:linear-gradient(90deg,transparent 0%,#00ff41 15%,#00cfff 35%,#b44fff 55%,#00cfff 75%,#00ff41 90%,transparent 100%);animation:neon-sweep 3s linear 2.6s infinite}
+  @keyframes neon-sweep{0%{left:-200%}100%{left:100%}}
+  .stat-label{font-size:clamp(8px,2vw,10px);color:rgba(0,255,65,0.4);letter-spacing:clamp(1px,.8vw,3px);text-transform:uppercase;margin-bottom:8px}
+  .stat-value{font-family:'VT323',monospace;font-size:clamp(28px,6vw,42px);line-height:1}
+  .stat-value.green{color:#00ff41;text-shadow:0 0 15px rgba(0,255,65,0.4)}
+  .stat-value.cyan{color:#00cfff;text-shadow:0 0 15px rgba(0,207,255,0.4)}
+  .ink-label{font-size:clamp(8px,2vw,10px);color:rgba(0,255,65,0.4);letter-spacing:clamp(1px,.8vw,3px);text-transform:uppercase;margin-bottom:8px;position:relative;z-index:1}
+  .ink-value{font-family:'VT323',monospace;font-size:clamp(28px,6vw,42px);line-height:1;color:#c47aff;text-shadow:0 0 15px rgba(180,80,255,0.5);position:relative;z-index:1}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #000; color: #00ff41; font-family: 'Share Tech Mono', monospace; min-height: 100vh; overflow-x: hidden; }
+  /* TABS */
+  .tabs{display:flex;gap:2px;margin-bottom:0}
+  .tab{flex:1;padding:14px;background:rgba(0,255,65,0.02);border:1px solid rgba(0,255,65,0.15);border-bottom:none;color:rgba(0,255,65,0.35);font-family:'VT323',monospace;font-size:clamp(16px,4vw,22px);letter-spacing:3px;text-transform:uppercase;cursor:pointer;text-align:center;transition:all .2s}
+  .tab:hover{color:rgba(0,255,65,0.6);background:rgba(0,255,65,0.04)}
+  .tab.active{color:#00ff41;background:rgba(0,255,65,0.06);border-color:rgba(0,255,65,0.3);text-shadow:0 0 8px rgba(0,255,65,0.4)}
 
-  .scanlines { position: fixed; top:0; left:0; width:100%; height:100%; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px); pointer-events:none; z-index:100; }
-  .grid-bg { position:fixed; top:0; left:0; width:100%; height:100%; background-image: linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px); background-size:40px 40px; pointer-events:none; z-index:0; }
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;margin-top:32px}
+  .section-header::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,255,65,0.3),transparent)}
+  .section-tag{font-size:clamp(9px,2vw,10px);letter-spacing:clamp(2px,1vw,4px);color:rgba(0,255,65,0.5);text-transform:uppercase;white-space:nowrap}
 
-  .container { position:relative; z-index:10; max-width:900px; margin:0 auto; padding:0 24px 80px; }
+  .panel{display:none}
+  .panel.active{display:block}
 
-  nav { display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid rgba(0,255,65,0.2); margin-bottom:60px; flex-wrap:wrap; gap:10px; }
-  .nav-logo { font-family:'VT323',monospace; font-size:28px; color:#00ff41; letter-spacing:4px; }
-  .nav-status { font-size:11px; color:rgba(0,255,65,0.5); display:flex; align-items:center; gap:8px; }
-  .dot { width:6px; height:6px; border-radius:50%; background:#00ff41; animation:blink 1.2s infinite; flex-shrink:0; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .terminal{background:#000;border:1px solid rgba(0,255,65,0.25);padding:clamp(20px,5vw,32px);padding-top:clamp(36px,6vw,48px);position:relative}
+  .terminal::before{content:'● ● ●';position:absolute;top:12px;left:16px;font-size:10px;color:rgba(0,255,65,0.3);letter-spacing:4px}
 
-  .hero { text-align:center; margin-bottom:60px; }
-  .hero-title { font-family:'VT323',monospace; font-size:clamp(56px,14vw,140px); color:#00ff41; letter-spacing:clamp(2px,2vw,8px); line-height:1; position:relative; text-shadow:0 0 20px rgba(0,255,65,0.5); }
-  .hero-title::before { content:attr(data-text); position:absolute; top:0; left:0; color:#ff0040; animation:glitch1 3s infinite; clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%); opacity:0; }
-  .hero-title::after { content:attr(data-text); position:absolute; top:0; left:0; color:#00cfff; animation:glitch2 3s infinite; clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%); opacity:0; }
-  @keyframes glitch1 { 0%,89%,100%{opacity:0;transform:translate(0)} 90%{opacity:0.8;transform:translate(-4px,2px)} 93%{opacity:0;transform:translate(4px,-2px)} 95%{opacity:0.6;transform:translate(-2px,0)} 97%{opacity:0} }
-  @keyframes glitch2 { 0%,91%,100%{opacity:0;transform:translate(0)} 92%{opacity:0.6;transform:translate(4px,-2px)} 94%{opacity:0;transform:translate(-4px,2px)} 96%{opacity:0.4;transform:translate(2px,0)} 98%{opacity:0} }
+  .wallet-bar{display:none;margin-bottom:16px;padding:10px 14px;border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.02);font-size:11px;color:rgba(0,255,65,0.5);justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .wallet-bar.show{display:flex}
+  .wallet-bar span{color:#00ff41}
 
-  .hero-sub { font-size:clamp(9px,2.5vw,13px); color:rgba(0,255,65,0.6); letter-spacing:clamp(2px,1.5vw,6px); text-transform:uppercase; margin-top:20px; margin-bottom:32px; }
-  .terminal-line { font-size:clamp(11px,2.5vw,12px); color:rgba(0,255,65,0.4); margin:0 auto 8px; text-align:left; max-width:500px; }
-  .terminal-line span { color:#00ff41; }
+  .amount-row{display:flex;gap:12px;margin-bottom:20px;align-items:stretch}
+  .amount-label{font-size:clamp(9px,2vw,10px);color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+  .amount-group{flex:1;min-width:0}
+  .amount-input-wrap{display:flex}
+  .amount-prefix{background:rgba(0,255,65,0.08);border:1px solid rgba(0,255,65,0.25);border-right:none;padding:12px clamp(8px,2vw,12px);font-size:clamp(10px,2.5vw,12px);color:rgba(0,255,65,0.5);white-space:nowrap;display:flex;align-items:center;flex-shrink:0}
+  .amount-input{width:100%;min-width:0;background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.25);color:#00ff41;font-family:'Share Tech Mono',monospace;font-size:clamp(14px,3vw,16px);padding:12px clamp(8px,2vw,16px);outline:none;transition:border-color .2s}
+  .amount-input:focus{border-color:rgba(0,255,65,0.6);box-shadow:0 0 20px rgba(0,255,65,0.1)}
+  .arrow-sep{display:flex;align-items:flex-end;padding-bottom:12px;color:rgba(0,255,65,0.3);font-size:18px;flex-shrink:0}
+  .output-group{flex:1;min-width:0}
+  .output-display{background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.15);padding:12px clamp(8px,2vw,16px);font-family:'VT323',monospace;font-size:clamp(16px,4vw,22px);color:#00ff41;text-align:right;height:50px;display:flex;align-items:center;justify-content:flex-end;overflow:hidden}
+  .output-display span{color:rgba(0,255,65,0.4);font-size:clamp(10px,2.5vw,14px);margin-left:6px;font-family:'Share Tech Mono',monospace;white-space:nowrap}
 
-  .stats-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-bottom:60px; border:1px solid rgba(0,255,65,0.15); }
+  .action-btn{width:100%;padding:clamp(14px,3vw,18px);background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:'VT323',monospace;font-size:clamp(20px,5vw,28px);letter-spacing:clamp(2px,1.5vw,6px);text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;margin-bottom:0}
+  .action-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,65,0.1),transparent);transition:left .4s}
+  .action-btn:hover:not(:disabled){background:rgba(0,255,65,0.08);box-shadow:0 0 30px rgba(0,255,65,0.2);text-shadow:0 0 10px #00ff41}
+  .action-btn:hover:not(:disabled)::before{left:100%}
+  .action-btn:active:not(:disabled){transform:scale(.99)}
+  .action-btn:disabled{opacity:.4;cursor:not-allowed}
 
-  .stat-block { padding:clamp(16px,4vw,28px) clamp(10px,2vw,20px); border-right:1px solid rgba(0,255,65,0.15); text-align:center; background:rgba(0,255,65,0.02); position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center; }
-  .stat-block::before { content:''; position:absolute; top:0; left:-200%; width:200%; height:2px; background:linear-gradient(90deg,transparent,#00ff41,transparent); animation:sweep 4s linear infinite; }
-  @keyframes sweep { 0%{left:-200%} 100%{left:100%} }
+  /* Airdrop special button states */
+  .airdrop-btn.twitter-state{border-color:#1d9bf0;color:#1d9bf0}
+  .airdrop-btn.twitter-state:hover:not(:disabled){background:rgba(29,155,240,0.08);box-shadow:0 0 30px rgba(29,155,240,0.2);text-shadow:0 0 10px #1d9bf0}
+  .airdrop-btn.claimed-state{border-color:rgba(0,255,65,0.2);color:rgba(0,255,65,0.3);cursor:not-allowed}
 
-  .stat-block-cyan { padding:clamp(16px,4vw,28px) clamp(10px,2vw,20px); border-right:1px solid rgba(0,255,65,0.15); text-align:center; background:rgba(0,255,65,0.02); position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center; }
-  .stat-block-cyan::before { content:''; position:absolute; top:0; left:-200%; width:200%; height:2px; background:linear-gradient(90deg,transparent,#00cfff,transparent); animation:sweep-cyan 4s linear 1.3s infinite; }
-  @keyframes sweep-cyan { 0%{left:-200%} 100%{left:100%} }
+  .log{margin-top:20px;min-height:50px;font-size:clamp(10px,2.5vw,12px);color:rgba(0,255,65,0.5);line-height:1.8;word-break:break-all}
+  .log .ok{color:#00ff41}
+  .log .err{color:#ff0040}
+  .log .info{color:#00cfff}
+  .log .warn{color:#f7c948}
 
-  .ink-block { padding:clamp(16px,4vw,28px) clamp(10px,2vw,20px); text-align:center; background:rgba(0,255,65,0.02); position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center; }
-  .ink-block::before { content:''; position:absolute; top:0; left:-200%; width:200%; height:2px; background:linear-gradient(90deg,transparent 0%,#00ff41 15%,#00cfff 35%,#b44fff 55%,#00cfff 75%,#00ff41 90%,transparent 100%); animation:neon-sweep 3s linear 2.6s infinite; }
-  @keyframes neon-sweep { 0%{left:-200%} 100%{left:100%} }
+  .share-btn{display:none;width:100%;margin-top:12px;padding:clamp(12px,3vw,16px);background:transparent;border:1px solid #1d9bf0;color:#1d9bf0;font-family:'VT323',monospace;font-size:clamp(16px,4vw,24px);letter-spacing:clamp(2px,1vw,4px);text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;text-align:center;text-decoration:none}
+  .share-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(29,155,240,0.12),transparent);transition:left .4s}
+  .share-btn:hover{background:rgba(29,155,240,0.08);box-shadow:0 0 30px rgba(29,155,240,0.2)}
+  .share-btn:hover::before{left:100%}
+  .share-btn.visible{display:block;animation:fadein .4s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-  .stat-label { font-size:clamp(8px,2vw,10px); color:rgba(0,255,65,0.4); letter-spacing:clamp(1px,0.8vw,3px); text-transform:uppercase; margin-bottom:8px; }
-  .stat-value { font-family:'VT323',monospace; font-size:clamp(28px,6vw,42px); line-height:1; }
-  .stat-value.green { color:#00ff41; text-shadow:0 0 15px rgba(0,255,65,0.4); }
-  .stat-value.cyan  { color:#00cfff; text-shadow:0 0 15px rgba(0,207,255,0.4); }
-  .ink-label { font-size:clamp(8px,2vw,10px); color:rgba(0,255,65,0.4); letter-spacing:clamp(1px,0.8vw,3px); text-transform:uppercase; margin-bottom:8px; position:relative; z-index:1; }
-  .ink-value { font-family:'VT323',monospace; font-size:clamp(28px,6vw,42px); line-height:1; color:#c47aff; text-shadow:0 0 15px rgba(180,80,255,0.5); position:relative; z-index:1; }
+  /* airdrop info box */
+  .airdrop-info{display:flex;gap:2px;margin-bottom:20px}
+  .airdrop-stat{flex:1;padding:16px 12px;border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.01);text-align:center}
+  .airdrop-stat-label{font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+  .airdrop-stat-value{font-family:'VT323',monospace;font-size:28px;color:#00ff41;line-height:1}
+  .airdrop-stat-value.purple{color:#c47aff}
 
-  .claim-section { margin-bottom:60px; }
-  .section-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
-  .section-header::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(0,255,65,0.3),transparent); }
-  .section-tag { font-size:clamp(9px,2vw,10px); letter-spacing:clamp(2px,1vw,4px); color:rgba(0,255,65,0.5); text-transform:uppercase; white-space:nowrap; }
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:60px}
+  .step{padding:clamp(16px,4vw,28px) clamp(12px,3vw,20px);border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.01)}
+  .step-num{font-family:'VT323',monospace;font-size:clamp(40px,8vw,64px);color:rgba(0,255,65,0.08);line-height:1;margin-bottom:10px}
+  .step-title{font-family:'Rajdhani',sans-serif;font-size:clamp(13px,3vw,16px);font-weight:600;color:#00ff41;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+  .step-desc{font-size:clamp(10px,2vw,11px);color:rgba(0,255,65,0.4);line-height:1.7}
 
-  .claim-terminal { background:#000; border:1px solid rgba(0,255,65,0.25); padding:clamp(20px,5vw,32px); padding-top:clamp(36px,6vw,48px); position:relative; }
-  .claim-terminal::before { content:'● ● ●'; position:absolute; top:12px; left:16px; font-size:10px; color:rgba(0,255,65,0.3); letter-spacing:4px; }
+  .ticker-wrap{overflow:hidden;border-top:1px solid rgba(0,255,65,0.15);border-bottom:1px solid rgba(0,255,65,0.15);padding:10px 0;margin-bottom:60px;background:rgba(0,255,65,0.02)}
+  .ticker{display:flex;white-space:nowrap;animation:tick 18s linear infinite;gap:60px}
+  .ticker-item{font-size:clamp(9px,2vw,11px);color:rgba(0,255,65,0.45);letter-spacing:3px;flex-shrink:0}
+  .ticker-item span{color:#00ff41}
+  @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-  .amount-row { display:flex; gap:12px; margin-bottom:20px; align-items:stretch; }
-  .amount-label { font-size:clamp(9px,2vw,10px); color:rgba(0,255,65,0.4); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
-  .amount-group { flex:1; min-width:0; }
-  .amount-input-wrap { display:flex; }
-  .amount-prefix { background:rgba(0,255,65,0.08); border:1px solid rgba(0,255,65,0.25); border-right:none; padding:12px clamp(8px,2vw,12px); font-size:clamp(10px,2.5vw,12px); color:rgba(0,255,65,0.5); white-space:nowrap; display:flex; align-items:center; flex-shrink:0; }
-  .amount-input { width:100%; min-width:0; background:rgba(0,255,65,0.03); border:1px solid rgba(0,255,65,0.25); color:#00ff41; font-family:'Share Tech Mono',monospace; font-size:clamp(14px,3vw,16px); padding:12px clamp(8px,2vw,16px); outline:none; transition:border-color 0.2s,box-shadow 0.2s; }
-  .amount-input:focus { border-color:rgba(0,255,65,0.6); box-shadow:0 0 20px rgba(0,255,65,0.1); }
+  footer{border-top:1px solid rgba(0,255,65,0.12);padding-top:28px;display:flex;justify-content:space-between;align-items:center;font-size:clamp(8px,2vw,10px);color:rgba(0,255,65,0.25);letter-spacing:clamp(1px,.5vw,2px);gap:12px;flex-wrap:wrap}
+  .counter{font-family:'VT323',monospace;font-size:clamp(14px,3vw,18px);color:rgba(0,255,65,0.35)}
 
-  .arrow-sep { display:flex; align-items:flex-end; padding-bottom:12px; color:rgba(0,255,65,0.3); font-size:18px; flex-shrink:0; }
-
-  .output-group { flex:1; min-width:0; }
-  .output-display { background:rgba(0,255,65,0.03); border:1px solid rgba(0,255,65,0.15); padding:12px clamp(8px,2vw,16px); font-family:'VT323',monospace; font-size:clamp(16px,4vw,22px); color:#00ff41; text-align:right; height:50px; display:flex; align-items:center; justify-content:flex-end; overflow:hidden; }
-  .output-display span { color:rgba(0,255,65,0.4); font-size:clamp(10px,2.5vw,14px); margin-left:6px; font-family:'Share Tech Mono',monospace; white-space:nowrap; }
-
-  .input-row { display:flex; margin-bottom:20px; }
-  .input-prefix { background:rgba(0,255,65,0.08); border:1px solid rgba(0,255,65,0.25); border-right:none; padding:12px clamp(8px,2vw,16px); font-size:clamp(10px,2.5vw,13px); color:rgba(0,255,65,0.5); white-space:nowrap; flex-shrink:0; }
-  .wallet-input { flex:1; min-width:0; background:rgba(0,255,65,0.03); border:1px solid rgba(0,255,65,0.25); color:#00ff41; font-family:'Share Tech Mono',monospace; font-size:clamp(10px,2.5vw,13px); padding:12px clamp(8px,2vw,16px); outline:none; transition:border-color 0.2s; }
-  .wallet-input::placeholder { color:rgba(0,255,65,0.2); }
-  .wallet-input:focus { border-color:rgba(0,255,65,0.6); box-shadow:0 0 20px rgba(0,255,65,0.1); }
-
-  .claim-btn { width:100%; padding:clamp(14px,3vw,18px); background:transparent; border:1px solid #00ff41; color:#00ff41; font-family:'VT323',monospace; font-size:clamp(20px,5vw,28px); letter-spacing:clamp(2px,1.5vw,6px); text-transform:uppercase; cursor:pointer; position:relative; overflow:hidden; transition:all 0.3s; }
-  .claim-btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(0,255,65,0.1),transparent); transition:left 0.4s; }
-  .claim-btn:hover { background:rgba(0,255,65,0.08); box-shadow:0 0 30px rgba(0,255,65,0.2); text-shadow:0 0 10px #00ff41; }
-  .claim-btn:hover::before { left:100%; }
-  .claim-btn:active { transform:scale(0.99); }
-
-  .output-log { margin-top:20px; min-height:50px; font-size:clamp(10px,2.5vw,12px); color:rgba(0,255,65,0.5); line-height:1.8; word-break:break-all; }
-  .output-log .ok  { color:#00ff41; }
-  .output-log .err { color:#ff0040; }
-  .output-log .info{ color:#00cfff; }
-
-  .twitter-btn { display:none; width:100%; margin-top:16px; padding:clamp(12px,3vw,16px); background:transparent; border:1px solid #1d9bf0; color:#1d9bf0; font-family:'VT323',monospace; font-size:clamp(16px,4vw,24px); letter-spacing:clamp(2px,1vw,4px); text-transform:uppercase; cursor:pointer; position:relative; overflow:hidden; transition:all 0.3s; text-align:center; text-decoration:none; }
-  .twitter-btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(29,155,240,0.12),transparent); transition:left 0.4s; }
-  .twitter-btn:hover { background:rgba(29,155,240,0.08); box-shadow:0 0 30px rgba(29,155,240,0.2); text-shadow:0 0 10px #1d9bf0; }
-  .twitter-btn:hover::before { left:100%; }
-  .twitter-btn.visible { display:block; animation:fadein 0.4s ease; }
-  @keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-
-  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-bottom:60px; }
-  .step { padding:clamp(16px,4vw,28px) clamp(12px,3vw,20px); border:1px solid rgba(0,255,65,0.12); background:rgba(0,255,65,0.01); }
-  .step-num { font-family:'VT323',monospace; font-size:clamp(40px,8vw,64px); color:rgba(0,255,65,0.08); line-height:1; margin-bottom:10px; }
-  .step-title { font-family:'Rajdhani',sans-serif; font-size:clamp(13px,3vw,16px); font-weight:600; color:#00ff41; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
-  .step-desc { font-size:clamp(10px,2vw,11px); color:rgba(0,255,65,0.4); line-height:1.7; }
-
-  .ticker-wrap { overflow:hidden; border-top:1px solid rgba(0,255,65,0.15); border-bottom:1px solid rgba(0,255,65,0.15); padding:10px 0; margin-bottom:60px; background:rgba(0,255,65,0.02); }
-  .ticker { display:flex; white-space:nowrap; animation:tick 18s linear infinite; gap:60px; }
-  .ticker-item { font-size:clamp(9px,2vw,11px); color:rgba(0,255,65,0.45); letter-spacing:3px; flex-shrink:0; }
-  .ticker-item span { color:#00ff41; }
-  @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-
-  footer { border-top:1px solid rgba(0,255,65,0.12); padding-top:28px; display:flex; justify-content:space-between; align-items:center; font-size:clamp(8px,2vw,10px); color:rgba(0,255,65,0.25); letter-spacing:clamp(1px,0.5vw,2px); gap:12px; flex-wrap:wrap; }
-  .counter { font-family:'VT323',monospace; font-size:clamp(14px,3vw,18px); color:rgba(0,255,65,0.35); }
-
-  @media(max-width:640px) {
-    .container { padding:0 16px 60px; }
-    nav { margin-bottom:40px; }
-    .hero { margin-bottom:40px; }
-    .stats-strip { grid-template-columns:1fr 1fr; }
-    .ink-block { grid-column: span 2; border-top:1px solid rgba(0,255,65,0.15); }
-    .amount-row { gap:8px; }
-    .steps { grid-template-columns:1fr; }
-    footer { flex-direction:column; text-align:center; }
+  @media(max-width:640px){
+    .container{padding:0 16px 60px}
+    nav{margin-bottom:40px}
+    .stats-strip{grid-template-columns:1fr 1fr}
+    .ink-block{grid-column:span 2;border-top:1px solid rgba(0,255,65,0.15)}
+    .steps{grid-template-columns:1fr}
+    footer{flex-direction:column;text-align:center}
   }
-
-  @media(max-width:400px) {
-    .container { padding:0 12px 48px; }
-    .nav-status { font-size:10px; }
-    .stats-strip { grid-template-columns:1fr; }
-    .ink-block { grid-column:span 1; }
-    .stat-block, .stat-block-cyan { border-right:none; border-bottom:1px solid rgba(0,255,65,0.15); }
-    .amount-row { flex-direction:column; }
-    .arrow-sep { display:none; }
-    .output-group { width:100%; }
-    .output-display { text-align:left; justify-content:flex-start; }
-    .input-prefix { display:none; }
-    .wallet-input { border-left:1px solid rgba(0,255,65,0.25); }
-    .claim-terminal { padding:36px 14px 20px; }
-    .claim-terminal::before { left:12px; }
+  @media(max-width:400px){
+    .container{padding:0 12px 48px}
+    .stats-strip{grid-template-columns:1fr}
+    .ink-block{grid-column:span 1}
+    .stat-block,.stat-block-cyan{border-right:none;border-bottom:1px solid rgba(0,255,65,0.15)}
+    .amount-row{flex-direction:column}
+    .arrow-sep{display:none}
+    .terminal{padding:36px 14px 20px}
+    .airdrop-info{flex-direction:column}
   }
 </style>
 </head>
 <body>
-
 <div class="scanlines"></div>
 <div class="grid-bg"></div>
-
 <div class="container">
 
   <nav>
     <div class="nav-logo">$HACK</div>
-    <div class="nav-status">
-      <div class="dot"></div>
-      INK MAINNET // BLOCK #<span id="blocknum">21847293</span>
+    <div class="nav-right">
+      <div class="nav-status">
+        <div class="dot"></div>
+        INK // BLOCK #<span id="blocknum">21847293</span>
+      </div>
+      <button class="connect-btn" id="connectBtn" onclick="connectWallet()">[ CONNECT WALLET ]</button>
     </div>
   </nav>
 
   <div class="hero">
     <div class="hero-title" data-text="$HACK">$HACK</div>
     <div class="hero-sub">ACCESS GRANTED // CLAIM YOUR TOKENS</div>
-    <div class="terminal-line">&gt; initializing airdrop protocol...</div>
-    <div class="terminal-line">&gt; claim window: <span>OPEN</span></div>
+    <div class="terminal-line">&gt; sale: <span>OPEN</span> // airdrop: <span>OPEN</span></div>
+    <div class="terminal-line">&gt; chain: <span>INK</span> // payment: <span>USDC</span></div>
   </div>
 
   <div class="stats-strip">
     <div class="stat-block">
-      <div class="stat-label">Total Supply</div>
-      <div class="stat-value green">1T</div>
+      <div class="stat-label">Airdrop</div>
+      <div class="stat-value green">10%</div>
     </div>
     <div class="stat-block-cyan">
       <div class="stat-label">Sale Pool</div>
@@ -179,67 +184,96 @@
     </div>
   </div>
 
-  <div class="claim-section">
-    <div class="section-header">
-      <div class="section-tag">// CLAIM INTERFACE</div>
-    </div>
-    <div class="claim-terminal">
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('airdrop')">[ AIRDROP ]</div>
+    <div class="tab" onclick="switchTab('sale')">[ BUY ]</div>
+  </div>
+
+  <!-- SALE PANEL -->
+  <div class="panel" id="panel-sale">
+    <div class="section-header"><div class="section-tag">// CLAIM INTERFACE</div></div>
+    <div class="terminal">
+      <div class="wallet-bar" id="walletBar">
+        <div>WALLET: <span id="walletAddr">—</span></div>
+        <div>USDC: <span id="usdcBalance">—</span></div>
+      </div>
       <div class="amount-row">
         <div class="amount-group">
           <div class="amount-label">You pay</div>
           <div class="amount-input-wrap">
             <div class="amount-prefix">USDC</div>
-            <input class="amount-input" id="usdcInput" type="number" min="1" step="1" value="1" inputmode="numeric" oninput="calcTokens()">
+            <input class="amount-input" id="usdcInput" type="number" min="0" step="any" value="1" inputmode="decimal" oninput="calcTokens()">
           </div>
         </div>
         <div class="arrow-sep">→</div>
         <div class="output-group">
           <div class="amount-label">You receive</div>
-          <div class="output-display" id="tokenOut">50,000<span>$HACK</span></div>
+          <div class="output-display" id="tokenOut">20,000<span>$HACK</span></div>
         </div>
       </div>
-      <div class="input-row">
-        <div class="input-prefix">root@$HACK:~$</div>
-        <input class="wallet-input" id="walletInput" type="text" placeholder="0x... wallet address" spellcheck="false" autocomplete="off" autocorrect="off">
-      </div>
-      <button class="claim-btn" onclick="runClaim()">[ EXECUTE CLAIM ]</button>
-      <div class="output-log" id="log"></div>
-      <a class="twitter-btn" id="twitterBtn" target="_blank" rel="noopener">[ SHARE ON X / TWITTER ]</a>
+      <button class="action-btn" id="buyBtn" onclick="executeBuy()">[ EXECUTE CLAIM ]</button>
+      <div class="log" id="buyLog"></div>
+      <a class="share-btn" id="buyShareBtn" target="_blank" rel="noopener">[ SHARE ON X ]</a>
     </div>
   </div>
 
-  <div class="section-header">
-    <div class="section-tag">// PROTOCOL STEPS</div>
+  <!-- AIRDROP PANEL -->
+  <div class="panel active" id="panel-airdrop">
+    <div class="section-header"><div class="section-tag">// FREE AIRDROP</div></div>
+    <div class="terminal">
+      <div class="airdrop-info">
+        <div class="airdrop-stat">
+          <div class="airdrop-stat-label">Airdrop Amount</div>
+          <div class="airdrop-stat-value">5,000</div>
+        </div>
+        <div class="airdrop-stat">
+          <div class="airdrop-stat-label">Per Wallet</div>
+          <div class="airdrop-stat-value purple">1x</div>
+        </div>
+        <div class="airdrop-stat">
+          <div class="airdrop-stat-label">Cost</div>
+          <div class="airdrop-stat-value">FREE</div>
+        </div>
+      </div>
+
+      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()">[ CLAIM AIRDROP ]</button>
+      <div class="log" id="airdropLog"></div>
+    </div>
   </div>
+
+  <div class="section-header" style="margin-top:40px"><div class="section-tag">// PROTOCOL STEPS</div></div>
   <div class="steps">
     <div class="step">
       <div class="step-num">01</div>
       <div class="step-title">Connect</div>
-      <div class="step-desc">Paste your EVM-compatible wallet address into the terminal above.</div>
+      <div class="step-desc">Connect MetaMask on INK network. Switch happens automatically.</div>
     </div>
     <div class="step">
       <div class="step-num">02</div>
-      <div class="step-title">Verify</div>
-      <div class="step-desc">System scans the eligibility list. No KYC. No bullshit. On-chain only.</div>
+      <div class="step-title">Share / Approve</div>
+      <div class="step-desc">Airdrop: share on X. Sale: approve USDC spend once.</div>
     </div>
     <div class="step">
       <div class="step-num">03</div>
       <div class="step-title">Receive</div>
-      <div class="step-desc">Tokens hit your wallet within 2 blocks. Welcome to the system.</div>
+      <div class="step-desc">$HACK lands in your wallet instantly on INK chain.</div>
     </div>
   </div>
 
   <div class="ticker-wrap">
     <div class="ticker">
       <span class="ticker-item">$HACK</span>
-      <span class="ticker-item">PRICE: <span>1 USDC = 50,000 $HACK</span></span>
+      <span class="ticker-item">PRICE: <span>1 USDC = 20,000 $HACK</span></span>
+      <span class="ticker-item">AIRDROP: <span>5,000 $HACK FREE</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
       <span class="ticker-item">TAX: <span>0/0</span></span>
       <span class="ticker-item">LP: <span>BURNED 🔥</span></span>
       <span class="ticker-item">CONTRACT: <span>RENOUNCED</span></span>
       <span class="ticker-item">$HACK</span>
-      <span class="ticker-item">PRICE: <span>1 USDC = 50,000 $HACK</span></span>
+      <span class="ticker-item">PRICE: <span>1 USDC = 20,000 $HACK</span></span>
+      <span class="ticker-item">AIRDROP: <span>5,000 $HACK FREE</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
       <span class="ticker-item">TAX: <span>0/0</span></span>
@@ -254,71 +288,297 @@
   </footer>
 
 </div>
-
 <script>
-  const RATE = 50000;
+// ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
+const SALE_ADDRESS     = "0xe1E29d502bb981D5467E3fab850C32b6cA782f5D";
+const AIRDROP_ADDRESS  = "0xf4d3269a77A28B1BE0463C0Fe545ed2b57Aa7489";
+const USDC_ADDRESS     = "0xF1815bd50389c46847f0Bda824eC8da914045D14";
+const HACK_ADDRESS     = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
+const RATE             = 20000;
 
-  function calcTokens() {
-    const usdc = parseFloat(document.getElementById('usdcInput').value) || 0;
-    const tokens = Math.round(usdc * RATE);
-    const el = document.getElementById('tokenOut');
-    el.innerHTML = tokens > 0 ? tokens.toLocaleString() + '<span>$HACK</span>' : '—<span>$HACK</span>';
-  }
+const INK_CHAIN = {
+  chainId:           "0xDED1",
+  chainName:         "Ink",
+  nativeCurrency:    { name:"Ether", symbol:"ETH", decimals:18 },
+  rpcUrls:           ["https://rpc-gel.inkonchain.com"],
+  blockExplorerUrls: ["https://explorer.inkonchain.com"]
+};
 
-  let block = 21847293;
-  setInterval(() => {
-    block += Math.floor(Math.random() * 3) + 1;
-    document.getElementById('blocknum').textContent = block.toString();
-  }, 12000);
+const SALE_ABI = [
+  "function buy(uint256 usdcAmount) external",
+  "function preview(uint256 usdcAmount) external view returns (uint256)",
+  "function remainingHack() external view returns (uint256)",
+  "function saleActive() external view returns (bool)"
+];
 
-  function updateClock() {
-    const n = new Date();
-    const t = [n.getHours(), n.getMinutes(), n.getSeconds()].map(x => String(x).padStart(2, '0')).join(':');
-    document.getElementById('fcounter').textContent = 'SYS_TIME: ' + t;
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
+const AIRDROP_ABI = [
+  "function claim() external",
+  "function claimed(address) external view returns (bool)",
+  "function airdropActive() external view returns (bool)",
+  "function remainingPool() external view returns (uint256)"
+];
 
-  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+const ERC20_ABI = [
+  "function approve(address spender, uint256 amount) external returns (bool)",
+  "function allowance(address owner, address spender) external view returns (uint256)",
+  "function balanceOf(address account) external view returns (uint256)"
+];
 
-  async function typeLog(el, cls, text) {
-    const line = document.createElement('div');
-    line.className = cls;
-    el.appendChild(line);
-    for (const ch of ('> ' + text)) {
-      line.textContent += ch;
-      await delay(18);
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let provider, signer, walletAddress;
+let saleContract, airdropContract, usdcContract;
+let twitterShared = false;
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', (i === 0 && tab==='airdrop') || (i===1 && tab==='sale'));
+  });
+  document.getElementById('panel-sale').classList.toggle('active', tab==='sale');
+  document.getElementById('panel-airdrop').classList.toggle('active', tab==='airdrop');
+}
+
+// ─── UI ──────────────────────────────────────────────────────────────────────
+function calcTokens() {
+  const u = parseFloat(document.getElementById('usdcInput').value) || 0;
+  const t = Math.round(u * RATE);
+  document.getElementById('tokenOut').innerHTML =
+    t > 0 ? t.toLocaleString() + '<span>$HACK</span>' : '—<span>$HACK</span>';
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function typeLog(logId, cls, text) {
+  const log = document.getElementById(logId);
+  const line = document.createElement('div');
+  line.className = cls;
+  log.appendChild(line);
+  for (const ch of ('> ' + text)) { line.textContent += ch; await delay(14); }
+  log.scrollTop = log.scrollHeight;
+}
+
+function clearLog(logId) { document.getElementById(logId).innerHTML = ''; }
+
+// ─── WALLET ──────────────────────────────────────────────────────────────────
+async function connectWallet() {
+  if (!window.ethereum) { alert('MetaMask not found.'); return; }
+  try {
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const network = await provider.getNetwork();
+
+    if (network.chainId !== BigInt(57041)) {
+      try {
+        await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId: INK_CHAIN.chainId}] });
+      } catch(e) {
+        if (e.code === 4902) {
+          await window.ethereum.request({ method:'wallet_addEthereumChain', params:[INK_CHAIN] });
+        } else throw e;
+      }
+      provider = new ethers.BrowserProvider(window.ethereum);
     }
+
+    signer          = await provider.getSigner();
+    walletAddress   = await signer.getAddress();
+    saleContract    = new ethers.Contract(SALE_ADDRESS,    SALE_ABI,    signer);
+    airdropContract = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
+    usdcContract    = new ethers.Contract(USDC_ADDRESS,    ERC20_ABI,   signer);
+
+    const short = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
+    document.getElementById('connectBtn').textContent = short;
+    document.getElementById('connectBtn').classList.add('connected');
+    document.getElementById('walletAddr').textContent = short;
+    document.getElementById('walletBar').classList.add('show');
+
+    await refreshBalance();
+    await checkAirdropStatus();
+
+    window.ethereum.on('accountsChanged', () => location.reload());
+    window.ethereum.on('chainChanged',    () => location.reload());
+  } catch(e) {
+    console.error(e);
+    alert('Connection failed: ' + (e.message || e));
+  }
+}
+
+async function refreshBalance() {
+  try {
+    const raw = await usdcContract.balanceOf(walletAddress);
+    const bal = Number(raw) / 1e6;
+    document.getElementById('usdcBalance').textContent =
+      bal.toLocaleString(undefined, {maximumFractionDigits:2}) + ' USDC';
+  } catch(e) {}
+}
+
+// ─── AIRDROP STATUS ──────────────────────────────────────────────────────────
+async function checkAirdropStatus() {
+  if (!airdropContract || !walletAddress) return;
+  try {
+    const alreadyClaimed = await airdropContract.claimed(walletAddress);
+    const btn = document.getElementById('airdropBtn');
+    if (alreadyClaimed) {
+      btn.textContent = '[ ALREADY CLAIMED ]';
+      btn.disabled = true;
+      btn.classList.add('claimed-state');
+      await typeLog('airdropLog', 'warn', 'this wallet has already claimed the airdrop');
+    }
+  } catch(e) {}
+}
+
+// ─── AIRDROP FLOW ────────────────────────────────────────────────────────────
+// States: idle → share_twitter → claim_ready → done
+let airdropState = 'idle';
+
+async function handleAirdrop() {
+  if (!signer) {
+    await connectWallet();
+    if (!signer) return;
   }
 
-  async function runClaim() {
-    const w = document.getElementById('walletInput').value.trim();
-    const usdc = parseFloat(document.getElementById('usdcInput').value) || 0;
-    const log = document.getElementById('log');
-    const twitterBtn = document.getElementById('twitterBtn');
-    log.innerHTML = '';
-    twitterBtn.classList.remove('visible');
+  if (airdropState === 'idle') {
+    // Show Twitter share
+    clearLog('airdropLog');
+    const btn = document.getElementById('airdropBtn');
 
-    if (!w) { await typeLog(log, 'err', 'ERROR: no wallet address provided'); return; }
-    if (usdc < 1) { await typeLog(log, 'err', 'ERROR: minimum claim is 1 USDC'); return; }
-    if (!/^0x[a-fA-F0-9]{40}$/.test(w)) {
-      await typeLog(log, 'err', 'ERROR: invalid wallet format');
-      await typeLog(log, 'err', 'EXPECTED: EVM address (0x...) on INK network');
+    await typeLog('airdropLog', 'info', 'share $HACK on X to unlock airdrop...');
+
+    const tweet = 'Just found $HACK on @inkonchain 🖥️\n\nFree airdrop — 5,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.\n\nClaim here 👇\nhttps://YOURSITE.com\n\n#HACK #INK #memecoin';
+    const twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
+    window.open(twitterUrl, '_blank');
+
+    // After opening Twitter, change button to claim
+    airdropState = 'claim_ready';
+    btn.textContent = '[ CLAIM 5,000 $HACK ]';
+    btn.classList.remove('twitter-state');
+
+    await typeLog('airdropLog', 'ok', 'shared! now click claim to receive your tokens.');
+
+  } else if (airdropState === 'claim_ready') {
+    await executeAirdropClaim();
+  }
+}
+
+async function executeAirdropClaim() {
+  const btn = document.getElementById('airdropBtn');
+  clearLog('airdropLog');
+  btn.disabled = true;
+
+  try {
+    await typeLog('airdropLog', 'info', 'checking airdrop status...');
+    const active = await airdropContract.airdropActive();
+    if (!active) { await typeLog('airdropLog', 'err', 'ERROR: airdrop is paused'); btn.disabled=false; return; }
+
+    const alreadyClaimed = await airdropContract.claimed(walletAddress);
+    if (alreadyClaimed) {
+      await typeLog('airdropLog', 'err', 'ERROR: this wallet already claimed');
+      btn.textContent = '[ ALREADY CLAIMED ]';
+      btn.classList.add('claimed-state');
       return;
     }
 
-    const tokens = Math.round(usdc * RATE).toLocaleString();
-    await typeLog(log, 'info', 'scanning eligibility database...'); await delay(800);
-    await typeLog(log, 'ok', 'wallet verified on INK network'); await delay(500);
-    await typeLog(log, 'info', 'preparing swap: ' + usdc + ' USDC → ' + tokens + ' $HACK'); await delay(900);
-    await typeLog(log, 'info', 'broadcasting transaction on INK...'); await delay(1200);
-    await typeLog(log, 'ok', 'SUCCESS: ' + tokens + ' $HACK tokens incoming.');
-    await typeLog(log, 'ok', '> welcome to the system, anon.');
+    const pool = await airdropContract.remainingPool();
+    if (pool < BigInt("5000000000000000000000")) {
+      await typeLog('airdropLog', 'err', 'ERROR: airdrop pool is empty');
+      btn.disabled=false; return;
+    }
 
-    const tweetText = 'just claimed ' + tokens + ' $HACK on @INK for ' + usdc + ' USDC 🖥️\n\naccess granted. on-chain. no KYC. no bullshit.\n\n#HACK #INK #memecoin';
-    twitterBtn.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText);
-    twitterBtn.classList.add('visible');
+    await typeLog('airdropLog', 'info', 'confirm transaction in wallet...');
+    const tx = await airdropContract.claim();
+    await typeLog('airdropLog', 'info', 'tx sent: ' + tx.hash.slice(0,20) + '...');
+    await tx.wait();
+    await typeLog('airdropLog', 'ok', 'SUCCESS: 5,000 $HACK claimed!');
+    await typeLog('airdropLog', 'ok', '> welcome to the system, anon.');
+
+    airdropState = 'done';
+    btn.textContent = '[ CLAIMED ✓ ]';
+    btn.classList.add('claimed-state');
+
+  } catch(e) {
+    await typeLog('airdropLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
+    btn.disabled = false;
   }
+}
+
+// ─── BUY FLOW ────────────────────────────────────────────────────────────────
+async function executeBuy() {
+  clearLog('buyLog');
+  document.getElementById('buyShareBtn').classList.remove('visible');
+  const btn = document.getElementById('buyBtn');
+
+  if (!signer) {
+    await typeLog('buyLog', 'warn', 'connect your wallet first...');
+    await connectWallet();
+    if (!signer) return;
+  }
+
+  const usdcFloat = parseFloat(document.getElementById('usdcInput').value);
+  if (!usdcFloat || usdcFloat <= 0) {
+    await typeLog('buyLog', 'err', 'ERROR: enter a valid USDC amount'); return;
+  }
+
+  const usdcRaw = BigInt(Math.round(usdcFloat * 1_000_000));
+  btn.disabled = true;
+
+  try {
+    await typeLog('buyLog', 'info', 'checking sale status...');
+    const active = await saleContract.saleActive();
+    if (!active) { await typeLog('buyLog', 'err', 'ERROR: sale is paused'); btn.disabled=false; return; }
+
+    const remaining = await saleContract.remainingHack();
+    const hackExpected = await saleContract.preview(usdcRaw);
+    if (remaining < hackExpected) {
+      await typeLog('buyLog', 'err', 'ERROR: not enough tokens in sale pool'); btn.disabled=false; return;
+    }
+    const hackFormatted = Number(ethers.formatEther(hackExpected)).toLocaleString();
+    await typeLog('buyLog', 'ok', 'sale OK — ' + hackFormatted + ' $HACK to receive');
+
+    await typeLog('buyLog', 'info', 'checking USDC allowance...');
+    const allowance = await usdcContract.allowance(walletAddress, SALE_ADDRESS);
+    if (allowance < usdcRaw) {
+      await typeLog('buyLog', 'warn', 'approve USDC — confirm in wallet...');
+      const approveTx = await usdcContract.approve(SALE_ADDRESS, usdcRaw);
+      await typeLog('buyLog', 'info', 'approval tx: ' + approveTx.hash.slice(0,18) + '...');
+      await approveTx.wait();
+      await typeLog('buyLog', 'ok', 'USDC approved');
+    } else {
+      await typeLog('buyLog', 'ok', 'USDC allowance OK');
+    }
+
+    await typeLog('buyLog', 'info', 'confirm buy transaction in wallet...');
+    const buyTx = await saleContract.buy(usdcRaw);
+    await typeLog('buyLog', 'info', 'tx: ' + buyTx.hash.slice(0,18) + '...');
+    await buyTx.wait();
+    await typeLog('buyLog', 'ok', 'SUCCESS: ' + hackFormatted + ' $HACK incoming!');
+    await typeLog('buyLog', 'ok', '> welcome to the system, anon.');
+
+    await refreshBalance();
+
+    const tweet = 'just bought ' + hackFormatted + ' $HACK for ' + usdcFloat + ' USDC 🖥️\n\non-chain. no KYC. no bullshit. on @inkonchain\n\n#HACK #INK #memecoin';
+    const shareBtn = document.getElementById('buyShareBtn');
+    shareBtn.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
+    shareBtn.classList.add('visible');
+
+  } catch(e) {
+    await typeLog('buyLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ─── MISC ────────────────────────────────────────────────────────────────────
+let block = 21847293;
+setInterval(() => {
+  block += Math.floor(Math.random()*3)+1;
+  document.getElementById('blocknum').textContent = block.toString();
+}, 12000);
+
+function updateClock() {
+  const n = new Date();
+  const t = [n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+  document.getElementById('fcounter').textContent = 'SYS_TIME: ' + t;
+}
+setInterval(updateClock, 1000);
+updateClock();
 </script>
 </body>
 </html>
