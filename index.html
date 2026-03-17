@@ -142,6 +142,23 @@
   .airdrop-stat-value{font-family:'VT323',monospace;font-size:28px;color:#00ff41;line-height:1}
   .airdrop-stat-value.purple{color:#c47aff}
 
+  /* social tasks */
+  .tasks{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+  .task{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.01);flex-wrap:wrap}
+  .task-label{font-size:11px;color:rgba(0,255,65,0.5);letter-spacing:1px;flex:1;min-width:120px}
+  .task-label.done{color:rgba(0,255,65,0.2);text-decoration:line-through}
+  .task-status{font-family:'VT323',monospace;font-size:20px;color:rgba(0,255,65,0.15);flex-shrink:0;min-width:36px;text-align:right}
+  .task-status.done{color:#00ff41}
+  .task-btn{background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.6);font-family:'Share Tech Mono',monospace;font-size:10px;padding:7px 14px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap;text-decoration:none;display:inline-block;flex-shrink:0}
+  .task-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 10px rgba(0,255,65,0.15)}
+  .task-btn.done{border-color:rgba(0,255,65,0.1);color:rgba(0,255,65,0.2);cursor:default;pointer-events:none}
+  @media(max-width:480px){
+    .task{gap:8px}
+    .task-label{font-size:10px;width:100%;flex:none}
+    .task-btn{font-size:9px;padding:6px 10px}
+    .task-status{min-width:28px}
+  }
+
   .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:60px}
   .step{padding:clamp(16px,4vw,28px) clamp(12px,3vw,20px);border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.01)}
   .step-num{font-family:'VT323',monospace;font-size:clamp(40px,8vw,64px);color:rgba(0,255,65,0.08);line-height:1;margin-bottom:10px}
@@ -268,7 +285,40 @@
         </div>
       </div>
 
-      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()">[ CLAIM AIRDROP ]</button>
+      <div class="tasks">
+        <div class="task">
+          <div class="task-label" id="lbl-follow">&gt; follow @HACKtokenINK on X</div>
+          <a class="task-btn" id="btn-follow" href="https://twitter.com/intent/follow?screen_name=HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('follow')">[ FOLLOW ]</a>
+          <div class="task-status" id="st-follow">--</div>
+        </div>
+        <div class="task">
+          <div class="task-label" id="lbl-tg">&gt; join telegram channel</div>
+          <a class="task-btn" id="btn-tg" href="https://t.me/HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('tg')">[ JOIN ]</a>
+          <div class="task-status" id="st-tg">--</div>
+        </div>
+        <div class="task">
+          <div class="task-label" id="lbl-like">&gt; like the announcement post</div>
+          <a class="task-btn" id="btn-like" href="https://twitter.com/intent/like?tweet_id=2033839538615759119" target="_blank" rel="noopener" onclick="completeTask('like')">[ LIKE ]</a>
+          <div class="task-status" id="st-like">--</div>
+        </div>
+        <div class="task">
+          <div class="task-label" id="lbl-rt">&gt; retweet the announcement post</div>
+          <a class="task-btn" id="btn-rt" href="https://twitter.com/intent/retweet?tweet_id=2033839538615759119" target="_blank" rel="noopener" onclick="completeTask('rt')">[ RETWEET ]</a>
+          <div class="task-status" id="st-rt">--</div>
+        </div>
+        <div class="task">
+          <div class="task-label" id="lbl-comment">&gt; leave a comment on the post</div>
+          <a class="task-btn" id="btn-comment" href="https://twitter.com/intent/tweet?in_reply_to=2033839538615759119&text=%24HACK%20on%20INK%20%F0%9F%96%A5%EF%B8%8F%20%23HACK%20%23INK" target="_blank" rel="noopener" onclick="completeTask('comment')">[ COMMENT ]</a>
+          <div class="task-status" id="st-comment">--</div>
+        </div>
+        <div class="task">
+          <div class="task-label" id="lbl-share">&gt; share $HACK with your followers</div>
+          <a class="task-btn" id="btn-share" href="https://twitter.com/intent/tweet?text=Just%20found%20%24HACK%20on%20%40HACKtokenINK%20%F0%9F%96%A5%EF%B8%8F%0A%0AFree%20airdrop%20%E2%80%94%205%2C000%20%24HACK%20per%20wallet.%0ANo%20KYC.%20No%20bullshit.%20On-chain%20only.%0A%0AClaim%20here%20%F0%9F%91%89hackink.xyz%0A%0A%23HACK%20%23INK%20%23INKChain%20%23Airdrop" target="_blank" rel="noopener" onclick="completeTask('share')">[ SHARE ]</a>
+          <div class="task-status" id="st-share">--</div>
+        </div>
+      </div>
+
+      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()" disabled>[ COMPLETE TASKS TO CLAIM ]</button>
       <div class="log" id="airdropLog"></div>
     </div>
   </div>
@@ -456,8 +506,29 @@ async function checkAirdropStatus() {
   } catch(e) {}
 }
 
+// ─── SOCIAL TASKS ────────────────────────────────────────────────────────────
+const TASKS = ['follow','tg','like','rt','comment','share'];
+let completedTasks = new Set();
+
+function completeTask(id) {
+  setTimeout(() => {
+    completedTasks.add(id);
+    const lbl = document.getElementById('lbl-'+id);
+    const st  = document.getElementById('st-'+id);
+    const btn = document.getElementById('btn-'+id);
+    if (lbl) lbl.classList.add('done');
+    if (st)  { st.textContent = '[OK]'; st.classList.add('done'); }
+    if (btn) btn.classList.add('done');
+    const allDone = TASKS.every(t => completedTasks.has(t));
+    if (allDone) {
+      const claimBtn = document.getElementById('airdropBtn');
+      claimBtn.disabled = false;
+      claimBtn.textContent = '[ CLAIM 5,000 $HACK ]';
+    }
+  }, 1200);
+}
+
 // ─── AIRDROP FLOW ────────────────────────────────────────────────────────────
-// States: idle → share_twitter → claim_ready → done
 let airdropState = 'idle';
 
 async function handleAirdrop() {
@@ -465,28 +536,7 @@ async function handleAirdrop() {
     await connectWallet();
     if (!signer) return;
   }
-
-  if (airdropState === 'idle') {
-    // Show Twitter share
-    clearLog('airdropLog');
-    const btn = document.getElementById('airdropBtn');
-
-    await typeLog('airdropLog', 'info', 'share $HACK on X to unlock airdrop...');
-
-    const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 5,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.\n\nClaim here 👇\nhttps://hackink.xyz\n\nhttps://x.com/HACKtokenINK/status/2033839538615759119\n\n #HACK #INK #memecoin';
-    const twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
-    window.open(twitterUrl, '_blank');
-
-    // After opening Twitter, change button to claim
-    airdropState = 'claim_ready';
-    btn.textContent = '[ CLAIM 5,000 $HACK ]';
-    btn.classList.remove('twitter-state');
-
-    await typeLog('airdropLog', 'ok', 'shared! now click claim to receive your tokens.');
-
-  } else if (airdropState === 'claim_ready') {
-    await executeAirdropClaim();
-  }
+  await executeAirdropClaim();
 }
 
 async function executeAirdropClaim() {
