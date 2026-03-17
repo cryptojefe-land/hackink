@@ -6,7 +6,7 @@
 
 <!-- ─── SEO ──────────────────────────────────────────────────────────────── -->
 <title>$HACK — Free Airdrop & Token Sale on INK Chain</title>
-<meta name="description" content="Claim your free $HACK airdrop or buy tokens for USDC on INK Chain. No KYC. No bullshit. On-chain only. 1 USDC = 20,000 $HACK.">
+<meta name="description" content="Claim your free $HACK airdrop or buy tokens for USDC.e on INK Chain. No KYC. No bullshit. On-chain only. 1 USD = 20,000 $HACK.">
 <meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, token sale, crypto, web3, INK memecoin">
 <meta name="author" content="$HACK">
 <meta name="robots" content="index, follow">
@@ -16,7 +16,7 @@
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="https://hackink.xyz">
 <meta property="og:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta property="og:description" content="Claim 5,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
+<meta property="og:description" content="Claim 5,000 $HACK free or buy with USDC.e. No KYC. No bullshit. On-chain only.">
 <meta property="og:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
@@ -26,7 +26,7 @@
 <meta name="twitter:card"        content="summary_large_image">
 <meta name="twitter:url"         content="https://hackink.xyz">
 <meta name="twitter:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta name="twitter:description" content="Claim 5,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
+<meta name="twitter:description" content="Claim 5,000 $HACK free or buy with USDC.e. No KYC. No bullshit. On-chain only.">
 <meta name="twitter:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 
 <!-- ─── FAVICON ─────────────────────────────────────────────────────────── -->
@@ -97,6 +97,9 @@
   .wallet-bar{display:none;margin-bottom:16px;padding:10px 14px;border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.02);font-size:11px;color:rgba(0,255,65,0.5);justify-content:space-between;flex-wrap:wrap;gap:8px}
   .wallet-bar.show{display:flex}
   .wallet-bar span{color:#00ff41}
+  .token-sel{background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.4);font-family:'Share Tech Mono',monospace;font-size:11px;padding:6px 14px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
+  .token-sel:hover{border-color:rgba(0,255,65,0.5);color:rgba(0,255,65,0.7)}
+  .token-sel.active{border-color:#00ff41;color:#00ff41;background:rgba(0,255,65,0.06)}
 
   .amount-row{display:flex;gap:12px;margin-bottom:20px;align-items:stretch}
   .amount-label{font-size:clamp(9px,2vw,10px);color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
@@ -214,7 +217,7 @@
     <div class="hero-title" data-text="$HACK">$HACK</div>
     <div class="hero-sub">ACCESS GRANTED // CLAIM YOUR TOKENS</div>
     <div class="terminal-line">&gt; sale: <span>OPEN</span> // airdrop: <span>OPEN</span></div>
-    <div class="terminal-line">&gt; chain: <span>INK</span> // payment: <span>USDC</span></div>
+    <div class="terminal-line">&gt; chain: <span>INK</span> // payment: <span>USDC.e</span> <span style="color:rgba(0,255,65,0.3)">|</span> <span>USDT0</span> <span style="color:rgba(0,255,65,0.3)">|</span> <span>crvUSD</span></div>
   </div>
 
   <div class="stats-strip">
@@ -244,13 +247,20 @@
     <div class="terminal">
       <div class="wallet-bar" id="walletBar">
         <div>WALLET: <span id="walletAddr">—</span></div>
-        <div>USDC: <span id="usdcBalance">—</span></div>
+        <div><span id="usdcBalance">—</span></div>
+      </div>
+
+      <div style="display:flex;gap:4px;margin-bottom:16px;">
+        <div style="font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;align-self:center;margin-right:8px;">PAY WITH:</div>
+        <button class="token-sel active" id="sel-USDC.e" onclick="selectToken('USDC.e')">USDC.e</button>
+        <button class="token-sel" id="sel-USDT0" onclick="selectToken('USDT0')">USDT0</button>
+        <button class="token-sel" id="sel-crvUSD" onclick="selectToken('crvUSD')">crvUSD</button>
       </div>
       <div class="amount-row">
         <div class="amount-group">
           <div class="amount-label">You pay</div>
           <div class="amount-input-wrap">
-            <div class="amount-prefix">USDC</div>
+            <div class="amount-prefix" id="tokenPrefix">USDC.e</div>
             <input class="amount-input" id="usdcInput" type="number" min="0" step="any" value="1" inputmode="decimal" oninput="calcTokens()">
           </div>
         </div>
@@ -297,19 +307,9 @@
           <div class="task-status" id="st-tg">--</div>
         </div>
         <div class="task">
-          <div class="task-label" id="lbl-like">&gt; like the announcement post</div>
-          <a class="task-btn" id="btn-like" href="https://twitter.com/intent/like?tweet_id=2033839538615759119" target="_blank" rel="noopener" onclick="completeTask('like')">[ LIKE ]</a>
+          <div class="task-label" id="lbl-like">&gt; like &amp; retweet the announcement post</div>
+          <a class="task-btn" id="btn-like" href="https://twitter.com/intent/retweet?tweet_id=2033839538615759119" target="_blank" rel="noopener" onclick="completeTask('like'); completeTask('rt');">[ LIKE &amp; RT ]</a>
           <div class="task-status" id="st-like">--</div>
-        </div>
-        <div class="task">
-          <div class="task-label" id="lbl-rt">&gt; retweet the announcement post</div>
-          <a class="task-btn" id="btn-rt" href="https://twitter.com/intent/retweet?tweet_id=2033839538615759119" target="_blank" rel="noopener" onclick="completeTask('rt')">[ RETWEET ]</a>
-          <div class="task-status" id="st-rt">--</div>
-        </div>
-        <div class="task">
-          <div class="task-label" id="lbl-comment">&gt; leave a comment on the post</div>
-          <a class="task-btn" id="btn-comment" href="https://twitter.com/intent/tweet?in_reply_to=2033839538615759119&text=%24HACK%20on%20INK%20%F0%9F%96%A5%EF%B8%8F%20%23HACK%20%23INK" target="_blank" rel="noopener" onclick="completeTask('comment')">[ COMMENT ]</a>
-          <div class="task-status" id="st-comment">--</div>
         </div>
         <div class="task">
           <div class="task-label" id="lbl-share">&gt; share $HACK with your followers</div>
@@ -333,7 +333,7 @@
     <div class="step">
       <div class="step-num">02</div>
       <div class="step-title">Share / Approve</div>
-      <div class="step-desc">Airdrop: share on X. Sale: approve USDC spend once.</div>
+      <div class="step-desc">Airdrop: share on X. Sale: approve USDC.e spend once.</div>
     </div>
     <div class="step">
       <div class="step-num">03</div>
@@ -345,7 +345,7 @@
   <div class="ticker-wrap">
     <div class="ticker">
       <span class="ticker-item">$HACK</span>
-      <span class="ticker-item">PRICE: <span>1 USDC = 20,000 $HACK</span></span>
+      <span class="ticker-item">PRICE: <span>1 USD = 20,000 $HACK</span></span>
       <span class="ticker-item">AIRDROP: <span>5,000 $HACK FREE</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
@@ -353,7 +353,7 @@
       <span class="ticker-item">LP: <span>BURNED 🔥</span></span>
       <span class="ticker-item">CONTRACT: <span>RENOUNCED</span></span>
       <span class="ticker-item">$HACK</span>
-      <span class="ticker-item">PRICE: <span>1 USDC = 20,000 $HACK</span></span>
+      <span class="ticker-item">PRICE: <span>1 USD = 20,000 $HACK</span></span>
       <span class="ticker-item">AIRDROP: <span>5,000 $HACK FREE</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
@@ -371,11 +371,17 @@
 </div>
 <script>
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
-const SALE_ADDRESS     = "0xe1E29d502bb981D5467E3fab850C32b6cA782f5D";
-const AIRDROP_ADDRESS  = "0xf4d3269a77A28B1BE0463C0Fe545ed2b57Aa7489";
-const USDC_ADDRESS     = "0xF1815bd50389c46847f0Bda824eC8da914045D14";
-const HACK_ADDRESS     = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
-const RATE             = 20000;
+const SALE_ADDRESS    = "0xafa58a6c9bD72Bd6C4b77f50c22A4A4588476625";
+const AIRDROP_ADDRESS = "0xf4d3269a77A28B1BE0463C0Fe545ed2b57Aa7489";
+const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
+const RATE            = 20000;
+
+const TOKENS = {
+  "USDC.e": { address: "0xF1815bd50389c46847f0Bda824eC8da914045D14", decimals: 6 },
+  "USDT0":  { address: "0x0200C29006150606B650577BBE7B6248F58470c1", decimals: 6 },
+  "crvUSD": { address: "0x39fec550CC6DDCEd810eCCfA9B2931b4B5f2344D", decimals: 18 },
+};
+let selectedToken = "USDC.e";
 
 const INK_CHAIN = {
   chainId:           "0xDEF1",
@@ -386,8 +392,8 @@ const INK_CHAIN = {
 };
 
 const SALE_ABI = [
-  "function buy(uint256 usdcAmount) external",
-  "function preview(uint256 usdcAmount) external view returns (uint256)",
+  "function buy(address token, uint256 paymentAmount) external",
+  "function preview(address token, uint256 paymentAmount) external view returns (uint256)",
   "function remainingHack() external view returns (uint256)",
   "function saleActive() external view returns (bool)"
 ];
@@ -407,7 +413,8 @@ const ERC20_ABI = [
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let provider, signer, walletAddress;
-let saleContract, airdropContract, usdcContract;
+let saleContract, airdropContract;
+let paymentContracts = {};
 let twitterShared = false;
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
@@ -463,7 +470,9 @@ async function connectWallet() {
     walletAddress   = await signer.getAddress();
     saleContract    = new ethers.Contract(SALE_ADDRESS,    SALE_ABI,    signer);
     airdropContract = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
-    usdcContract    = new ethers.Contract(USDC_ADDRESS,    ERC20_ABI,   signer);
+    for (const [name, t] of Object.entries(TOKENS)) {
+      paymentContracts[name] = new ethers.Contract(t.address, ERC20_ABI, signer);
+    }
 
     const short = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
     document.getElementById('connectBtn').textContent = short;
@@ -484,10 +493,13 @@ async function connectWallet() {
 
 async function refreshBalance() {
   try {
-    const raw = await usdcContract.balanceOf(walletAddress);
-    const bal = Number(raw) / 1e6;
+    const contract = paymentContracts[selectedToken];
+    if (!contract) return;
+    const raw = await contract.balanceOf(walletAddress);
+    const dec = TOKENS[selectedToken].decimals;
+    const bal = Number(raw) / (10 ** dec);
     document.getElementById('usdcBalance').textContent =
-      bal.toLocaleString(undefined, {maximumFractionDigits:2}) + ' USDC';
+      bal.toLocaleString(undefined, {maximumFractionDigits:2}) + ' ' + selectedToken;
   } catch(e) {}
 }
 
@@ -507,7 +519,7 @@ async function checkAirdropStatus() {
 }
 
 // ─── SOCIAL TASKS ────────────────────────────────────────────────────────────
-const TASKS = ['follow','tg','like','rt','comment','share'];
+const TASKS = ['follow','tg','like','rt','share'];
 let completedTasks = new Set();
 
 function completeTask(id) {
@@ -589,6 +601,16 @@ async function executeAirdropClaim() {
   }
 }
 
+// ─── TOKEN SELECTOR ──────────────────────────────────────────────────────────
+function selectToken(name) {
+  selectedToken = name;
+  document.querySelectorAll('.token-sel').forEach(b => b.classList.remove('active'));
+  document.getElementById('sel-' + name).classList.add('active');
+  document.getElementById('tokenPrefix').textContent = name;
+  calcTokens();
+  if (signer) refreshBalance();
+}
+
 // ─── BUY FLOW ────────────────────────────────────────────────────────────────
 async function executeBuy() {
   clearLog('buyLog');
@@ -601,12 +623,14 @@ async function executeBuy() {
     if (!signer) return;
   }
 
-  const usdcFloat = parseFloat(document.getElementById('usdcInput').value);
-  if (!usdcFloat || usdcFloat <= 0) {
-    await typeLog('buyLog', 'err', 'ERROR: enter a valid USDC amount'); return;
+  const amount = parseFloat(document.getElementById('usdcInput').value);
+  if (!amount || amount <= 0) {
+    await typeLog('buyLog', 'err', 'ERROR: enter a valid ' + selectedToken + ' amount'); return;
   }
 
-  const usdcRaw = BigInt(Math.round(usdcFloat * 1_000_000));
+  const token    = TOKENS[selectedToken];
+  const rawAmt   = BigInt(Math.round(amount * (10 ** token.decimals)));
+  const payContract = paymentContracts[selectedToken];
   btn.disabled = true;
 
   try {
@@ -614,28 +638,28 @@ async function executeBuy() {
     const active = await saleContract.saleActive();
     if (!active) { await typeLog('buyLog', 'err', 'ERROR: sale is paused'); btn.disabled=false; return; }
 
-    const remaining = await saleContract.remainingHack();
-    const hackExpected = await saleContract.preview(usdcRaw);
+    const remaining    = await saleContract.remainingHack();
+    const hackExpected = await saleContract.preview(token.address, rawAmt);
     if (remaining < hackExpected) {
       await typeLog('buyLog', 'err', 'ERROR: not enough tokens in sale pool'); btn.disabled=false; return;
     }
     const hackFormatted = Number(ethers.formatEther(hackExpected)).toLocaleString();
     await typeLog('buyLog', 'ok', 'sale OK — ' + hackFormatted + ' $HACK to receive');
 
-    await typeLog('buyLog', 'info', 'checking USDC allowance...');
-    const allowance = await usdcContract.allowance(walletAddress, SALE_ADDRESS);
-    if (allowance < usdcRaw) {
-      await typeLog('buyLog', 'warn', 'approve USDC — confirm in wallet...');
-      const approveTx = await usdcContract.approve(SALE_ADDRESS, usdcRaw);
+    await typeLog('buyLog', 'info', 'checking ' + selectedToken + ' allowance...');
+    const allowance = await payContract.allowance(walletAddress, SALE_ADDRESS);
+    if (allowance < rawAmt) {
+      await typeLog('buyLog', 'warn', 'approve ' + selectedToken + ' — confirm in wallet...');
+      const approveTx = await payContract.approve(SALE_ADDRESS, rawAmt);
       await typeLog('buyLog', 'info', 'approval tx: ' + approveTx.hash.slice(0,18) + '...');
       await approveTx.wait();
-      await typeLog('buyLog', 'ok', 'USDC approved');
+      await typeLog('buyLog', 'ok', selectedToken + ' approved');
     } else {
-      await typeLog('buyLog', 'ok', 'USDC allowance OK');
+      await typeLog('buyLog', 'ok', selectedToken + ' allowance OK');
     }
 
     await typeLog('buyLog', 'info', 'confirm buy transaction in wallet...');
-    const buyTx = await saleContract.buy(usdcRaw);
+    const buyTx = await saleContract.buy(token.address, rawAmt);
     await typeLog('buyLog', 'info', 'tx: ' + buyTx.hash.slice(0,18) + '...');
     await buyTx.wait();
     await typeLog('buyLog', 'ok', 'SUCCESS: ' + hackFormatted + ' $HACK incoming!');
@@ -643,7 +667,7 @@ async function executeBuy() {
 
     await refreshBalance();
 
-    const tweet = 'just bought ' + hackFormatted + ' $HACK for ' + usdcFloat + ' USDC 🖥️\n\non-chain. no KYC. no bullshit. on @HACKtokenINK\n\n#HACK #INK #memecoin';
+    const tweet = 'just bought ' + hackFormatted + ' $HACK for ' + amount + ' ' + selectedToken + ' 🖥️\n\non-chain. no KYC. no bullshit. on @HACKtokenINK\n\n#HACK #INK #memecoin';
     const shareBtn = document.getElementById('buyShareBtn');
     shareBtn.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
     shareBtn.classList.add('visible');
