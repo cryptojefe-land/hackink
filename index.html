@@ -217,7 +217,7 @@
     <div class="hero-title" data-text="$HACK">$HACK</div>
     <div class="hero-sub">ACCESS GRANTED // CLAIM YOUR TOKENS</div>
     <div class="terminal-line">&gt; sale: <span>OPEN</span> // airdrop: <span>OPEN</span></div>
-    <div class="terminal-line">&gt; chain: <span>INK</span> // payment: <span>USDC.e</span> <span style="color:rgba(0,255,65,0.3)">|</span> <span>USDT0</span> <span style="color:rgba(0,255,65,0.3)">|</span> <span>crvUSD</span></div>
+    <div class="terminal-line">&gt; chain: <span>INK</span> // payment: <span>USDC</span> <span style="color:rgba(0,255,65,0.3)">|</span> <span>USDC.e</span> <span style="color:rgba(0,255,65,0.3)">|</span> <span>USDT0</span></div>
   </div>
 
   <div class="stats-strip">
@@ -252,15 +252,15 @@
 
       <div style="display:flex;gap:4px;margin-bottom:16px;">
         <div style="font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;align-self:center;margin-right:8px;">PAY WITH:</div>
-        <button class="token-sel active" id="sel-USDC.e" onclick="selectToken('USDC.e')">USDC.e</button>
+        <button class="token-sel active" id="sel-USDC" onclick="selectToken('USDC')">USDC</button>
+        <button class="token-sel" id="sel-USDC.e" onclick="selectToken('USDC.e')">USDC.e</button>
         <button class="token-sel" id="sel-USDT0" onclick="selectToken('USDT0')">USDT0</button>
-        <button class="token-sel" id="sel-crvUSD" onclick="selectToken('crvUSD')">crvUSD</button>
       </div>
       <div class="amount-row">
         <div class="amount-group">
           <div class="amount-label">You pay</div>
           <div class="amount-input-wrap">
-            <div class="amount-prefix" id="tokenPrefix">USDC.e</div>
+            <div class="amount-prefix" id="tokenPrefix">USDC</div>
             <input class="amount-input" id="usdcInput" type="number" min="0" step="any" value="1" inputmode="decimal" oninput="calcTokens()">
           </div>
         </div>
@@ -371,17 +371,17 @@
 </div>
 <script>
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
-const SALE_ADDRESS    = "0xafa58a6c9bD72Bd6C4b77f50c22A4A4588476625";
+const SALE_ADDRESS    = "0xFaBd3610FfFF899b3ec55624dcA92553C1C5ef23";
 const AIRDROP_ADDRESS = "0xf4d3269a77A28B1BE0463C0Fe545ed2b57Aa7489";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const RATE            = 20000;
 
 const TOKENS = {
+  "USDC":   { address: "0x2D270e6886d130D724215A266106e6832161EAEd", decimals: 6 },
   "USDC.e": { address: "0xF1815bd50389c46847f0Bda824eC8da914045D14", decimals: 6 },
   "USDT0":  { address: "0x0200C29006150606B650577BBE7B6248F58470c1", decimals: 6 },
-  "crvUSD": { address: "0x39fec550CC6DDCEd810eCCfA9B2931b4B5f2344D", decimals: 18 },
 };
-let selectedToken = "USDC.e";
+let selectedToken = "USDC";
 
 const INK_CHAIN = {
   chainId:           "0xDEF1",
