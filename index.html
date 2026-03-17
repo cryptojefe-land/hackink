@@ -473,7 +473,7 @@ async function handleAirdrop() {
 
     await typeLog('airdropLog', 'info', 'share $HACK on X to unlock airdrop...');
 
-    const tweet = 'Just found $HACK on @inkonchain 🖥️\n\nFree airdrop — 5,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.\n\nClaim here 👇\nhttps://YOURSITE.com\n\n#HACK #INK #memecoin';
+    const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 5,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.\n\nClaim here 👇\nhttps://hackink.xyz\n\n#HACK #INK #memecoin';
     const twitterUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
     window.open(twitterUrl, '_blank');
 
@@ -584,7 +584,7 @@ async function executeBuy() {
 
     await refreshBalance();
 
-    const tweet = 'just bought ' + hackFormatted + ' $HACK for ' + usdcFloat + ' USDC 🖥️\n\non-chain. no KYC. no bullshit. on @inkonchain\n\n#HACK #INK #memecoin';
+    const tweet = 'just bought ' + hackFormatted + ' $HACK for ' + usdcFloat + ' USDC 🖥️\n\non-chain. no KYC. no bullshit. on @HACKtokenINK\n\n#HACK #INK #memecoin';
     const shareBtn = document.getElementById('buyShareBtn');
     shareBtn.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
     shareBtn.classList.add('visible');
