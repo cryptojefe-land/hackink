@@ -574,6 +574,15 @@ async function executeAirdropClaim() {
     btn.textContent = '[ CLAIMED ✓ ]';
     btn.classList.add('claimed-state');
 
+    // Show buy more button
+    const buyMoreBtn = document.createElement('button');
+    buyMoreBtn.className = 'action-btn';
+    buyMoreBtn.style.cssText = 'margin-top:12px;border-color:rgba(0,255,65,0.4);color:rgba(0,255,65,0.6);font-size:clamp(14px,3vw,20px);';
+    buyMoreBtn.textContent = '[ BUY MORE $HACK ]';
+    buyMoreBtn.onclick = () => switchTab('sale');
+    btn.parentNode.insertBefore(buyMoreBtn, document.getElementById('airdropLog'));
+    buyMoreBtn.style.animation = 'fadein .4s ease';
+
   } catch(e) {
     await typeLog('airdropLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
     btn.disabled = false;
