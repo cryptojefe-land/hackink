@@ -46,6 +46,8 @@
   nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid rgba(0,255,65,0.2);margin-bottom:60px;flex-wrap:wrap;gap:10px}
   .nav-logo{font-family:'VT323',monospace;font-size:28px;color:#00ff41;letter-spacing:4px}
   .nav-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .nav-link{font-size:11px;color:rgba(0,255,65,0.5);letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:color .2s}
+  .nav-link:hover{color:#00ff41}
   .nav-status{font-size:11px;color:rgba(0,255,65,0.5);display:flex;align-items:center;gap:8px}
   .dot{width:6px;height:6px;border-radius:50%;background:#00ff41;animation:blink 1.2s infinite;flex-shrink:0}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
@@ -130,6 +132,27 @@
   .log .err{color:#ff0040}
   .log .info{color:#00cfff}
   .log .warn{color:#f7c948}
+
+  /* staking tiers */
+  .tier-btn{background:rgba(0,255,65,0.01);border:1px solid rgba(0,255,65,0.15);padding:14px 8px;cursor:pointer;text-align:center;transition:all .2s;display:flex;flex-direction:column;gap:4px}
+  .tier-btn:hover{border-color:rgba(0,255,65,0.4);background:rgba(0,255,65,0.04)}
+  .tier-btn.active{border-color:#00ff41;background:rgba(0,255,65,0.06)}
+  .tier-days{font-family:'VT323',monospace;font-size:22px;color:#00ff41;line-height:1}
+  .tier-apy{font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:2px}
+  .tier-btn.active .tier-apy{color:rgba(0,255,65,0.8)}
+  .stake-item{border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.01);padding:14px 16px;margin-bottom:6px}
+  .stake-item-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+  .stake-item-label{font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase}
+  .stake-item-val{font-family:'VT323',monospace;font-size:20px;color:#00ff41}
+  .stake-item-val.cyan{color:#00cfff}
+  .stake-item-val.warn{color:#f7c948}
+  .stake-progress{height:3px;background:rgba(0,255,65,0.08);margin-bottom:10px}
+  .stake-progress-fill{height:100%;background:#00ff41;transition:width .5s ease}
+  .stake-progress-fill.done{background:#00cfff}
+  .unstake-btn{background:transparent;border:1px solid rgba(0,255,65,0.25);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:10px;padding:5px 12px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
+  .unstake-btn:hover{border-color:#00ff41;color:#00ff41}
+  .unstake-btn.early{border-color:rgba(255,165,0,0.3);color:rgba(255,165,0,0.5)}
+  .unstake-btn.early:hover{border-color:#f7c948;color:#f7c948}
 
   .share-btn{display:none;width:100%;margin-top:12px;padding:clamp(12px,3vw,16px);background:transparent;border:1px solid #1d9bf0;color:#1d9bf0;font-family:'VT323',monospace;font-size:clamp(16px,4vw,24px);letter-spacing:clamp(2px,1vw,4px);text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;text-align:center;text-decoration:none}
   .share-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(29,155,240,0.12),transparent);transition:left .4s}
@@ -239,6 +262,8 @@
   <div class="tabs">
     <div class="tab active" onclick="switchTab('airdrop')">[ AIRDROP ]</div>
     <div class="tab" onclick="switchTab('sale')">[ BUY ]</div>
+    <div class="tab" onclick="switchTab('stake')">[ STAKE ]</div>
+    
   </div>
 
   <!-- SALE PANEL -->
@@ -323,6 +348,74 @@
     </div>
   </div>
 
+  <!-- STAKE PANEL -->
+  <div class="panel" id="panel-stake">
+    <div class="section-header"><div class="section-tag">// STAKING</div></div>
+    <div class="terminal">
+
+      <!-- Stats row -->
+      <div class="airdrop-info" style="margin-bottom:24px">
+        <div class="airdrop-stat">
+          <div class="airdrop-stat-label">Your Staked</div>
+          <div class="airdrop-stat-value" id="st-total-staked">—</div>
+        </div>
+        <div class="airdrop-stat">
+          <div class="airdrop-stat-label">Pending Rewards</div>
+          <div class="airdrop-stat-value cyan" id="st-pending">—</div>
+        </div>
+        <div class="airdrop-stat">
+          <div class="airdrop-stat-label">Reward Pool</div>
+          <div class="airdrop-stat-value" style="color:#c47aff" id="st-pool">—</div>
+        </div>
+      </div>
+
+      <!-- Tier selector -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">&gt; select lock period</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px" id="tierBtns">
+          <button class="tier-btn active" id="tier-0" onclick="selectTier(0)">
+            <div class="tier-days">7 DAYS</div>
+            <div class="tier-apy">300% APY</div>
+          </button>
+          <button class="tier-btn" id="tier-1" onclick="selectTier(1)">
+            <div class="tier-days">30 DAYS</div>
+            <div class="tier-apy">600% APY</div>
+          </button>
+          <button class="tier-btn" id="tier-2" onclick="selectTier(2)">
+            <div class="tier-days">90 DAYS</div>
+            <div class="tier-apy">1200% APY</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Amount input + reward preview -->
+      <div class="amount-row" style="margin-bottom:20px">
+        <div class="amount-group">
+          <div class="amount-label">Stake amount</div>
+          <div class="amount-input-wrap">
+            <div class="amount-prefix">$HACK</div>
+            <input class="amount-input" id="stakeInput" type="number" min="0" step="any" value="100000" inputmode="decimal" oninput="previewStakeReward()">
+          </div>
+        </div>
+        <div class="arrow-sep">→</div>
+        <div class="output-group">
+          <div class="amount-label">You earn</div>
+          <div class="output-display" id="stakeRewardOut">—<span>$HACK</span></div>
+        </div>
+      </div>
+
+      <button class="action-btn" id="stakeBtn" onclick="executeStake()">[ STAKE $HACK ]</button>
+      <div class="log" id="stakeLog"></div>
+
+      <!-- Active stakes -->
+      <div id="stakesListWrap" style="display:none;margin-top:24px">
+        <div style="font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">&gt; active stakes</div>
+        <div id="stakesList"></div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="section-header" style="margin-top:40px"><div class="section-tag">// PROTOCOL STEPS</div></div>
   <div class="steps">
     <div class="step">
@@ -371,7 +464,8 @@
 </div>
 <script>
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
-const SALE_ADDRESS    = "0xFaBd3610FfFF899b3ec55624dcA92553C1C5ef23";
+const SALE_ADDRESS     = "0xFaBd3610FfFF899b3ec55624dcA92553C1C5ef23";
+const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
 const AIRDROP_ADDRESS = "0xf4d3269a77A28B1BE0463C0Fe545ed2b57Aa7489";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const RATE            = 20000;
@@ -405,6 +499,18 @@ const AIRDROP_ABI = [
   "function remainingPool() external view returns (uint256)"
 ];
 
+const STAKING_ABI = [
+  "function stake(uint256 amount, uint256 tierIndex) external",
+  "function unstake(uint256 stakeIndex) external",
+  "function getStakes(address user) external view returns (tuple(uint256 amount, uint256 stakedAt, uint256 unlockAt, uint256 tierIndex, bool active)[])",
+  "function calcReward(uint256 amount, uint256 tierIndex) external view returns (uint256)",
+  "function previewUnstake(address user, uint256 stakeIndex) external view returns (uint256 principal, uint256 reward, bool unlocked)",
+  "function rewardPool() external view returns (uint256)",
+  "function stakingActive() external view returns (bool)",
+  "function stakeFeeWei() external view returns (uint256)",
+  "function tiers(uint256) external view returns (uint256 duration, uint256 apyBps, string label)"
+];
+
 const ERC20_ABI = [
   "function approve(address spender, uint256 amount) external returns (bool)",
   "function allowance(address owner, address spender) external view returns (uint256)",
@@ -413,17 +519,23 @@ const ERC20_ABI = [
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let provider, signer, walletAddress;
-let saleContract, airdropContract;
+let saleContract, airdropContract, stakingContract;
 let paymentContracts = {};
 let twitterShared = false;
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => {
-    t.classList.toggle('active', (i === 0 && tab==='airdrop') || (i===1 && tab==='sale'));
+    t.classList.toggle('active',
+      (i===0 && tab==='airdrop') ||
+      (i===1 && tab==='sale')    ||
+      (i===2 && tab==='stake')
+    );
   });
-  document.getElementById('panel-sale').classList.toggle('active', tab==='sale');
   document.getElementById('panel-airdrop').classList.toggle('active', tab==='airdrop');
+  document.getElementById('panel-sale').classList.toggle('active',    tab==='sale');
+  document.getElementById('panel-stake').classList.toggle('active',   tab==='stake');
+  if (tab==='stake' && signer) loadStakes();
 }
 
 // ─── UI ──────────────────────────────────────────────────────────────────────
@@ -469,7 +581,8 @@ async function connectWallet() {
     signer          = await provider.getSigner();
     walletAddress   = await signer.getAddress();
     saleContract    = new ethers.Contract(SALE_ADDRESS,    SALE_ABI,    signer);
-    airdropContract = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
+    airdropContract  = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
+    stakingContract  = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
     for (const [name, t] of Object.entries(TOKENS)) {
       paymentContracts[name] = new ethers.Contract(t.address, ERC20_ABI, signer);
     }
@@ -586,14 +699,25 @@ async function executeAirdropClaim() {
     btn.textContent = '[ CLAIMED ✓ ]';
     btn.classList.add('claimed-state');
 
-    // Show buy more button
+    // Show buy + stake buttons
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-top:16px;animation:fadein .4s ease';
+
     const buyMoreBtn = document.createElement('button');
     buyMoreBtn.className = 'action-btn';
-    buyMoreBtn.style.cssText = 'margin-top:12px;border-color:rgba(0,255,65,0.4);color:rgba(0,255,65,0.6);font-size:clamp(14px,3vw,20px);';
+    buyMoreBtn.style.cssText = 'border-color:rgba(0,255,65,0.4);color:rgba(0,255,65,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
     buyMoreBtn.textContent = '[ BUY MORE $HACK ]';
     buyMoreBtn.onclick = () => switchTab('sale');
-    btn.parentNode.insertBefore(buyMoreBtn, document.getElementById('airdropLog'));
-    buyMoreBtn.style.animation = 'fadein .4s ease';
+
+    const stakeBtn = document.createElement('button');
+    stakeBtn.className = 'action-btn';
+    stakeBtn.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
+    stakeBtn.textContent = '[ STAKE YOUR $HACK ]';
+    stakeBtn.onclick = () => switchTab('stake');
+
+    wrap.appendChild(buyMoreBtn);
+    wrap.appendChild(stakeBtn);
+    btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
 
   } catch(e) {
     await typeLog('airdropLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
@@ -676,6 +800,195 @@ async function executeBuy() {
     await typeLog('buyLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
   } finally {
     btn.disabled = false;
+  }
+}
+
+// ─── STAKING ─────────────────────────────────────────────────────────────────
+let selectedTier = 0;
+
+function selectTier(idx) {
+  selectedTier = idx;
+  document.querySelectorAll('.tier-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  previewStakeReward();
+}
+
+async function previewStakeReward() {
+  const amt = parseFloat(document.getElementById('stakeInput').value) || 0;
+  const el  = document.getElementById('stakeRewardOut');
+  if (!amt) { el.innerHTML = '—<span>$HACK</span>'; return; }
+
+  // client-side calc: amount * apyBps * duration / (365days * 10000)
+  const apys    = [30000, 60000, 120000];
+  const days    = [7, 30, 90];
+  const apy     = apys[selectedTier];
+  const dur     = days[selectedTier] * 86400;
+  const reward  = (amt * apy * dur) / (365 * 86400 * 10000);
+  const total   = amt + reward;
+  el.innerHTML  = Math.round(reward).toLocaleString() + '<span>$HACK</span>';
+
+  // If connected, try on-chain preview
+  if (stakingContract) {
+    try {
+      const raw = BigInt(Math.round(amt * 1e18));
+      const r   = await stakingContract.calcReward(raw, selectedTier);
+      el.innerHTML = Number(ethers.formatEther(r)).toLocaleString(undefined,{maximumFractionDigits:0}) + '<span>$HACK</span>';
+    } catch(e) {}
+  }
+}
+
+async function loadStakes() {
+  if (!stakingContract || !walletAddress) return;
+  try {
+    // Load pool stats
+    const pool = await stakingContract.rewardPool();
+    document.getElementById('st-pool').textContent =
+      Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
+
+    const stakesList = await stakingContract.getStakes(walletAddress);
+    let totalStk = 0n, totalRew = 0n;
+    const activeStakes = stakesList.filter(s => s.active);
+
+    if (activeStakes.length > 0) {
+      document.getElementById('stakesListWrap').style.display = 'block';
+      const listEl = document.getElementById('stakesList');
+      listEl.innerHTML = '';
+
+      for (let i = 0; i < stakesList.length; i++) {
+        const s = stakesList[i];
+        if (!s.active) continue;
+        totalStk += s.amount;
+
+        const now      = Math.floor(Date.now() / 1000);
+        const unlockAt = Number(s.unlockAt);
+        const stakedAt = Number(s.stakedAt);
+        const unlocked = now >= unlockAt;
+        const pct      = unlocked ? 100 : Math.min(100, Math.round((now - stakedAt) / (unlockAt - stakedAt) * 100));
+
+        let reward = 0n;
+        try {
+          const preview = await stakingContract.previewUnstake(walletAddress, i);
+          reward = preview.reward;
+          totalRew += reward;
+        } catch(e) {}
+
+        const tierLabels = ['7 DAYS / 300%', '30 DAYS / 600%', '90 DAYS / 1200%'];
+        const amtFmt  = Number(ethers.formatEther(s.amount)).toLocaleString(undefined,{maximumFractionDigits:0});
+        const rewFmt  = Number(ethers.formatEther(reward)).toLocaleString(undefined,{maximumFractionDigits:0});
+
+        // Countdown
+        const secsLeft = Math.max(0, unlockAt - now);
+        const dLeft    = Math.floor(secsLeft / 86400);
+        const hLeft    = Math.floor((secsLeft % 86400) / 3600);
+        const mLeft    = Math.floor((secsLeft % 3600) / 60);
+        const timeStr  = unlocked ? 'UNLOCKED' : dLeft + 'd ' + hLeft + 'h ' + mLeft + 'm';
+
+        const item = document.createElement('div');
+        item.className = 'stake-item';
+        item.innerHTML = `
+          <div class="stake-item-row">
+            <div>
+              <div class="stake-item-label">${tierLabels[Number(s.tierIndex)]}</div>
+              <div class="stake-item-val">${amtFmt} <span style="font-family:'Share Tech Mono';font-size:12px;color:rgba(0,255,65,0.4)">$HACK</span></div>
+            </div>
+            <div style="text-align:right">
+              <div class="stake-item-label">reward</div>
+              <div class="stake-item-val cyan">+${rewFmt}</div>
+            </div>
+            <div style="text-align:right">
+              <div class="stake-item-label">${unlocked ? 'status' : 'unlocks in'}</div>
+              <div class="stake-item-val ${unlocked ? 'cyan' : 'warn'}">${timeStr}</div>
+            </div>
+          </div>
+          <div class="stake-progress">
+            <div class="stake-progress-fill ${unlocked ? 'done' : ''}" style="width:${pct}%"></div>
+          </div>
+          <button class="unstake-btn ${!unlocked ? 'early' : ''}" onclick="executeUnstake(${i})">
+            ${unlocked ? '[ UNSTAKE + CLAIM ]' : '[ EARLY EXIT — LOSE REWARDS ]'}
+          </button>`;
+        listEl.appendChild(item);
+      }
+    }
+
+    document.getElementById('st-total-staked').textContent =
+      Number(ethers.formatEther(totalStk)).toLocaleString(undefined,{maximumFractionDigits:0});
+    document.getElementById('st-pending').textContent =
+      Number(ethers.formatEther(totalRew)).toLocaleString(undefined,{maximumFractionDigits:0});
+
+  } catch(e) { console.error('loadStakes:', e); }
+}
+
+async function executeStake() {
+  if (!signer) { await connectWallet(); if (!signer) return; }
+  const log = document.getElementById('stakeLog');
+  clearLog('stakeLog');
+  const btn = document.getElementById('stakeBtn');
+  const amt = parseFloat(document.getElementById('stakeInput').value);
+  if (!amt || amt <= 0) { await typeLog('stakeLog','err','ERROR: enter amount to stake'); return; }
+
+  const raw = BigInt(Math.round(amt * 1e18));
+  btn.disabled = true;
+
+  try {
+    await typeLog('stakeLog','info','checking staking status...');
+    const active = await stakingContract.stakingActive();
+    if (!active) { await typeLog('stakeLog','err','ERROR: staking is paused'); btn.disabled=false; return; }
+
+    await typeLog('stakeLog','info','approving $HACK — confirm in wallet...');
+    const hackContract = new ethers.Contract(
+      '0xe6e719bf4046Db0bb849231aEf37482187fd84f4',
+      ['function approve(address,uint256) returns (bool)', 'function allowance(address,address) view returns (uint256)'],
+      signer
+    );
+    const allowance = await hackContract.allowance(walletAddress, STAKING_ADDRESS);
+    if (allowance < raw) {
+      const approveTx = await hackContract.approve(STAKING_ADDRESS, raw);
+      await typeLog('stakeLog','info','approval tx: ' + approveTx.hash.slice(0,18) + '...');
+      await approveTx.wait();
+      await typeLog('stakeLog','ok','$HACK approved');
+    } else {
+      await typeLog('stakeLog','ok','allowance OK');
+    }
+
+    await typeLog('stakeLog','info','staking ' + amt.toLocaleString() + ' $HACK for ' + ['7','30','90'][selectedTier] + ' days...');
+    let feeWei = BigInt("20000000000000");
+    try { feeWei = await stakingContract.stakeFeeWei(); } catch(e) {}
+    const tx = await stakingContract.stake(raw, selectedTier, { value: feeWei });
+    await typeLog('stakeLog','info','tx: ' + tx.hash.slice(0,18) + '...');
+    await tx.wait();
+    await typeLog('stakeLog','ok','SUCCESS: ' + amt.toLocaleString() + ' $HACK staked!');
+    await typeLog('stakeLog','ok','> sit back and earn, anon.');
+    await loadStakes();
+  } catch(e) {
+    await typeLog('stakeLog','err','ERROR: ' + (e.reason || e.message || 'failed'));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function executeUnstake(stakeIndex) {
+  if (!signer) return;
+  const log = document.getElementById('stakeLog');
+  clearLog('stakeLog');
+  try {
+    const preview = await stakingContract.previewUnstake(walletAddress, stakeIndex);
+    const early   = !preview.unlocked;
+    if (early) {
+      const ok = confirm('Early withdrawal — you will lose all rewards. Continue?');
+      if (!ok) return;
+    }
+    await typeLog('stakeLog','info','confirm unstake in wallet...');
+    const tx = await stakingContract.unstake(stakeIndex);
+    await typeLog('stakeLog','info','tx: ' + tx.hash.slice(0,18) + '...');
+    await tx.wait();
+    const rewFmt = Number(ethers.formatEther(preview.reward)).toLocaleString(undefined,{maximumFractionDigits:0});
+    if (early) {
+      await typeLog('stakeLog','warn','unstaked. rewards forfeited.');
+    } else {
+      await typeLog('stakeLog','ok','SUCCESS: principal + ' + rewFmt + ' $HACK rewards claimed!');
+    }
+    await loadStakes();
+  } catch(e) {
+    await typeLog('stakeLog','err','ERROR: ' + (e.reason || e.message || 'failed'));
   }
 }
 
