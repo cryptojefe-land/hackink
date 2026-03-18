@@ -49,13 +49,13 @@
   .nav-link{font-size:11px;color:rgba(0,255,65,0.5);letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:color .2s}
   .nav-link:hover{color:#00ff41}
   .nav-status{font-size:11px;color:rgba(0,255,65,0.5);display:flex;align-items:center;gap:8px}
-  .dot{width:6px;height:6px;border-radius:50%;background:#00ff41;animation:blink 1.2s infinite;flex-shrink:0}
+  .dot{width:6px;height:6px;border-radius:50%;background:#00ff41;animation:blink 1.2s infinite;flex-shrink:0;box-shadow:0 0 6px rgba(0,255,65,0.8)}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
   .connect-btn{background:transparent;border:1px solid rgba(0,255,65,0.4);color:rgba(0,255,65,0.7);font-family:'Share Tech Mono',monospace;font-size:11px;padding:8px 16px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap}
   .connect-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 12px rgba(0,255,65,0.2)}
   .connect-btn.connected{border-color:rgba(0,255,65,0.3);color:rgba(0,255,65,0.5)}
   .hero{text-align:center;margin-bottom:60px}
-  .hero-title{font-family:'VT323',monospace;font-size:clamp(56px,14vw,140px);color:#00ff41;letter-spacing:clamp(2px,2vw,8px);line-height:1;position:relative;text-shadow:0 0 20px rgba(0,255,65,0.5)}
+  /* hero-title defined in neon section below */
   .hero-title::before{content:attr(data-text);position:absolute;top:0;left:0;color:#ff0040;animation:glitch1 3s infinite;clip-path:polygon(0 30%,100% 30%,100% 50%,0 50%);opacity:0}
   .hero-title::after{content:attr(data-text);position:absolute;top:0;left:0;color:#00cfff;animation:glitch2 3s infinite;clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%);opacity:0}
   @keyframes glitch1{0%,89%,100%{opacity:0;transform:translate(0)}90%{opacity:.8;transform:translate(-4px,2px)}93%{opacity:0;transform:translate(4px,-2px)}95%{opacity:.6;transform:translate(-2px,0)}97%{opacity:0}}
@@ -206,6 +206,89 @@
   .share-btn:hover::before{left:100%}
   .share-btn.visible{display:block;animation:fadein .4s ease}
   @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  /* ── NEON EFFECTS ── */
+
+  /* Пульсирующее свечение на hero title */
+  .hero-title{font-family:'VT323',monospace;font-size:clamp(56px,14vw,140px);color:#00ff41;letter-spacing:clamp(2px,2vw,8px);line-height:1;position:relative;text-shadow:0 0 20px rgba(0,255,65,0.5),0 0 60px rgba(0,255,65,0.15);animation:hero-pulse 3s ease-in-out infinite}
+  @keyframes hero-pulse{0%,100%{text-shadow:0 0 20px rgba(0,255,65,0.5),0 0 60px rgba(0,255,65,0.15)}50%{text-shadow:0 0 30px rgba(0,255,65,0.9),0 0 80px rgba(0,255,65,0.3),0 0 120px rgba(0,255,65,0.1)}}
+
+  /* Неоновая рамка на активном терминале */
+  .terminal{box-shadow:0 0 0 1px rgba(0,255,65,0.25),inset 0 0 30px rgba(0,255,65,0.02)}
+  .terminal:focus-within{box-shadow:0 0 20px rgba(0,255,65,0.15),0 0 0 1px rgba(0,255,65,0.4),inset 0 0 30px rgba(0,255,65,0.03);transition:box-shadow .3s}
+
+  /* Пульс на зелёном dot */
+  .dot{width:6px;height:6px;border-radius:50%;background:#00ff41;animation:blink 1.2s infinite;box-shadow:0 0 6px rgba(0,255,65,0.8),0 0 12px rgba(0,255,65,0.4)}
+
+  /* Свечение на активной вкладке */
+  .tab.active{color:#00ff41;background:rgba(0,255,65,0.06);border-color:rgba(0,255,65,0.4);text-shadow:0 0 10px rgba(0,255,65,0.7);box-shadow:inset 0 0 20px rgba(0,255,65,0.05),0 0 15px rgba(0,255,65,0.1)}
+
+  /* Свечение на кнопке STAKE $HACK */
+  .tier-btn.active{border-color:#00ff41;background:rgba(0,255,65,0.06);box-shadow:0 0 15px rgba(0,255,65,0.15),inset 0 0 10px rgba(0,255,65,0.03)}
+  .tier-apy{font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:2px}
+  .tier-btn.active .tier-apy{color:#f7c948;text-shadow:0 0 8px rgba(247,201,72,0.6)}
+  .tier-btn.active .tier-days{text-shadow:0 0 12px rgba(0,255,65,0.6)}
+
+  /* Countdown цифры с неоном */
+  .cd-val{font-family:'VT323',monospace;font-size:clamp(36px,8vw,80px);color:#00ff41;line-height:1;text-shadow:0 0 20px rgba(0,255,65,0.8),0 0 40px rgba(0,255,65,0.3);animation:cd-pulse 1s ease-in-out infinite}
+  @keyframes cd-pulse{0%,100%{text-shadow:0 0 20px rgba(0,255,65,0.8),0 0 40px rgba(0,255,65,0.3)}50%{text-shadow:0 0 30px rgba(0,255,65,1),0 0 60px rgba(0,255,65,0.5),0 0 90px rgba(0,255,65,0.2)}}
+  .cd-val.expired{color:#ff0040;text-shadow:0 0 20px rgba(255,0,64,0.8);animation:none}
+
+  /* Countdown block border glow */
+  .countdown-block{border:1px solid rgba(0,255,65,0.2);background:rgba(0,255,65,0.02);padding:28px;margin-bottom:0;text-align:center;box-shadow:0 0 30px rgba(0,255,65,0.06),inset 0 0 40px rgba(0,255,65,0.02)}
+
+  /* Неон на stat values */
+  .stat-value.green{color:#00ff41;text-shadow:0 0 15px rgba(0,255,65,0.7),0 0 30px rgba(0,255,65,0.2)}
+  .stat-value.cyan{color:#00cfff;text-shadow:0 0 15px rgba(0,207,255,0.7),0 0 30px rgba(0,207,255,0.2)}
+  .ink-value{font-family:'VT323',monospace;font-size:clamp(28px,6vw,42px);line-height:1;color:#c47aff;text-shadow:0 0 15px rgba(180,80,255,0.8),0 0 35px rgba(180,80,255,0.3);position:relative;z-index:1}
+
+  /* Stat blocks hover */
+  .stat-block:hover,.stat-block-cyan:hover,.ink-block:hover{background:rgba(0,255,65,0.04);transition:background .3s}
+
+  /* Task status OK glow */
+  .task-status.done{color:#00ff41;text-shadow:0 0 10px rgba(0,255,65,0.9),0 0 20px rgba(0,255,65,0.4)}
+
+  /* Task btn hover glow */
+  .task-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 12px rgba(0,255,65,0.2);text-shadow:0 0 6px rgba(0,255,65,0.5)}
+
+  /* Token selector active glow */
+  .token-sel.active{border-color:#00ff41;color:#00ff41;background:rgba(0,255,65,0.06);box-shadow:0 0 10px rgba(0,255,65,0.15);text-shadow:0 0 6px rgba(0,255,65,0.5)}
+
+  /* Roadmap done items glow */
+  .rm-item.done{box-shadow:inset 3px 0 0 #00ff41,inset 0 0 20px rgba(0,255,65,0.03)}
+  .rm-item.active{box-shadow:inset 3px 0 0 #f7c948,inset 0 0 20px rgba(247,201,72,0.03)}
+  .rm-item.done:hover{box-shadow:inset 3px 0 0 #00ff41,0 0 15px rgba(0,255,65,0.08)}
+
+  /* Contract rows hover glow */
+  .contract-row:hover{background:rgba(0,255,65,0.03);box-shadow:0 0 10px rgba(0,255,65,0.05);transition:all .2s}
+  .contract-label{font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:2px;text-transform:uppercase;padding:12px 16px;border-right:1px solid rgba(0,255,65,0.12);white-space:nowrap;min-width:100px}
+
+  /* Copy button glow on hover */
+  .copy-btn:hover{color:#00ff41;background:rgba(0,255,65,0.05);box-shadow:0 0 10px rgba(0,255,65,0.15)}
+  .copy-btn.copied{color:#00ff41;text-shadow:0 0 8px rgba(0,255,65,0.8)}
+
+  /* Airdrop stat values */
+  .airdrop-stat-value{font-family:'VT323',monospace;font-size:28px;color:#00ff41;line-height:1;text-shadow:0 0 10px rgba(0,255,65,0.5)}
+  .airdrop-stat-value.purple{color:#c47aff;text-shadow:0 0 10px rgba(180,80,255,0.6)}
+
+  /* Staking stats */
+  #g-staked,#g-rewards,#g-pool,#g-count,#st-total-staked,#st-pending,#st-pool{text-shadow:0 0 12px currentColor}
+
+  /* Connect btn neon on hover */
+  .connect-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 15px rgba(0,255,65,0.25);text-shadow:0 0 6px rgba(0,255,65,0.5)}
+
+  /* FAQ open glow */
+  .faq-item.open{border-color:rgba(0,255,65,0.3);box-shadow:0 0 15px rgba(0,255,65,0.05)}
+
+  /* Social links */
+  .social-link{font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-decoration:none;border:1px solid rgba(0,255,65,0.15);padding:6px 12px;transition:all .3s}
+  .social-link:hover{color:#00ff41;border-color:rgba(0,255,65,0.5);box-shadow:0 0 12px rgba(0,255,65,0.2);text-shadow:0 0 8px rgba(0,255,65,0.6)}
+
+  /* Ticker items glow on $HACK */
+  .ticker-item span{color:#00ff41;text-shadow:0 0 6px rgba(0,255,65,0.4)}
+
+  /* Scanner line across page */
+  .scan-line{position:fixed;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,rgba(0,255,65,0.15),transparent);animation:scan-move 8s linear infinite;pointer-events:none;z-index:99}
+  @keyframes scan-move{0%{top:-2px;opacity:0}5%{opacity:1}95%{opacity:1}100%{top:100vh;opacity:0}}
 
   /* airdrop info box */
   .airdrop-info{display:flex;gap:2px;margin-bottom:20px}
@@ -268,6 +351,7 @@
 </head>
 <body>
 <div class="scanlines"></div>
+<div class="scan-line"></div>
 <div class="grid-bg"></div>
 <div class="container">
 
@@ -1011,8 +1095,8 @@ async function loadStakes() {
   try {
     // Load pool stats
     const pool = await stakingContract.rewardPool();
-    document.getElementById('st-pool').textContent =
-      Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
+    const poolFmt = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
+    document.getElementById('st-pool').textContent = poolFmt;
 
     const stakesList = await stakingContract.getStakes(walletAddress);
     let totalStk = 0n, totalRew = 0n;
@@ -1203,6 +1287,20 @@ function toggleFaq(el) {
 }
 
 // ─── MISC ────────────────────────────────────────────────────────────────────
+
+// Load reward pool without wallet — public view function
+async function loadPoolPublic() {
+  try {
+    const rpc = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
+    const contract = new ethers.Contract(STAKING_ADDRESS, [
+      "function rewardPool() external view returns (uint256)"
+    ], rpc);
+    const pool = await contract.rewardPool();
+    const poolFmt = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
+    document.getElementById('st-pool').textContent = poolFmt;
+  } catch(e) { console.error('loadPoolPublic:', e); }
+}
+loadPoolPublic();
 let block = 21847293;
 setInterval(() => {
   block += Math.floor(Math.random()*3)+1;
