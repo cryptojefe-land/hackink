@@ -6,7 +6,7 @@
 
 <!-- ─── SEO ──────────────────────────────────────────────────────────────── -->
 <title>$HACK — Free Airdrop & Token Sale on INK Chain</title>
-<meta name="description" content="Claim your free $HACK airdrop or buy tokens for USDC.e on INK Chain. No KYC. No bullshit. On-chain only. 1 USD = 20,000 $HACK.">
+<meta name="description" content="Claim your free $HACK airdrop or buy tokens for USDC on INK Chain. No KYC. No bullshit. On-chain only. 1 USD = 20,000 $HACK.">
 <meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, token sale, crypto, web3, INK memecoin">
 <meta name="author" content="$HACK">
 <meta name="robots" content="index, follow">
@@ -16,7 +16,7 @@
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="https://hackink.xyz">
 <meta property="og:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta property="og:description" content="Claim 5,000 $HACK free or buy with USDC.e. No KYC. No bullshit. On-chain only.">
+<meta property="og:description" content="Claim 5,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
 <meta property="og:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
@@ -26,7 +26,7 @@
 <meta name="twitter:card"        content="summary_large_image">
 <meta name="twitter:url"         content="https://hackink.xyz">
 <meta name="twitter:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta name="twitter:description" content="Claim 5,000 $HACK free or buy with USDC.e. No KYC. No bullshit. On-chain only.">
+<meta name="twitter:description" content="Claim 5,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
 <meta name="twitter:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 
 <!-- ─── FAVICON ─────────────────────────────────────────────────────────── -->
@@ -115,7 +115,7 @@
   .output-display{background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.15);padding:12px clamp(8px,2vw,16px);font-family:'VT323',monospace;font-size:clamp(16px,4vw,22px);color:#00ff41;text-align:right;height:50px;display:flex;align-items:center;justify-content:flex-end;overflow:hidden}
   .output-display span{color:rgba(0,255,65,0.4);font-size:clamp(10px,2.5vw,14px);margin-left:6px;font-family:'Share Tech Mono',monospace;white-space:nowrap}
 
-  .action-btn{width:100%;padding:clamp(14px,3vw,18px);background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:'VT323',monospace;font-size:clamp(20px,5vw,28px);letter-spacing:clamp(2px,1.5vw,6px);text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;margin-bottom:0}
+  .action-btn{width:100%;padding:clamp(10px,2vw,13px);background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:'VT323',monospace;font-size:clamp(14px,3vw,19px);letter-spacing:clamp(1px,0.8vw,3px);text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;white-space:nowrap}
   .action-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,65,0.1),transparent);transition:left .4s}
   .action-btn:hover:not(:disabled){background:rgba(0,255,65,0.08);box-shadow:0 0 30px rgba(0,255,65,0.2);text-shadow:0 0 10px #00ff41}
   .action-btn:hover:not(:disabled)::before{left:100%}
@@ -137,12 +137,12 @@
   .countdown-block{border:1px solid rgba(0,255,65,0.2);background:rgba(0,255,65,0.02);padding:28px;margin-bottom:0;text-align:center}
   .countdown-title{font-size:12px;color:rgba(0,255,65,0.5);letter-spacing:3px;margin-bottom:6px}
   .countdown-sub{font-size:11px;color:rgba(0,255,65,0.25);letter-spacing:2px;margin-bottom:24px}
-  .countdown-cells{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap}
-  .cd-cell{text-align:center;min-width:80px}
-  .cd-val{font-family:'VT323',monospace;font-size:clamp(52px,10vw,80px);color:#00ff41;line-height:1;text-shadow:0 0 20px rgba(0,255,65,0.5)}
+  .countdown-cells{display:flex;justify-content:center;align-items:center;gap:clamp(4px,2vw,12px);flex-wrap:nowrap;width:100%}
+  .cd-cell{text-align:center;flex:1;min-width:0}
+  .cd-val{font-family:'VT323',monospace;font-size:clamp(36px,8vw,80px);color:#00ff41;line-height:1;text-shadow:0 0 20px rgba(0,255,65,0.5)}
   .cd-val.expired{color:#ff0040}
-  .cd-unit{font-size:10px;color:rgba(0,255,65,0.35);letter-spacing:3px;margin-top:4px}
-  .cd-sep{font-family:'VT323',monospace;font-size:60px;color:rgba(0,255,65,0.2);line-height:1;align-self:flex-start;margin-top:8px}
+  .cd-unit{font-size:clamp(8px,1.5vw,10px);color:rgba(0,255,65,0.35);letter-spacing:2px;margin-top:4px}
+  .cd-sep{font-family:'VT323',monospace;font-size:clamp(32px,6vw,60px);color:rgba(0,255,65,0.2);line-height:1;align-self:flex-start;margin-top:4px;flex-shrink:0}
 
   /* contracts */
   .contracts-block{display:flex;flex-direction:column;gap:4px;margin-bottom:0}
@@ -508,7 +508,7 @@
   <div class="section-header" style="margin-top:0"><div class="section-tag">// DEX LISTING</div></div>
   <div class="countdown-block">
     <div class="countdown-title">&gt; DEX listing countdown</div>
-    <div class="countdown-sub">April 20, 2025 — 00:00 UTC</div>
+    <div class="countdown-sub">April 20, 2026 — 00:00 UTC</div>
     <div class="countdown-cells">
       <div class="cd-cell"><div class="cd-val" id="cd-d">00</div><div class="cd-unit">DAYS</div></div>
       <div class="cd-sep">:</div>
@@ -579,7 +579,7 @@
     <div class="rm-item soon">
       <div class="rm-status">[SOON]</div>
       <div class="rm-content">
-        <div class="rm-title">DEX Listing — April 20, 2025</div>
+        <div class="rm-title">DEX Listing — April 20, 2026</div>
         <div class="rm-desc">$HACK goes live on DEX. Trading opens. LP unlocked for the public.</div>
       </div>
     </div>
@@ -1163,7 +1163,7 @@ async function executeUnstake(stakeIndex) {
 }
 
 // ─── COUNTDOWN ───────────────────────────────────────────────────────────────
-const LISTING_DATE = new Date('2025-04-20T00:00:00Z');
+const LISTING_DATE = new Date('2026-04-20T00:00:00Z');
 function updateCountdown() {
   const now  = new Date();
   const diff = LISTING_DATE - now;
@@ -1219,4 +1219,3 @@ updateClock();
 </script>
 </body>
 </html>
-
