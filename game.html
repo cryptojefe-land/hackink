@@ -36,7 +36,7 @@
   .cyan{color:#00cfff;text-shadow:0 0 10px rgba(0,207,255,0.6)}
 
   /* CANVAS */
-  .game-wrap{border:1px solid rgba(0,255,65,0.3);background:#000;position:relative;margin-bottom:10px;box-shadow:0 0 20px rgba(0,255,65,0.06);line-height:0;overflow:hidden;width:100%}
+  .game-wrap{border:1px solid rgba(0,255,65,0.3);background:#000;position:relative;margin-bottom:10px;box-shadow:0 0 20px rgba(0,255,65,0.06);line-height:0;overflow:hidden;width:100%;min-height:clamp(200px,45vw,380px)}
   canvas{display:block;width:100%;height:auto}
 
   /* OVERLAY */
@@ -164,10 +164,10 @@ let provider, signer, walletAddress, gameContract;
 // ─── CANVAS SETUP ─────────────────────────────────────────────────────────────
 const C   = document.getElementById('gc');
 const ctx = C.getContext('2d');
-const CW  = 800, CH = 280;
+const CW  = 800, CH = 380;
 C.width = CW; C.height = CH;
 
-const GND    = CH - 54;
+const GND    = CH - 70;
 const G      = '#00ff41';
 const RED    = '#ff0040';
 const GOLD   = '#f7c948';
@@ -184,9 +184,9 @@ let speed    = 5;
 let jumpCnt  = 0;
 let raf;
 
-const P = { x:70, y:GND, w:28, h:38, vy:0, grounded:true };
-const JUMP_V  = -13;
-const GRAVITY = 0.65;
+const P = { x:80, y:GND, w:36, h:50, vy:0, grounded:true };
+const JUMP_V  = -16;
+const GRAVITY = 0.75;
 
 let obstacles = [];
 let floaties  = [];
@@ -236,8 +236,8 @@ function loop() {
 
   // Spawn
   if (--nextObs <= 0) {
-    const h = 16 + Math.random()*28;
-    obstacles.push({ x:CW+10, w:16, h, y:GND+P.h-h });
+    const h = 24 + Math.random()*40;
+    obstacles.push({ x:CW+10, w:22, h, y:GND+P.h-h });
     nextObs = 55 + Math.random()*70;
   }
   obstacles = obstacles.filter(o=>o.x+o.w>0);
@@ -292,27 +292,27 @@ function draw() {
   const px=P.x, py=P.y;
   ctx.shadowColor=G; ctx.shadowBlur=8;
   ctx.fillStyle=G;
-  ctx.fillRect(px+7,py+10,14,20);  // body
-  ctx.fillRect(px+8,py+1,12,10);   // head
+  ctx.fillRect(px+8,py+14,18,26);  // body
+  ctx.fillRect(px+9,py+1,16,14);   // head
   ctx.fillStyle='#000';
-  ctx.fillRect(px+10,py+3,3,3);    // eye L
-  ctx.fillRect(px+16,py+3,3,3);    // eye R
+  ctx.fillRect(px+12,py+4,4,4);    // eye L
+  ctx.fillRect(px+20,py+4,4,4);    // eye R
   ctx.fillStyle=G;
   const lp = Math.floor(frame/5)%2;
-  ctx.fillRect(px+8,  py+30, 5, P.grounded?(lp?8:6):6);
-  ctx.fillRect(px+15, py+30, 5, P.grounded?(lp?6:8):6);
-  ctx.fillRect(px+3,  py+12, 5, 3);  // arm L
-  ctx.fillRect(px+20, py+12, 5, 3);  // arm R
+  ctx.fillRect(px+9,  py+40, 7, P.grounded?(lp?10:7):7);
+  ctx.fillRect(px+18, py+40, 7, P.grounded?(lp?7:10):7);
+  ctx.fillRect(px+2,  py+16, 7, 4);  // arm L
+  ctx.fillRect(px+25, py+16, 7, 4);  // arm R
   ctx.shadowBlur=0;
 
   // Obstacles
   obstacles.forEach(o=>{
-    ctx.shadowColor=RED; ctx.shadowBlur=6;
+    ctx.shadowColor=RED; ctx.shadowBlur=8;
     ctx.fillStyle=RED;
     ctx.fillRect(o.x,o.y,o.w,o.h);
-    ctx.beginPath();ctx.moveTo(o.x,o.y);ctx.lineTo(o.x+o.w/2,o.y-7);ctx.lineTo(o.x+o.w,o.y);ctx.fill();
+    ctx.beginPath();ctx.moveTo(o.x,o.y);ctx.lineTo(o.x+o.w/2,o.y-10);ctx.lineTo(o.x+o.w,o.y);ctx.fill();
     ctx.fillStyle='rgba(0,0,0,0.25)';
-    for(let i=o.y;i<o.y+o.h;i+=4) ctx.fillRect(o.x,i,o.w,2);
+    for(let i=o.y;i<o.y+o.h;i+=5) ctx.fillRect(o.x,i,o.w,2);
     ctx.shadowBlur=0;
   });
 
@@ -339,11 +339,11 @@ function draw() {
   ctx.strokeStyle='rgba(0,255,65,0.35)';
   ctx.beginPath();ctx.moveTo(0,GND+P.h);ctx.lineTo(CW,GND+P.h);ctx.stroke();
   ctx.shadowColor=G; ctx.shadowBlur=8; ctx.fillStyle=G;
-  ctx.fillRect(P.x+7,GND+10,14,20); ctx.fillRect(P.x+8,GND+1,12,10);
-  ctx.fillStyle='#000'; ctx.fillRect(P.x+10,GND+3,3,3); ctx.fillRect(P.x+16,GND+3,3,3);
+  ctx.fillRect(P.x+8,GND+14,18,26); ctx.fillRect(P.x+9,GND+1,16,14);
+  ctx.fillStyle='#000'; ctx.fillRect(P.x+12,GND+4,4,4); ctx.fillRect(P.x+20,GND+4,4,4);
   ctx.fillStyle=G;
-  ctx.fillRect(P.x+8,GND+30,5,8); ctx.fillRect(P.x+15,GND+30,5,8);
-  ctx.fillRect(P.x+3,GND+12,5,3); ctx.fillRect(P.x+20,GND+12,5,3);
+  ctx.fillRect(P.x+9,GND+40,7,10); ctx.fillRect(P.x+18,GND+40,7,10);
+  ctx.fillRect(P.x+2,GND+16,7,4); ctx.fillRect(P.x+25,GND+16,7,4);
   ctx.shadowBlur=0;
 })();
 
