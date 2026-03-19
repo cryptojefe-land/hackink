@@ -619,7 +619,7 @@
     </div>
     <div class="contract-row">
       <div class="contract-label">AIRDROP</div>
-      <div class="contract-addr" id="addr-airdrop">0xeb8D2Eaa3D48435C86fC3A36a452C8D6b1a75653</div>
+      <div class="contract-addr" id="addr-airdrop">0x7F8a38Bd737C3F5F921134F849cC9278843Eb137</div>
       <button class="copy-btn" onclick="copyAddr('addr-airdrop',this)">[ COPY ]</button>
     </div>
     <div class="contract-row">
@@ -720,7 +720,7 @@
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
 const SALE_ADDRESS     = "0xFaBd3610FfFF899b3ec55624dcA92553C1C5ef23";
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
-const AIRDROP_ADDRESS = "0xeb8D2Eaa3D48435C86fC3A36a452C8D6b1a75653";
+const AIRDROP_ADDRESS = "0x7F8a38Bd737C3F5F921134F849cC9278843Eb137";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const RATE            = 20000;
 
@@ -747,11 +747,12 @@ const SALE_ABI = [
 ];
 
 const AIRDROP_ABI = [
-  "function claim() external payable",
+  "function claim(address referrer) external payable",
   "function claimed(address) external view returns (bool)",
   "function airdropActive() external view returns (bool)",
   "function remainingPool() external view returns (uint256)",
-  "function claimFeeWei() external view returns (uint256)"
+  "function claimFeeWei() external view returns (uint256)",
+  "function getReferralStats(address) external view returns (uint256 count, uint256 earned)"
 ];
 
 const STAKING_ABI = [
@@ -774,6 +775,10 @@ const ERC20_ABI = [
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let provider, signer, walletAddress;
+
+// Read referrer from URL ?ref=0x...
+const urlRef = new URLSearchParams(window.location.search).get('ref') || '';
+const REF_ADDR = /^0x[a-fA-F0-9]{40}$/.test(urlRef) ? urlRef : '0x0000000000000000000000000000000000000000';
 let saleContract, airdropContract, stakingContract;
 let paymentContracts = {};
 let twitterShared = false;
@@ -931,9 +936,22 @@ async function executeAirdropClaim() {
 
     const alreadyClaimed = await airdropContract.claimed(walletAddress);
     if (alreadyClaimed) {
-      await typeLog('airdropLog', 'err', 'ERROR: this wallet already claimed');
       btn.textContent = '[ ALREADY CLAIMED ]';
       btn.classList.add('claimed-state');
+      const refUrl2 = 'https://hackink.xyz?ref=' + walletAddress;
+      await typeLog('airdropLog', 'warn', 'already claimed. share your ref link:');
+      const ri = document.createElement('input');
+      ri.value = refUrl2; ri.readOnly = true;
+      ri.style.cssText = 'width:100%;background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.6);font-family:Share Tech Mono,monospace;font-size:10px;padding:8px 10px;outline:none;margin-top:8px';
+      document.getElementById('airdropLog').appendChild(ri);
+      try {
+        const stats = await airdropContract.getReferralStats(walletAddress);
+        if (Number(stats.count) > 0) {
+          await typeLog('airdropLog', 'ok', 'invited: ' + stats.count + ' wallets // earned: ' + Number(ethers.formatEther(stats.earned)).toLocaleString() + ' $HACK');
+        } else {
+          await typeLog('airdropLog', 'info', '+1,000 $HACK for each wallet you invite');
+        }
+      } catch(e) {}
       return;
     }
 
@@ -955,6 +973,39 @@ async function executeAirdropClaim() {
     await tx.wait();
     await typeLog('airdropLog', 'ok', 'SUCCESS: 5,000 $HACK claimed!');
     await typeLog('airdropLog', 'ok', '> welcome to the system, anon.');
+
+    // Show referral link
+    const refUrl = 'https://hackink.xyz?ref=' + walletAddress;
+    await typeLog('airdropLog', 'info', 'your ref link: hackink.xyz?ref=' + walletAddress.slice(0,10) + '...');
+    await typeLog('airdropLog', 'info', '+1,000 $HACK for each wallet you invite');
+
+    // Show copy ref button
+    const refWrap = document.createElement('div');
+    refWrap.style.cssText = 'margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+    const refInput = document.createElement('input');
+    refInput.value = refUrl;
+    refInput.readOnly = true;
+    refInput.style.cssText = 'flex:1;background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.6);font-family:Share Tech Mono,monospace;font-size:10px;padding:8px 10px;outline:none;min-width:0';
+    const copyRefBtn = document.createElement('button');
+    copyRefBtn.textContent = '[ COPY ]';
+    copyRefBtn.style.cssText = 'background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.6);font-family:Share Tech Mono,monospace;font-size:10px;padding:8px 12px;cursor:pointer;letter-spacing:2px;white-space:nowrap';
+    copyRefBtn.onclick = () => {
+      navigator.clipboard.writeText(refUrl);
+      copyRefBtn.textContent = '[ COPIED ✓ ]';
+      copyRefBtn.style.color = '#00ff41';
+      setTimeout(()=>{ copyRefBtn.textContent='[ COPY ]'; copyRefBtn.style.color=''; }, 2000);
+    };
+    refWrap.appendChild(refInput);
+    refWrap.appendChild(copyRefBtn);
+    document.getElementById('airdropLog').appendChild(refWrap);
+
+    // Load referral stats
+    try {
+      const stats = await airdropContract.getReferralStats(walletAddress);
+      if (Number(stats.count) > 0) {
+        await typeLog('airdropLog', 'ok', 'invited: ' + stats.count + ' wallets // earned: ' + Number(ethers.formatEther(stats.earned)).toLocaleString() + ' $HACK');
+      }
+    } catch(e) {}
 
     airdropState = 'done';
     btn.textContent = '[ CLAIMED ✓ ]';
