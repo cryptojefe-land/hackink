@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$HACK — Run</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#000;color:#00ff41;font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden}
+  .scanlines{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:100}
+  .grid-bg{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,255,65,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,65,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+  .container{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:0 24px 60px}
+
+  nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid rgba(0,255,65,0.2);margin-bottom:40px;flex-wrap:wrap;gap:10px}
+  .nav-logo{font-family:'VT323',monospace;font-size:28px;color:#00ff41;letter-spacing:4px;text-decoration:none;text-shadow:0 0 15px rgba(0,255,65,0.5)}
+  .nav-right{display:flex;align-items:center;gap:16px}
+  .nav-link{font-size:11px;color:rgba(0,255,65,0.5);letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:color .2s}
+  .nav-link:hover{color:#00ff41}
+  .dot{width:6px;height:6px;border-radius:50%;background:#00ff41;animation:blink 1.2s infinite;box-shadow:0 0 6px rgba(0,255,65,0.8)}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* STATS */
+  .game-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:24px;border:1px solid rgba(0,255,65,0.15)}
+  .gs-block{padding:16px 12px;border-right:1px solid rgba(0,255,65,0.15);text-align:center;background:rgba(0,255,65,0.02)}
+  .gs-block:last-child{border-right:none}
+  .gs-label{font-size:9px;color:rgba(0,255,65,0.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
+  .gs-val{font-family:'VT323',monospace;font-size:32px;line-height:1}
+  .gs-val.green{color:#00ff41;text-shadow:0 0 10px rgba(0,255,65,0.6)}
+  .gs-val.gold{color:#f7c948;text-shadow:0 0 10px rgba(247,201,72,0.6)}
+  .gs-val.cyan{color:#00cfff;text-shadow:0 0 10px rgba(0,207,255,0.6)}
+
+  /* GAME CANVAS WRAPPER */
+  .game-wrap{border:1px solid rgba(0,255,65,0.3);background:#000;position:relative;overflow:hidden;margin-bottom:16px;box-shadow:0 0 30px rgba(0,255,65,0.08),inset 0 0 40px rgba(0,255,65,0.02);cursor:pointer}
+  canvas{display:block;width:100%;image-rendering:pixelated}
+
+  /* OVERLAY */
+  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);z-index:10}
+  .overlay-title{font-family:'VT323',monospace;font-size:clamp(36px,8vw,64px);color:#00ff41;text-shadow:0 0 20px rgba(0,255,65,0.8);letter-spacing:4px;margin-bottom:8px}
+  .overlay-sub{font-size:12px;color:rgba(0,255,65,0.5);letter-spacing:3px;margin-bottom:24px;text-align:center;padding:0 20px}
+  .overlay-btn{background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:'VT323',monospace;font-size:24px;letter-spacing:4px;padding:12px 32px;cursor:pointer;transition:all .2s}
+  .overlay-btn:hover{background:rgba(0,255,65,0.1);box-shadow:0 0 20px rgba(0,255,65,0.3);text-shadow:0 0 10px #00ff41}
+  .overlay.hidden{display:none}
+
+  /* HINT */
+  .hint{font-size:11px;color:rgba(0,255,65,0.3);letter-spacing:2px;text-align:center;margin-bottom:24px}
+
+  /* CLAIM SECTION */
+  .claim-section{border:1px solid rgba(0,255,65,0.2);background:rgba(0,255,65,0.02);padding:20px;margin-bottom:24px;box-shadow:0 0 20px rgba(0,255,65,0.05)}
+  .claim-title{font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+  .claim-info{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+  .claim-amount{font-family:'VT323',monospace;font-size:36px;color:#f7c948;text-shadow:0 0 15px rgba(247,201,72,0.5)}
+  .claim-amount span{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(247,201,72,0.5);margin-left:6px}
+  .claim-note{font-size:11px;color:rgba(0,255,65,0.3);letter-spacing:1px;line-height:1.6}
+  .claim-btn{width:100%;padding:14px;background:transparent;border:1px solid #f7c948;color:#f7c948;font-family:'VT323',monospace;font-size:22px;letter-spacing:4px;cursor:pointer;transition:all .3s;white-space:nowrap;overflow:hidden}
+  .claim-btn:hover:not(:disabled){background:rgba(247,201,72,0.08);box-shadow:0 0 20px rgba(247,201,72,0.2);text-shadow:0 0 8px #f7c948}
+  .claim-btn:disabled{opacity:.35;cursor:not-allowed}
+  .claim-log{margin-top:12px;font-size:11px;color:rgba(0,255,65,0.5);line-height:1.8;min-height:20px}
+  .claim-log .ok{color:#00ff41}
+  .claim-log .err{color:#ff0040}
+  .claim-log .info{color:#00cfff}
+
+  /* CONNECT */
+  .connect-btn{background:transparent;border:1px solid rgba(0,255,65,0.4);color:rgba(0,255,65,0.7);font-family:'Share Tech Mono',monospace;font-size:11px;padding:8px 16px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
+  .connect-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 12px rgba(0,255,65,0.2)}
+  .connect-btn.connected{border-color:rgba(0,255,65,0.3);color:rgba(0,255,65,0.5)}
+
+  /* LEADERBOARD */
+  .lb-row{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(0,255,65,0.06);font-size:11px;color:rgba(0,255,65,0.4)}
+  .lb-row:first-child{color:rgba(247,201,72,0.8)}
+  .lb-row:nth-child(2){color:rgba(0,207,255,0.7)}
+  .lb-row .pos{width:24px;flex-shrink:0}
+  .lb-row .addr{flex:1;padding:0 8px}
+  .lb-row .score{color:#00ff41;font-family:'VT323',monospace;font-size:16px}
+
+  footer{border-top:1px solid rgba(0,255,65,0.12);padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:rgba(0,255,65,0.25);letter-spacing:2px;flex-wrap:wrap;gap:10px}
+  .fcounter{font-family:'VT323',monospace;font-size:16px;color:rgba(0,255,65,0.35)}
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="grid-bg"></div>
+<div class="container">
+
+  <nav>
+    <a class="nav-logo" href="index.html">$HACK</a>
+    <div class="nav-right">
+      <a class="nav-link" href="index.html">← BACK</a>
+      <div class="dot"></div>
+      <button class="connect-btn" id="connectBtn" onclick="connectWallet()">[ CONNECT ]</button>
+    </div>
+  </nav>
+
+  <div class="game-stats">
+    <div class="gs-block">
+      <div class="gs-label">Score</div>
+      <div class="gs-val green" id="scoreDisplay">0</div>
+    </div>
+    <div class="gs-block">
+      <div class="gs-label">$HACK Earned</div>
+      <div class="gs-val gold" id="tokensDisplay">0</div>
+    </div>
+    <div class="gs-block">
+      <div class="gs-label">Best</div>
+      <div class="gs-val cyan" id="bestDisplay">0</div>
+    </div>
+  </div>
+
+  <div class="game-wrap" id="gameWrap" onclick="handleInput()" ontouchstart="handleInput()">
+    <canvas id="gameCanvas"></canvas>
+    <div class="overlay" id="overlay">
+      <div class="overlay-title">$HACK RUN</div>
+      <div class="overlay-sub">Jump over obstacles.<br>Each jump = +1 $HACK token.</div>
+      <button class="overlay-btn" onclick="startGame(event)">[ START ]</button>
+    </div>
+  </div>
+
+  <div class="hint">SPACE / CLICK / TAP — JUMP &nbsp;|&nbsp; DOUBLE JUMP SUPPORTED</div>
+
+  <!-- CLAIM -->
+  <div class="claim-section">
+    <div class="claim-title">&gt; earned tokens</div>
+    <div class="claim-info">
+      <div>
+        <div class="claim-amount" id="claimAmount">0<span>$HACK</span></div>
+        <div class="claim-note">tokens accumulate each session<br>connect wallet to claim for real</div>
+      </div>
+      <button class="claim-btn" id="claimBtn" onclick="claimTokens()" disabled>[ CLAIM $HACK ]</button>
+    </div>
+    <div class="claim-log" id="claimLog"></div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div style="margin-bottom:40px">
+    <div style="font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px">&gt; session leaderboard</div>
+    <div id="leaderboard" style="border:1px solid rgba(0,255,65,0.1)">
+      <div class="lb-row"><span class="pos">#1</span><span class="addr">—</span><span class="score">0</span></div>
+      <div class="lb-row"><span class="pos">#2</span><span class="addr">—</span><span class="score">0</span></div>
+      <div class="lb-row"><span class="pos">#3</span><span class="addr">—</span><span class="score">0</span></div>
+    </div>
+  </div>
+
+  <footer>
+    <div>$HACK // hackink.xyz</div>
+    <div class="fcounter" id="fcounter">SYS_TIME: 00:00:00</div>
+  </footer>
+
+</div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+const AIRDROP_ADDRESS = "0xeb8D2Eaa3D48435C86fC3A36a452C8D6b1a75653";
+const INK_CHAIN = {
+  chainId:"0xDEF1", chainName:"Ink",
+  nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
+  rpcUrls:["https://rpc-gel.inkonchain.com"],
+  blockExplorerUrls:["https://explorer.inkonchain.com"]
+};
+const AIRDROP_ABI = [
+  "function claim() external payable",
+  "function claimFeeWei() external view returns (uint256)",
+  "function claimed(address) external view returns (bool)",
+  "function airdropActive() external view returns (bool)"
+];
+
+let provider, signer, walletAddress, airdropContract;
+
+// ─── GAME STATE ───────────────────────────────────────────────────────────────
+const C = document.getElementById('gameCanvas');
+const ctx = C.getContext('2d');
+
+const W = 800, H = 220;
+C.width = W; C.height = H;
+
+const GREEN      = '#00ff41';
+const GREEN_DIM  = 'rgba(0,255,65,0.15)';
+const GOLD       = '#f7c948';
+const RED        = '#ff0040';
+const CYAN       = '#00cfff';
+
+let state = 'idle'; // idle | running | dead
+let score = 0;
+let tokens = 0; // tokens earned this session
+let best = parseInt(localStorage.getItem('hackrun_best') || '0');
+let totalTokens = parseInt(localStorage.getItem('hackrun_tokens') || '0');
+let frame = 0;
+let speed = 5;
+let jumpCount = 0;
+let raf;
+
+document.getElementById('bestDisplay').textContent = best;
+
+// Player
+const P = {
+  x: 80, y: H - 50, w: 30, h: 40,
+  vy: 0, onGround: true,
+  jumping: false,
+};
+const GROUND = H - 50;
+const GRAVITY = 0.7;
+const JUMP_V = -14;
+
+// Obstacles
+let obstacles = [];
+let nextObs = 80;
+
+// Particles
+let particles = [];
+
+// Token floaties
+let floaties = [];
+
+function spawnObs() {
+  const h = 20 + Math.random() * 30;
+  obstacles.push({ x: W + 20, w: 18, h, y: GROUND + P.h - h });
+}
+
+function jump() {
+  if (state !== 'running') return;
+  if (jumpCount < 2) {
+    P.vy = JUMP_V;
+    P.onGround = false;
+    jumpCount++;
+    tokens++;
+    totalTokens++;
+    localStorage.setItem('hackrun_tokens', totalTokens);
+    updateUI();
+    spawnFloatie(P.x + P.w/2, P.y);
+    updateLeaderboard();
+  }
+}
+
+function spawnFloatie(x, y) {
+  floaties.push({ x, y, life: 40, vy: -1.5, txt: '+1' });
+}
+
+function spawnParticles(x, y, color) {
+  for (let i = 0; i < 8; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random()-0.5)*5,
+      vy: (Math.random()-0.5)*5,
+      life: 30, color
+    });
+  }
+}
+
+function startGame(e) {
+  if (e) e.stopPropagation();
+  state = 'running';
+  score = 0; tokens = 0;
+  speed = 5; frame = 0;
+  jumpCount = 0;
+  P.y = GROUND; P.vy = 0; P.onGround = true;
+  obstacles = []; particles = []; floaties = [];
+  nextObs = 80;
+  document.getElementById('overlay').classList.add('hidden');
+  if (raf) cancelAnimationFrame(raf);
+  loop();
+}
+
+function gameOver() {
+  state = 'dead';
+  spawnParticles(P.x + P.w/2, P.y + P.h/2, RED);
+  if (score > best) {
+    best = score;
+    localStorage.setItem('hackrun_best', best);
+  }
+  totalTokens += tokens;
+  localStorage.setItem('hackrun_tokens', totalTokens);
+  updateUI();
+  updateLeaderboard();
+  const ov = document.getElementById('overlay');
+  ov.innerHTML = `
+    <div class="overlay-title" style="color:#ff0040">GAME OVER</div>
+    <div class="overlay-sub" style="color:rgba(255,0,64,0.6)">Score: ${score} &nbsp;|&nbsp; +${tokens} $HACK earned</div>
+    <button class="overlay-btn" style="border-color:#ff0040;color:#ff0040" onclick="startGame(event)">[ RETRY ]</button>`;
+  ov.classList.remove('hidden');
+}
+
+function loop() {
+  if (state !== 'running') return;
+  raf = requestAnimationFrame(loop);
+  frame++;
+  score++;
+  speed = 5 + score / 400;
+
+  // Physics
+  P.vy += GRAVITY;
+  P.y += P.vy;
+  if (P.y >= GROUND) {
+    P.y = GROUND;
+    P.vy = 0;
+    P.onGround = true;
+    jumpCount = 0;
+  }
+
+  // Obstacles
+  nextObs--;
+  if (nextObs <= 0) {
+    spawnObs();
+    nextObs = 60 + Math.random() * 80;
+  }
+  obstacles = obstacles.filter(o => o.x + o.w > 0);
+  obstacles.forEach(o => o.x -= speed);
+
+  // Collision
+  for (const o of obstacles) {
+    if (
+      P.x + P.w - 6 > o.x &&
+      P.x + 6 < o.x + o.w &&
+      P.y + P.h > o.y + 4
+    ) { gameOver(); return; }
+  }
+
+  // Particles
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.life--; });
+
+  // Floaties
+  floaties = floaties.filter(f => f.life > 0);
+  floaties.forEach(f => { f.y+=f.vy; f.life--; });
+
+  draw();
+  document.getElementById('scoreDisplay').textContent = score;
+}
+
+function draw() {
+  ctx.clearRect(0,0,W,H);
+
+  // Background grid
+  ctx.strokeStyle = 'rgba(0,255,65,0.04)';
+  ctx.lineWidth = 1;
+  for (let x=0;x<W;x+=40) { ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+  for (let y=0;y<H;y+=40) { ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+
+  // Ground line
+  ctx.strokeStyle = 'rgba(0,255,65,0.3)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();ctx.moveTo(0,GROUND+P.h);ctx.lineTo(W,GROUND+P.h);ctx.stroke();
+  ctx.strokeStyle = 'rgba(0,255,65,0.08)';
+  ctx.beginPath();ctx.moveTo(0,GROUND+P.h+2);ctx.lineTo(W,GROUND+P.h+2);ctx.stroke();
+
+  // Player — hacker figure
+  const px = P.x, py = P.y;
+  // Body glow
+  ctx.shadowColor = GREEN;
+  ctx.shadowBlur = 10;
+  // Body
+  ctx.fillStyle = GREEN;
+  ctx.fillRect(px+8, py+12, 14, 20);
+  // Head
+  ctx.fillRect(px+9, py+2, 12, 11);
+  // Eyes
+  ctx.fillStyle = '#000';
+  ctx.fillRect(px+11, py+5, 3, 3);
+  ctx.fillRect(px+17, py+5, 3, 3);
+  // Legs (animated)
+  ctx.fillStyle = GREEN;
+  const legPhase = Math.floor(frame/6) % 2;
+  if (P.onGround) {
+    ctx.fillRect(px+9,  py+32, 5, legPhase===0?8:6);
+    ctx.fillRect(px+16, py+32, 5, legPhase===0?6:8);
+  } else {
+    ctx.fillRect(px+9,  py+32, 5, 6);
+    ctx.fillRect(px+16, py+32, 5, 6);
+  }
+  // Arms
+  ctx.fillRect(px+4,  py+14, 5, 3);
+  ctx.fillRect(px+21, py+14, 5, 3);
+  ctx.shadowBlur = 0;
+
+  // Obstacles
+  obstacles.forEach(o => {
+    ctx.shadowColor = RED;
+    ctx.shadowBlur = 8;
+    ctx.fillStyle = RED;
+    ctx.fillRect(o.x, o.y, o.w, o.h);
+    // top spike
+    ctx.beginPath();
+    ctx.moveTo(o.x, o.y);
+    ctx.lineTo(o.x + o.w/2, o.y - 8);
+    ctx.lineTo(o.x + o.w, o.y);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    // scan line on obstacle
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    for (let i=o.y;i<o.y+o.h;i+=4) ctx.fillRect(o.x,i,o.w,2);
+  });
+
+  // Particles
+  particles.forEach(p => {
+    ctx.globalAlpha = p.life/30;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x-2,p.y-2,4,4);
+  });
+  ctx.globalAlpha = 1;
+
+  // Floaties (+1 $HACK)
+  floaties.forEach(f => {
+    ctx.globalAlpha = f.life/40;
+    ctx.fillStyle = GOLD;
+    ctx.font = 'bold 13px Share Tech Mono';
+    ctx.fillText('+1 $HACK', f.x-20, f.y);
+  });
+  ctx.globalAlpha = 1;
+
+  // Score on canvas
+  ctx.fillStyle = 'rgba(0,255,65,0.2)';
+  ctx.font = '12px Share Tech Mono';
+  ctx.fillText('SCORE: ' + score, W-120, 20);
+  ctx.fillStyle = 'rgba(247,201,72,0.4)';
+  ctx.fillText('+' + tokens + ' $HACK', W-120, 36);
+}
+
+function handleInput() {
+  if (state === 'running') jump();
+}
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'ArrowUp') {
+    e.preventDefault();
+    if (state === 'idle' || state === 'dead') return;
+    jump();
+  }
+});
+
+// Idle draw
+function drawIdle() {
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = 'rgba(0,255,65,0.04)';
+  for (let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for (let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.strokeStyle = 'rgba(0,255,65,0.3)';
+  ctx.beginPath();ctx.moveTo(0,GROUND+P.h);ctx.lineTo(W,GROUND+P.h);ctx.stroke();
+  ctx.shadowColor = GREEN; ctx.shadowBlur = 10;
+  ctx.fillStyle = GREEN;
+  ctx.fillRect(P.x+8,GROUND+12,14,20);
+  ctx.fillRect(P.x+9,GROUND+2,12,11);
+  ctx.fillStyle='#000';
+  ctx.fillRect(P.x+11,GROUND+5,3,3);
+  ctx.fillRect(P.x+17,GROUND+5,3,3);
+  ctx.fillStyle=GREEN;
+  ctx.fillRect(P.x+9,GROUND+32,5,8);
+  ctx.fillRect(P.x+16,GROUND+32,5,8);
+  ctx.fillRect(P.x+4,GROUND+14,5,3);
+  ctx.fillRect(P.x+21,GROUND+14,5,3);
+  ctx.shadowBlur=0;
+}
+drawIdle();
+
+// ─── UI ───────────────────────────────────────────────────────────────────────
+function updateUI() {
+  document.getElementById('tokensDisplay').textContent = tokens;
+  document.getElementById('bestDisplay').textContent = best;
+  document.getElementById('claimAmount').innerHTML = totalTokens + '<span>$HACK</span>';
+  document.getElementById('claimBtn').disabled = totalTokens === 0 || !signer;
+}
+updateUI();
+
+// ─── LEADERBOARD (session, localStorage) ────────────────────────────────────
+let lb = JSON.parse(localStorage.getItem('hackrun_lb') || '[]');
+function updateLeaderboard() {
+  if (!walletAddress) return;
+  const short = walletAddress.slice(0,6)+'...'+walletAddress.slice(-4);
+  const idx = lb.findIndex(e => e.addr === short);
+  if (idx >= 0) { if (score > lb[idx].score) lb[idx].score = score; }
+  else lb.push({ addr: short, score });
+  lb.sort((a,b) => b.score - a.score);
+  lb = lb.slice(0,10);
+  localStorage.setItem('hackrun_lb', JSON.stringify(lb));
+  const rows = document.querySelectorAll('#leaderboard .lb-row');
+  lb.slice(0,3).forEach((e,i) => {
+    if (rows[i]) {
+      rows[i].querySelector('.addr').textContent = e.addr;
+      rows[i].querySelector('.score').textContent = e.score;
+    }
+  });
+}
+
+// ─── WALLET ───────────────────────────────────────────────────────────────────
+async function connectWallet() {
+  if (!window.ethereum) { alert('MetaMask not found.'); return; }
+  try {
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts",[]);
+    const net = await provider.getNetwork();
+    if (net.chainId !== BigInt(57073)) {
+      try {
+        await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:INK_CHAIN.chainId}]});
+      } catch(e) {
+        if (e.code===4902) await window.ethereum.request({method:'wallet_addEthereumChain',params:[INK_CHAIN]});
+        else throw e;
+      }
+      provider = new ethers.BrowserProvider(window.ethereum);
+    }
+    signer = await provider.getSigner();
+    walletAddress = await signer.getAddress();
+    airdropContract = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
+    const short = walletAddress.slice(0,6)+'...'+walletAddress.slice(-4);
+    document.getElementById('connectBtn').textContent = short;
+    document.getElementById('connectBtn').classList.add('connected');
+    updateUI();
+  } catch(e) { alert('Failed: '+(e.message||e)); }
+}
+
+// ─── CLAIM ────────────────────────────────────────────────────────────────────
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+async function typeLog(cls,text){
+  const log=document.getElementById('claimLog');
+  const line=document.createElement('div');
+  line.className=cls; log.appendChild(line);
+  for(const ch of('> '+text)){line.textContent+=ch;await delay(14);}
+}
+
+async function claimTokens() {
+  if (!signer) { await connectWallet(); return; }
+  const log = document.getElementById('claimLog');
+  log.innerHTML = '';
+  document.getElementById('claimBtn').disabled = true;
+  try {
+    await typeLog('info','checking airdrop status...');
+    const active = await airdropContract.airdropActive();
+    if (!active){await typeLog('err','airdrop is paused');return;}
+    const already = await airdropContract.claimed(walletAddress);
+    if (already){await typeLog('warn','wallet already claimed airdrop');return;}
+    await typeLog('info','sending claim transaction — confirm in wallet...');
+    let feeWei = BigInt("20000000000000");
+    try { feeWei = await airdropContract.claimFeeWei(); } catch(e) {}
+    const feeWithBuffer = feeWei * BigInt(120) / BigInt(100);
+    await typeLog('info', 'fee: ' + ethers.formatEther(feeWei) + ' ETH (~$0.05)');
+    const tx = await airdropContract.claim({ value: feeWithBuffer });
+    await typeLog('info','tx: '+tx.hash.slice(0,20)+'...');
+    await tx.wait();
+    await typeLog('ok','SUCCESS: 5,000 $HACK claimed!');
+    await typeLog('ok','> you earned it, anon. keep running.');
+    totalTokens = 0;
+    localStorage.setItem('hackrun_tokens','0');
+    updateUI();
+  } catch(e) {
+    await typeLog('err','ERROR: '+(e.reason||e.message||'failed'));
+    document.getElementById('claimBtn').disabled = false;
+  }
+}
+
+// Clock
+function updateClock(){
+  const n=new Date();
+  const t=[n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+  document.getElementById('fcounter').textContent='SYS_TIME: '+t;
+}
+setInterval(updateClock,1000); updateClock();
+</script>
+</body>
+</html>
