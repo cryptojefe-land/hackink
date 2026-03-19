@@ -468,7 +468,7 @@
         </div>
         <div class="task">
           <div class="task-label" id="lbl-share">&gt; share $HACK with your followers</div>
-          <a class="task-btn" id="btn-share" href="https://twitter.com/intent/tweet?text=Just%20found%20%24HACK%20on%20%40HACKtokenINK%20%F0%9F%96%A5%EF%B8%8F%0A%0AFree%20airdrop%20%E2%80%94%205%2C000%20%24HACK%20per%20wallet.%0ANo%20KYC.%20No%20bullshit.%20On-chain%20only.%0A%0AClaim%20here%20%F0%9F%91%89hackink.xyz%0A%0A%23HACK%20%23INK%20%23INKChain%20%23Airdrop" target="_blank" rel="noopener" onclick="completeTask('share')">[ SHARE ]</a>
+          <a class="task-btn" id="btn-share" href="#" target="_blank" rel="noopener" onclick="openShare(event)">[ SHARE ]</a>
           <div class="task-status" id="st-share"></div>
         </div>
       </div>
@@ -894,6 +894,16 @@ async function checkAirdropStatus() {
 // ─── SOCIAL TASKS ────────────────────────────────────────────────────────────
 const TASKS = ['follow','tg','like','rt','share'];
 let completedTasks = new Set();
+
+function openShare(e) {
+  e.preventDefault();
+  const refPart = walletAddress
+    ? '\n\nClaim here 👉hackink.xyz?ref=' + walletAddress
+    : '\n\nClaim here 👉hackink.xyz';
+  const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 5,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
+  completeTask('share');
+}
 
 function completeTask(id) {
   setTimeout(() => {
@@ -1378,3 +1388,4 @@ updateClock();
 </script>
 </body>
 </html>
+
