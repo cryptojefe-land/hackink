@@ -298,20 +298,20 @@
   .airdrop-stat-value.purple{color:#c47aff}
 
   /* social tasks */
-  .tasks{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
-  .task{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.01);flex-wrap:wrap}
-  .task-label{font-size:11px;color:rgba(0,255,65,0.5);letter-spacing:1px;flex:1;min-width:120px}
+  .tasks{display:flex;flex-direction:column;gap:4px;margin-bottom:16px}
+  .task{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.01);flex-wrap:nowrap;justify-content:space-between}
+  .task-label{font-size:11px;color:rgba(0,255,65,0.5);letter-spacing:1px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .task-label.done{color:rgba(0,255,65,0.2);text-decoration:line-through}
-  .task-status{font-family:'VT323',monospace;font-size:20px;color:rgba(0,255,65,0.15);flex-shrink:0;min-width:36px;text-align:right}
+  .task-status{font-family:'VT323',monospace;font-size:18px;color:rgba(0,255,65,0.15);flex-shrink:0;width:36px;text-align:right}
   .task-status.done{color:#00ff41}
-  .task-btn{background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.6);font-family:'Share Tech Mono',monospace;font-size:10px;padding:7px 14px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap;text-decoration:none;display:inline-block;flex-shrink:0}
+  .task-btn{background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.6);font-family:'Share Tech Mono',monospace;font-size:10px;padding:6px 12px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap;text-decoration:none;display:inline-block;flex-shrink:0}
   .task-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 10px rgba(0,255,65,0.15)}
   .task-btn.done{border-color:rgba(0,255,65,0.1);color:rgba(0,255,65,0.2);cursor:default;pointer-events:none}
   @media(max-width:480px){
-    .task{gap:8px}
-    .task-label{font-size:10px;width:100%;flex:none}
-    .task-btn{font-size:9px;padding:6px 10px}
-    .task-status{min-width:28px}
+    .task{gap:8px;padding:8px 10px}
+    .task-label{font-size:10px}
+    .task-btn{font-size:9px;padding:5px 8px;letter-spacing:1px}
+    .task-status{width:28px}
   }
 
   .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:60px}
@@ -358,6 +358,7 @@
   <nav>
     <div class="nav-logo">$HACK</div>
     <div class="nav-right">
+      <a class="nav-link" href="game.html">[ PLAY ]</a>
       <div class="nav-status">
         <div class="dot"></div>
         INK // BLOCK #<span id="blocknum">21847293</span>
@@ -608,7 +609,7 @@
   <div class="section-header" style="margin-top:50px"><div class="section-tag">// CONTRACT ADDRESSES</div></div>
   <div class="contracts-block">
     <div class="contract-row">
-      <div class="contract-label">$HACK TOKEN</div>
+      <div class="contract-label">$HACK</div>
       <div class="contract-addr" id="addr-token">0xe6e719bf4046Db0bb849231aEf37482187fd84f4</div>
       <button class="copy-btn" onclick="copyAddr('addr-token',this)">[ COPY ]</button>
     </div>
@@ -619,7 +620,7 @@
     </div>
     <div class="contract-row">
       <div class="contract-label">AIRDROP</div>
-      <div class="contract-addr" id="addr-airdrop">0x2093cE03eaf617d6CC67137e4078f4d089AE091e</div>
+      <div class="contract-addr" id="addr-airdrop">0xeb8D2Eaa3D48435C86fC3A36a452C8D6b1a75653</div>
       <button class="copy-btn" onclick="copyAddr('addr-airdrop',this)">[ COPY ]</button>
     </div>
     <div class="contract-row">
@@ -720,7 +721,7 @@
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
 const SALE_ADDRESS     = "0xFaBd3610FfFF899b3ec55624dcA92553C1C5ef23";
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
-const AIRDROP_ADDRESS = "0x2093cE03eaf617d6CC67137e4078f4d089AE091e";
+const AIRDROP_ADDRESS = "0xeb8D2Eaa3D48435C86fC3A36a452C8D6b1a75653";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const RATE            = 20000;
 
@@ -747,10 +748,11 @@ const SALE_ABI = [
 ];
 
 const AIRDROP_ABI = [
-  "function claim() external",
+  "function claim() external payable",
   "function claimed(address) external view returns (bool)",
   "function airdropActive() external view returns (bool)",
-  "function remainingPool() external view returns (uint256)"
+  "function remainingPool() external view returns (uint256)",
+  "function claimFeeWei() external view returns (uint256)"
 ];
 
 const STAKING_ABI = [
@@ -942,8 +944,14 @@ async function executeAirdropClaim() {
       btn.disabled=false; return;
     }
 
+    // Fetch fee from contract
+    let feeWei = BigInt("20000000000000"); // fallback ~0.00002 ETH
+    try { feeWei = await airdropContract.claimFeeWei(); } catch(e) {}
+    // Add 20% buffer so msg.value always > claimFeeWei
+    const feeWithBuffer = feeWei * BigInt(120) / BigInt(100);
+    await typeLog('airdropLog', 'info', 'fee: ' + ethers.formatEther(feeWei) + ' ETH (~$0.05)');
     await typeLog('airdropLog', 'info', 'confirm transaction in wallet...');
-    const tx = await airdropContract.claim();
+    const tx = await airdropContract.claim({ value: feeWithBuffer });
     await typeLog('airdropLog', 'info', 'tx sent: ' + tx.hash.slice(0,20) + '...');
     await tx.wait();
     await typeLog('airdropLog', 'ok', 'SUCCESS: 5,000 $HACK claimed!');
@@ -1288,16 +1296,24 @@ function toggleFaq(el) {
 
 // ─── MISC ────────────────────────────────────────────────────────────────────
 
-// Load reward pool without wallet — public view function
+// Load reward pool without wallet — raw JSON-RPC fetch (no CORS issues)
 async function loadPoolPublic() {
   try {
-    const rpc = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
-    const contract = new ethers.Contract(STAKING_ADDRESS, [
-      "function rewardPool() external view returns (uint256)"
-    ], rpc);
-    const pool = await contract.rewardPool();
-    const poolFmt = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
-    document.getElementById('st-pool').textContent = poolFmt;
+    // rewardPool() selector = keccak256("rewardPool()")[0:4] = 0xb3ec6ca7
+    const res = await fetch("https://rpc-gel.inkonchain.com", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0", id: 1, method: "eth_call",
+        params: [{ to: STAKING_ADDRESS, data: "0xb3ec6ca7" }, "latest"]
+      })
+    });
+    const json = await res.json();
+    if (json.result && json.result !== "0x") {
+      const pool = BigInt(json.result);
+      const fmt  = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
+      document.getElementById('st-pool').textContent = fmt;
+    }
   } catch(e) { console.error('loadPoolPublic:', e); }
 }
 loadPoolPublic();
