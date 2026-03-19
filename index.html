@@ -961,14 +961,9 @@ async function executeAirdropClaim() {
       btn.disabled=false; return;
     }
 
-    // Fetch fee from contract
-    let feeWei = BigInt("20000000000000"); // fallback ~0.00002 ETH
-    try { feeWei = await airdropContract.claimFeeWei(); } catch(e) {}
-    // Add 20% buffer so msg.value always > claimFeeWei
-    const feeWithBuffer = feeWei * BigInt(120) / BigInt(100);
-    await typeLog('airdropLog', 'info', 'fee: ' + ethers.formatEther(feeWei) + ' ETH (~$0.05)');
-    await typeLog('airdropLog', 'info', 'confirm transaction in wallet...');
-    const tx = await airdropContract.claim({ value: feeWithBuffer });
+    const feeWei = BigInt("20000000000000"); // fixed: 0.00002 ETH
+    await typeLog('airdropLog', 'info', 'fee: 0.00002 ETH // confirm in wallet...');
+    const tx = await airdropContract.claim(REF_ADDR, { value: feeWei });
     await typeLog('airdropLog', 'info', 'tx sent: ' + tx.hash.slice(0,20) + '...');
     await tx.wait();
     await typeLog('airdropLog', 'ok', 'SUCCESS: 5,000 $HACK claimed!');
