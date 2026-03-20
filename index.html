@@ -475,6 +475,23 @@
 
       <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()" disabled>[ COMPLETE TASKS TO CLAIM ]</button>
       <div class="log" id="airdropLog"></div>
+
+      <!-- DAILY GM — shown only after airdrop claimed -->
+      <div id="gmBlock" style="display:none;margin-top:20px;border-top:1px solid rgba(0,255,65,0.1);padding-top:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+          <div>
+            <div style="font-size:9px;color:rgba(0,255,65,0.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">Daily GM</div>
+            <div style="font-family:'VT323',monospace;font-size:36px;color:#00ff41;line-height:1;text-shadow:0 0 12px rgba(0,255,65,0.5)">+500 <span style="font-size:14px;color:rgba(0,255,65,0.4);font-family:'Share Tech Mono',monospace">$HACK</span></div>
+            <div style="font-size:10px;color:rgba(0,255,65,0.25);margin-top:3px">once per 24h &nbsp;·&nbsp; your ref gets +100</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:9px;color:rgba(0,255,65,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px">Next GM in</div>
+            <div style="font-family:'VT323',monospace;font-size:28px;color:#f7c948;text-shadow:0 0 10px rgba(247,201,72,0.5)" id="gmCooldown">--:--:--</div>
+          </div>
+        </div>
+        <button class="action-btn" id="gmBtn" onclick="executeGM()" disabled style="font-size:clamp(14px,3vw,19px);padding:12px">[ GM — CLAIM 500 $HACK ]</button>
+        <div class="log" id="gmLog"></div>
+      </div>
     </div>
   </div>
 
@@ -721,6 +738,8 @@
 const SALE_ADDRESS     = "0xFaBd3610FfFF899b3ec55624dcA92553C1C5ef23";
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
 const AIRDROP_ADDRESS = "0x7F8a38Bd737C3F5F921134F849cC9278843Eb137";
+const GM_ADDRESS      = "REPLACE_WITH_DEPLOYED_GM_ADDRESS";
+const GM_ADDRESS      = "REPLACE_WITH_DEPLOYED_GM_ADDRESS";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const RATE            = 20000;
 
@@ -774,7 +793,26 @@ const ERC20_ABI = [
 ];
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
+const GM_ABI = [
+  "function gm() external payable",
+  "function cooldownLeft(address user) external view returns (uint256)",
+  "function canClaim(address user) external view returns (bool)",
+  "function remainingPool() external view returns (uint256)",
+  "function gmFeeWei() external view returns (uint256)",
+  "function totalGMs() external view returns (uint256)"
+];
+
+const GM_ABI = [
+  "function gm(address referrer) external payable",
+  "function cooldownLeft(address) external view returns (uint256)",
+  "function canClaim(address) external view returns (bool)",
+  "function remainingPool() external view returns (uint256)",
+  "function totalGMs() external view returns (uint256)"
+];
+
 let provider, signer, walletAddress;
+let gmContract;
+let gmContract;
 
 // Read referrer from URL ?ref=0x...
 const urlRef = new URLSearchParams(window.location.search).get('ref') || '';
@@ -843,6 +881,9 @@ async function connectWallet() {
     saleContract    = new ethers.Contract(SALE_ADDRESS,    SALE_ABI,    signer);
     airdropContract  = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
     stakingContract  = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+    gmContract       = new ethers.Contract(GM_ADDRESS, GM_ABI, signer);
+    gmContract       = new ethers.Contract(GM_ADDRESS,      GM_ABI,      signer);
+    await loadGMStatus();
     for (const [name, t] of Object.entries(TOKENS)) {
       paymentContracts[name] = new ethers.Contract(t.address, ERC20_ABI, signer);
     }
@@ -855,6 +896,7 @@ async function connectWallet() {
 
     await refreshBalance();
     await checkAirdropStatus();
+    await loadGMStatus();
 
     window.ethereum.on('accountsChanged', () => location.reload());
     window.ethereum.on('chainChanged',    () => location.reload());
@@ -887,6 +929,8 @@ async function checkAirdropStatus() {
       btn.disabled = true;
       btn.classList.add('claimed-state');
       await typeLog('airdropLog', 'warn', 'this wallet has already claimed the airdrop');
+      // Show GM block immediately
+      document.getElementById('gmBlock').style.display = 'block';
     }
   } catch(e) {}
 }
@@ -978,6 +1022,9 @@ async function executeAirdropClaim() {
     await tx.wait();
     await typeLog('airdropLog', 'ok', 'SUCCESS: 5,000 $HACK claimed!');
     await typeLog('airdropLog', 'ok', '> welcome to the system, anon.');
+    // Show GM block
+    document.getElementById('gmBlock').style.display = 'block';
+    await loadGMStatus();
 
     // Show referral link
     const refUrl = 'https://hackink.xyz?ref=' + walletAddress;
@@ -1349,26 +1396,94 @@ function toggleFaq(el) {
   el.classList.toggle('open');
 }
 
+// ─── DAILY GM ────────────────────────────────────────────────────────────────
+let gmCooldownInterval;
+
+async function loadGMStatus() {
+  if (!gmContract || !walletAddress) return;
+  try {
+    // Check airdrop claimed first
+    const hasClaimed = await airdropContract.claimed(walletAddress);
+    if (!hasClaimed) return; // block stays hidden
+
+    document.getElementById('gmBlock').style.display = 'block';
+
+    const [can, cooldown, total] = await Promise.all([
+      gmContract.canClaim(walletAddress),
+      gmContract.cooldownLeft(walletAddress),
+      gmContract.totalGMs()
+    ]);
+
+    const btn = document.getElementById('gmBtn');
+    if (can) {
+      btn.disabled = false;
+      btn.textContent = '[ GM — CLAIM 500 $HACK ]';
+      btn.style.borderColor = '#00ff41';
+      btn.style.color = '#00ff41';
+      document.getElementById('gmCooldown').textContent = 'NOW';
+      document.getElementById('gmCooldown').style.color = '#00ff41';
+    } else {
+      btn.disabled = true;
+      btn.textContent = '[ COME BACK TOMORROW ]';
+      btn.style.borderColor = 'rgba(0,255,65,0.2)';
+      btn.style.color = 'rgba(0,255,65,0.3)';
+      startGMCountdown(Number(cooldown));
+    }
+  } catch(e) { console.error('loadGMStatus:', e); }
+}
+
+function startGMCountdown(secs) {
+  if (gmCooldownInterval) clearInterval(gmCooldownInterval);
+  let left = secs;
+  const el = document.getElementById('gmCooldown');
+  const tick = () => {
+    if (left <= 0) {
+      clearInterval(gmCooldownInterval);
+      el.textContent = 'NOW';
+      el.style.color = '#00ff41';
+      loadGMStatus();
+      return;
+    }
+    const h = Math.floor(left/3600);
+    const m = Math.floor((left%3600)/60);
+    const s = left%60;
+    el.textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    left--;
+  };
+  tick();
+  gmCooldownInterval = setInterval(tick, 1000);
+}
+
+async function executeGM() {
+  if (!signer) return;
+  const btn = document.getElementById('gmBtn');
+  btn.disabled = true;
+  clearLog('gmLog');
+  try {
+    await typeLog('gmLog', 'info', 'gm INK. claiming 500 $HACK...');
+    const tx = await gmContract.gm(REF_ADDR, { value: BigInt("20000000000000") });
+    await typeLog('gmLog', 'info', 'tx: ' + tx.hash.slice(0,20) + '...');
+    await tx.wait();
+    await typeLog('gmLog', 'ok', 'gm! 500 $HACK incoming. see you tomorrow.');
+    await loadGMStatus();
+  } catch(e) {
+    await typeLog('gmLog', 'err', 'ERROR: ' + (e.reason || e.message || 'failed'));
+    btn.disabled = false;
+  }
+}
+
 // ─── MISC ────────────────────────────────────────────────────────────────────
 
 // Load reward pool without wallet — raw JSON-RPC fetch (no CORS issues)
 async function loadPoolPublic() {
   try {
-    // rewardPool() selector = keccak256("rewardPool()")[0:4] = 0xb3ec6ca7
-    const res = await fetch("https://rpc-gel.inkonchain.com", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0", id: 1, method: "eth_call",
-        params: [{ to: STAKING_ADDRESS, data: "0xb3ec6ca7" }, "latest"]
-      })
-    });
-    const json = await res.json();
-    if (json.result && json.result !== "0x") {
-      const pool = BigInt(json.result);
-      const fmt  = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
-      document.getElementById('st-pool').textContent = fmt;
-    }
+    const rpc = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
+    const contract = new ethers.Contract(STAKING_ADDRESS, [
+      "function rewardPool() external view returns (uint256)"
+    ], rpc);
+    const pool = await contract.rewardPool();
+    const fmt = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
+    document.getElementById('st-pool').textContent = fmt;
   } catch(e) { console.error('loadPoolPublic:', e); }
 }
 loadPoolPublic();
