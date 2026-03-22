@@ -358,6 +358,7 @@
   <nav>
     <div class="nav-logo">$HACK</div>
     <div class="nav-right">
+      <a class="nav-link" id="checkinNavBtn" href="checkin.html" style="display:none;border:1px solid rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);padding:6px 12px;transition:all .2s;text-decoration:none" onmouseover="this.style.borderColor='#f7c948';this.style.color='#f7c948'" onmouseout="this.style.borderColor='rgba(247,201,72,0.4)';this.style.color='rgba(247,201,72,0.7)'">[ CHECK-IN ]</a>
       <div class="nav-status">
         <div class="dot"></div>
         INK // BLOCK #<span id="blocknum">21847293</span>
@@ -887,8 +888,14 @@ async function checkAirdropStatus() {
       btn.disabled = true;
       btn.classList.add('claimed-state');
       await typeLog('airdropLog', 'warn', 'this wallet has already claimed the airdrop');
+      showCheckinBtn();
     }
   } catch(e) {}
+}
+
+function showCheckinBtn() {
+  const el = document.getElementById('checkinNavBtn');
+  if (el) el.style.display = 'block';
 }
 
 // ─── SOCIAL TASKS ────────────────────────────────────────────────────────────
@@ -1032,9 +1039,18 @@ async function executeAirdropClaim() {
     stakeBtn.textContent = '[ STAKE YOUR $HACK ]';
     stakeBtn.onclick = () => switchTab('stake');
 
+    // Check-in button
+    const checkinBtn2 = document.createElement('button');
+    checkinBtn2.className = 'action-btn';
+    checkinBtn2.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
+    checkinBtn2.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
+    checkinBtn2.onclick = () => window.location.href = 'checkin.html';
+
     wrap.appendChild(buyMoreBtn);
     wrap.appendChild(stakeBtn);
+    wrap.appendChild(checkinBtn2);
     btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
+    showCheckinBtn();
 
   } catch(e) {
     await typeLog('airdropLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
@@ -1352,24 +1368,19 @@ function toggleFaq(el) {
 // ─── MISC ────────────────────────────────────────────────────────────────────
 
 // Load reward pool without wallet — raw JSON-RPC fetch (no CORS issues)
+// Staking pool — 200B tokens hardcoded per tokenomics (20% of supply)
+document.getElementById('st-pool').textContent = '200,000,000,000';
+
 async function loadPoolPublic() {
   try {
-    // rewardPool() selector = keccak256("rewardPool()")[0:4] = 0xb3ec6ca7
-    const res = await fetch("https://rpc-gel.inkonchain.com", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0", id: 1, method: "eth_call",
-        params: [{ to: STAKING_ADDRESS, data: "0xb3ec6ca7" }, "latest"]
-      })
-    });
-    const json = await res.json();
-    if (json.result && json.result !== "0x") {
-      const pool = BigInt(json.result);
-      const fmt  = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
-      document.getElementById('st-pool').textContent = fmt;
-    }
-  } catch(e) { console.error('loadPoolPublic:', e); }
+    const rpc = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
+    const sc  = new ethers.Contract(STAKING_ADDRESS, [
+      "function rewardPool() external view returns (uint256)"
+    ], rpc);
+    const pool = await sc.rewardPool();
+    const fmt  = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
+    document.getElementById('st-pool').textContent = fmt;
+  } catch(e) { /* keep hardcoded fallback */ }
 }
 loadPoolPublic();
 let block = 21847293;
