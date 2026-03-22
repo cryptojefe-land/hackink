@@ -474,7 +474,7 @@
         </div>
       </div>
 
-      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()" disabled>[ COMPLETE TASKS TO CLAIM ]</button>
+      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()" disabled>[ CONNECT WALLET ]</button>
       <div class="log" id="airdropLog"></div>
     </div>
   </div>
@@ -856,6 +856,17 @@ async function connectWallet() {
 
     await refreshBalance();
     await checkAirdropStatus();
+    // Update button text now that wallet is connected
+    const aBtn = document.getElementById('airdropBtn');
+    if (!aBtn.classList.contains('claimed-state')) {
+      const allDone = ['follow','tg','like','rt','share'].every(t => completedTasks.has(t));
+      if (allDone) {
+        aBtn.disabled = false;
+        aBtn.textContent = '[ CLAIM 5,000 $HACK ]';
+      } else {
+        aBtn.textContent = '[ COMPLETE TASKS TO CLAIM ]';
+      }
+    }
 
     window.ethereum.on('accountsChanged', () => location.reload());
     window.ethereum.on('chainChanged',    () => location.reload());
@@ -889,6 +900,17 @@ async function checkAirdropStatus() {
       btn.classList.add('claimed-state');
       await typeLog('airdropLog', 'warn', 'this wallet has already claimed the airdrop');
       showCheckinBtn();
+
+      // Yellow check-in button below log
+      if (!document.getElementById('checkinInlineBtn')) {
+        const ci = document.createElement('a');
+        ci.id = 'checkinInlineBtn';
+        ci.href = 'checkin.html';
+        ci.className = 'action-btn';
+        ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.6);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease';
+        ci.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
+        document.getElementById('airdropLog').parentNode.appendChild(ci);
+      }
     }
   } catch(e) {}
 }
@@ -925,7 +947,7 @@ function completeTask(id) {
     if (allDone) {
       const claimBtn = document.getElementById('airdropBtn');
       claimBtn.disabled = false;
-      claimBtn.textContent = '[ CLAIM 5,000 $HACK ]';
+      claimBtn.textContent = signer ? '[ CLAIM 5,000 $HACK ]' : '[ CONNECT WALLET ]';
     }
   }, 10000);
 }
