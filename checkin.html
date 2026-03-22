@@ -114,6 +114,7 @@
 
   footer{border-top:1px solid rgba(0,255,65,0.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:rgba(0,255,65,0.2);letter-spacing:2px;flex-wrap:wrap;gap:8px}
   .fclock{font-family:'VT323',monospace;font-size:15px;color:rgba(0,255,65,0.3)}
+  #shareModal.open{display:flex!important}
 
   @media(max-width:640px){
     .stats{grid-template-columns:1fr 1fr}
@@ -219,9 +220,22 @@
   </footer>
 </div>
 
+<!-- SHARE MODAL -->
+<div id="shareModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#000;border:1px solid rgba(0,255,65,0.4);max-width:500px;width:100%;padding:32px 28px;position:relative;box-shadow:0 0 40px rgba(0,255,65,0.15)">
+    <button onclick="closeShareModal()" style="position:absolute;top:12px;right:16px;background:transparent;border:none;color:rgba(0,255,65,0.4);font-size:18px;cursor:pointer;font-family:'Share Tech Mono',monospace">[ × ]</button>
+    <div style="font-size:9px;color:rgba(0,255,65,0.4);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px">&gt; share your streak</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,65,0.6);line-height:1.8;background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.12);padding:14px;margin-bottom:20px;white-space:pre-wrap" id="modalTweetText"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a id="modalTweetBtn" href="#" target="_blank" rel="noopener" style="flex:1;display:block;padding:12px;background:transparent;border:1px solid #1d9bf0;color:#1d9bf0;font-family:'VT323',monospace;font-size:20px;letter-spacing:3px;text-align:center;text-decoration:none;transition:all .2s;white-space:nowrap" onmouseover="this.style.background='rgba(29,155,240,0.08)'" onmouseout="this.style.background='transparent'">[ POST ON X ]</a>
+      <button onclick="closeShareModal()" style="padding:12px 20px;background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.4);font-family:'VT323',monospace;font-size:18px;letter-spacing:2px;cursor:pointer;white-space:nowrap">[ SKIP ]</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
-const CHECKIN_ADDRESS = "0x5ec0e2f1F35730e0074510C5b4e070aae72070a7";
+const CHECKIN_ADDRESS = "0xd3Cb09767006Ffca00906f7FB0fbB196A6c52dCC";
 const INK_CHAIN = {
   chainId:"0xDEF1", chainName:"Ink",
   nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
@@ -236,7 +250,9 @@ const CHECKIN_ABI = [
 ];
 
 const REF_ADDR = (() => {
-  const r = new URLSearchParams(window.location.search).get('ref') || '';
+  const p = new URLSearchParams(window.location.search);
+  // support both ?ref=0x... and ?gm=0x... (gm-prefixed ref link)
+  const r = p.get('gm') || p.get('ref') || '';
   return /^0x[a-fA-F0-9]{40}$/.test(r) ? r : '0x0000000000000000000000000000000000000000';
 })();
 
@@ -385,6 +401,7 @@ async function executeCheckin() {
   clearLog();
   try {
     await typeLog('info', 'checking in...');
+    // Contract gates on airdrop claim — friendly error handled below
     const tx = await checkinContract.checkin(REF_ADDR, { value: BigInt("20000000000000") });
     await typeLog('info', 'tx: ' + tx.hash.slice(0,20) + '...');
     const receipt = await tx.wait();
@@ -399,8 +416,13 @@ async function executeCheckin() {
     if (streak === 14) await typeLog('ok', '[ MAX STREAK REACHED ] — 14 days. legendary.');
     showRefLink();
     await loadGlobalStats();
+    showShareModal(streak, earned);
   } catch(e) {
-    await typeLog('err', 'ERROR: ' + (e.reason || e.message || 'failed'));
+    const msg = e.reason || e.message || 'failed';
+    const friendly = msg.includes('airdrop') || msg.includes('Claim 5')
+      ? 'claim 5,000 $HACK airdrop first at hackink.xyz'
+      : msg;
+    await typeLog('err', 'ERROR: ' + friendly);
     btn.disabled = false;
   }
 }
@@ -408,7 +430,7 @@ async function executeCheckin() {
 // ─── REF LINK ─────────────────────────────────────────────────────────────────
 function showRefLink() {
   if (!walletAddress) return;
-  const url = window.location.origin + '/checkin.html?ref=' + walletAddress;
+  const url = window.location.origin + '/checkin.html?gm=' + walletAddress;
   document.getElementById('refInput').value = url;
   document.getElementById('refBox').style.display = 'block';
 }
@@ -435,6 +457,38 @@ async function typeLog(cls, text) {
 
 // Init streak grid empty
 renderStreakGrid(0);
+
+// ─── SHARE MODAL ─────────────────────────────────────────────────────────────
+function showShareModal(streak, earned) {
+  const refUrl = walletAddress
+    ? 'hackink.xyz/checkin.html?gm=' + walletAddress
+    : 'hackink.xyz/checkin.html';
+
+  const streakBar = '█'.repeat(streak) + '░'.repeat(14 - streak);
+  const tweet =
+    'gm INK. day ' + streak + ' streak on $HACK. \n' +
+    '\n' +
+    'checked in: +' + earned.toLocaleString() + ' $HACK\n' +
+    '[' + streakBar + '] ' + streak + '/14\n' +
+    '\n' +
+    'free daily check-in 👉 ' + refUrl + '\n' +
+    '\n' +
+    '#HACK #INK #GMcrypto';
+
+  document.getElementById('modalTweetText').textContent = tweet;
+  document.getElementById('modalTweetBtn').href =
+    'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
+  document.getElementById('shareModal').classList.add('open');
+}
+
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('open');
+}
+
+// Close on backdrop click
+document.getElementById('shareModal').addEventListener('click', function(e) {
+  if (e.target === this) closeShareModal();
+});
 
 // Clock
 function tick() {
