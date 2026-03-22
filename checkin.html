@@ -313,6 +313,7 @@ async function loadUserData() {
       document.getElementById('cdTimer').classList.add('ready');
     } else if (cooldown > 0) {
       updateBtn('cooldown', cooldown);
+      showRefLink();
       startCountdown(cooldown);
     } else {
       // cooldown=0 but can=false — pool empty or paused
