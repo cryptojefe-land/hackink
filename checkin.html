@@ -266,9 +266,9 @@ async function connectWallet() {
     document.getElementById('connectBtn').classList.add('connected');
     window.ethereum.on('accountsChanged', ()=>location.reload());
     window.ethereum.on('chainChanged', ()=>location.reload());
+    document.getElementById('checkinBtn').textContent = '[ LOADING... ]';
     await loadUserData();
     await loadGlobalStats();
-    showRefLink();
   } catch(e) { alert('Failed: '+(e.message||e)); }
 }
 
@@ -289,11 +289,19 @@ async function loadUserData() {
     document.getElementById('nextReward').textContent  = nextReward.toLocaleString(undefined,{maximumFractionDigits:0}) + ' $HACK';
 
     renderStreakGrid(streak);
-    updateBtn(can, cooldown);
-    if (!can && cooldown > 0) startCountdown(cooldown);
-    else if (can) {
+
+    // Figure out why can = false
+    if (can) {
+      updateBtn('ready', 0);
       document.getElementById('cdTimer').textContent = 'NOW';
       document.getElementById('cdTimer').classList.add('ready');
+    } else if (cooldown > 0) {
+      updateBtn('cooldown', cooldown);
+      startCountdown(cooldown);
+    } else {
+      // cooldown=0 but can=false — pool empty or paused
+      updateBtn('unavailable', 0);
+      document.getElementById('cdTimer').textContent = '--:--:--';
     }
   } catch(e) { console.error(e); }
 }
@@ -322,20 +330,25 @@ function renderStreakGrid(currentStreak) {
   }
 }
 
-function updateBtn(can, cooldown) {
+function updateBtn(state, cooldown) {
   const btn = document.getElementById('checkinBtn');
-  if (can) {
+  btn.classList.remove('ready');
+  if (state === 'ready') {
     btn.disabled = false;
     btn.textContent = '[ CHECK-IN & CLAIM ]';
     btn.classList.add('ready');
     btn.style.borderColor = '#00ff41';
     btn.style.color = '#00ff41';
+  } else if (state === 'cooldown') {
+    btn.disabled = true;
+    btn.textContent = '[ COME BACK TOMORROW ]';
+    btn.style.borderColor = 'rgba(247,201,72,0.2)';
+    btn.style.color = 'rgba(247,201,72,0.3)';
   } else {
     btn.disabled = true;
-    btn.textContent = '[ ALREADY CHECKED IN ]';
-    btn.classList.remove('ready');
-    btn.style.borderColor = 'rgba(0,255,65,0.2)';
-    btn.style.color = 'rgba(0,255,65,0.3)';
+    btn.textContent = '[ UNAVAILABLE ]';
+    btn.style.borderColor = 'rgba(0,255,65,0.15)';
+    btn.style.color = 'rgba(0,255,65,0.2)';
   }
 }
 
