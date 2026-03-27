@@ -923,8 +923,8 @@ let completedTasks = new Set();
 function openShare(e) {
   e.preventDefault();
   const refPart = walletAddress
-    ? '\n\nClaim here 👉hackink.xyz?ref=' + walletAddress
-    : '\n\nClaim here 👉hackink.xyz';
+    ? '\n\nClaim here 👉hacktokenink.xyz?ref=' + walletAddress
+    : '\n\nClaim here 👉hacktokenink.xyz';
   const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
   completeTask('share');
