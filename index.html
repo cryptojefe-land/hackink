@@ -10,24 +10,24 @@
 <meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, token sale, crypto, web3, INK memecoin">
 <meta name="author" content="$HACK">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://hacktokenink.xyz/">
+<link rel="canonical" href="https://hacktokenink.xyz">
 
 <!-- ─── OPEN GRAPH (Facebook, Telegram, Discord, WhatsApp) ───────────────── -->
 <meta property="og:type"        content="website">
-<meta property="og:url"         content="https://hacktokenink.xyz/">
+<meta property="og:url"         content="https://hacktokenink.xyz">
 <meta property="og:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta property="og:description" content="Claim 5,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
-<meta property="og:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
+<meta property="og:description" content="Claim 100,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
+<meta property="og:image"       content="https://hacktokenink.xyz/og-image.png">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name"   content="$HACK">
 
 <!-- ─── TWITTER CARD ────────────────────────────────────────────────────── -->
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:url"         content="https://hacktokenink.xyz/">
+<meta name="twitter:url"         content="https://hacktokenink.xyz">
 <meta name="twitter:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta name="twitter:description" content="Claim 5,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
-<meta name="twitter:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
+<meta name="twitter:description" content="Claim 100,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
+<meta name="twitter:image"       content="https://hacktokenink.xyz/og-image.png">
 
 <!-- ─── FAVICON ─────────────────────────────────────────────────────────── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='18' fill='%2300ff41'%3E%24H%3C/text%3E%3C/svg%3E">
@@ -347,6 +347,16 @@
     .terminal{padding:36px 14px 20px}
     .airdrop-info{flex-direction:column}
   }
+
+  /* Tasks modal */
+  .modal-task{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,65,0.1);background:rgba(0,255,65,0.01);flex-wrap:nowrap}
+  .mt-label{font-size:11px;color:rgba(0,255,65,0.5);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mt-btn{background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.6);font-family:'Share Tech Mono',monospace;font-size:10px;padding:6px 12px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap;text-decoration:none;flex-shrink:0}
+  .mt-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 10px rgba(0,255,65,0.2)}
+  .mt-btn.done{border-color:rgba(0,255,65,0.1);color:rgba(0,255,65,0.2);pointer-events:none}
+  .mt-status{font-family:'VT323',monospace;font-size:18px;color:rgba(0,255,65,0.15);min-width:36px;text-align:right;flex-shrink:0}
+  .mt-status.done{color:#00ff41;text-shadow:0 0 8px rgba(0,255,65,0.8)}
+  #tasksModal.open{display:flex!important}
 </style>
 </head>
 <body>
@@ -358,7 +368,7 @@
   <nav>
     <div class="nav-logo">$HACK</div>
     <div class="nav-right">
-      <a class="nav-link" id="checkinNavBtn" href="checkin.html" style="display:none;border:1px solid rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);padding:6px 12px;transition:all .2s;text-decoration:none" onmouseover="this.style.borderColor='#f7c948';this.style.color='#f7c948'" onmouseout="this.style.borderColor='rgba(247,201,72,0.4)';this.style.color='rgba(247,201,72,0.7)'">[ CHECK-IN ]</a>
+      <a class="nav-link" id="checkinNavBtn" href="checkin.html" style="display:none;border:1px solid rgba(247,201,72,0.5);color:#f7c948;padding:6px 12px;transition:all .2s;text-decoration:none;font-size:10px;letter-spacing:2px">[ CHECK-IN ]</a>
       <div class="nav-status">
         <div class="dot"></div>
         INK // BLOCK #<span id="blocknum">21847293</span>
@@ -436,45 +446,34 @@
   <div class="panel active" id="panel-airdrop">
     <div class="section-header"><div class="section-tag">// FREE AIRDROP</div></div>
     <div class="terminal">
-      <div class="airdrop-info">
-        <div class="airdrop-stat">
-          <div class="airdrop-stat-label">Airdrop Amount</div>
-          <div class="airdrop-stat-value">5,000</div>
+      <div class="airdrop-info" style="margin-bottom:16px">
+        <div class="airdrop-stat" style="padding:12px 8px">
+          <div class="airdrop-stat-label" style="font-size:8px">AIRDROP</div>
+          <div class="airdrop-stat-value" style="font-size:22px">100K <span style="font-size:11px;color:rgba(0,255,65,0.4)">$HACK</span></div>
         </div>
-        <div class="airdrop-stat">
-          <div class="airdrop-stat-label">Per Wallet</div>
-          <div class="airdrop-stat-value purple">1x</div>
+        <div class="airdrop-stat" style="padding:12px 8px">
+          <div class="airdrop-stat-label" style="font-size:8px">REFERRAL</div>
+          <div class="airdrop-stat-value purple" style="font-size:22px">+20K <span style="font-size:11px;color:rgba(196,122,255,0.4)">$HACK</span></div>
         </div>
-        <div class="airdrop-stat">
-          <div class="airdrop-stat-label">Cost</div>
-          <div class="airdrop-stat-value">FREE</div>
-        </div>
-      </div>
-
-      <div class="tasks">
-        <div class="task">
-          <div class="task-label" id="lbl-follow">&gt; follow @HACKtokenINK on X</div>
-          <a class="task-btn" id="btn-follow" href="https://twitter.com/intent/follow?screen_name=HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('follow')">[ FOLLOW ]</a>
-          <div class="task-status" id="st-follow"></div>
-        </div>
-        <div class="task">
-          <div class="task-label" id="lbl-tg">&gt; join telegram channel</div>
-          <a class="task-btn" id="btn-tg" href="https://t.me/HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('tg')">[ JOIN ]</a>
-          <div class="task-status" id="st-tg"></div>
-        </div>
-        <div class="task">
-          <div class="task-label" id="lbl-like">&gt; like &amp; retweet the announcement post</div>
-          <a class="task-btn" id="btn-like" href="https://twitter.com/intent/retweet?tweet_id=2036719138786115934" target="_blank" rel="noopener" onclick="completeTask('like'); completeTask('rt');">[ LIKE &amp; RT ]</a>
-          <div class="task-status" id="st-like"></div>
-        </div>
-        <div class="task">
-          <div class="task-label" id="lbl-share">&gt; share $HACK with your followers</div>
-          <a class="task-btn" id="btn-share" href="#" target="_blank" rel="noopener" onclick="openShare(event)">[ SHARE ]</a>
-          <div class="task-status" id="st-share"></div>
+        <div class="airdrop-stat" style="padding:12px 8px">
+          <div class="airdrop-stat-label" style="font-size:8px">COST</div>
+          <div class="airdrop-stat-value" style="font-size:22px;color:#00ff41">FREE</div>
         </div>
       </div>
 
-      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()" disabled>[ CONNECT WALLET ]</button>
+      <!-- Tasks progress mini display -->
+      <div id="tasksProgress" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:10px 14px;border:1px solid rgba(0,255,65,0.1);background:rgba(0,255,65,0.01);cursor:pointer" onclick="openTasksModal()">
+        <div style="font-size:11px;color:rgba(0,255,65,0.5)">&gt; complete tasks to unlock claim</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span id="tasksDot-follow" style="width:8px;height:8px;border-radius:50%;background:rgba(0,255,65,0.15);display:inline-block;transition:all .3s"></span>
+          <span id="tasksDot-tg"     style="width:8px;height:8px;border-radius:50%;background:rgba(0,255,65,0.15);display:inline-block;transition:all .3s"></span>
+          <span id="tasksDot-like"   style="width:8px;height:8px;border-radius:50%;background:rgba(0,255,65,0.15);display:inline-block;transition:all .3s"></span>
+          <span id="tasksDot-share"  style="width:8px;height:8px;border-radius:50%;background:rgba(0,255,65,0.15);display:inline-block;transition:all .3s"></span>
+          <span style="font-size:10px;color:rgba(0,255,65,0.3);margin-left:4px" id="tasksCount">0/4</span>
+        </div>
+      </div>
+
+      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()">[ CONNECT WALLET ]</button>
       <div class="log" id="airdropLog"></div>
     </div>
   </div>
@@ -570,7 +569,7 @@
     <div class="ticker">
       <span class="ticker-item">$HACK</span>
       <span class="ticker-item">PRICE: <span>1 USD = 20,000 $HACK</span></span>
-      <span class="ticker-item">AIRDROP: <span>5,000 $HACK FREE</span></span>
+      <span class="ticker-item">AIRDROP: <span>100,000 $HACK FREE</span></span>
       <span class="ticker-item">DEX LISTING: <span>APRIL 20</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
@@ -579,7 +578,7 @@
       <span class="ticker-item">CONTRACT: <span>RENOUNCED</span></span>
       <span class="ticker-item">$HACK</span>
       <span class="ticker-item">PRICE: <span>1 USD = 20,000 $HACK</span></span>
-      <span class="ticker-item">AIRDROP: <span>5,000 $HACK FREE</span></span>
+      <span class="ticker-item">AIRDROP: <span>100,000 $HACK FREE</span></span>
       <span class="ticker-item">DEX LISTING: <span>APRIL 20</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
@@ -620,7 +619,7 @@
     </div>
     <div class="contract-row">
       <div class="contract-label">AIRDROP</div>
-      <div class="contract-addr" id="addr-airdrop">0x7F8a38Bd737C3F5F921134F849cC9278843Eb137</div>
+      <div class="contract-addr" id="addr-airdrop">0x1647dA5c081b3804342956086cece17A352c5f28</div>
       <button class="copy-btn" onclick="copyAddr('addr-airdrop',this)">[ COPY ]</button>
     </div>
     <div class="contract-row">
@@ -644,7 +643,7 @@
       <div class="rm-status">[DONE]</div>
       <div class="rm-content">
         <div class="rm-title">Sale + Airdrop Launch</div>
-        <div class="rm-desc">Public sale live. Free airdrop — 5,000 $HACK per wallet. No KYC.</div>
+        <div class="rm-desc">Public sale live. Free airdrop — 100,000 $HACK per wallet. No KYC.</div>
       </div>
     </div>
     <div class="rm-item done">
@@ -694,7 +693,7 @@
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">&gt; How does the airdrop work?</div>
-      <div class="faq-a">Complete 4 tasks on X (follow, like+RT, share) and join Telegram. Once all tasks are done, claim 5,000 $HACK for free. One claim per wallet. On-chain verification.</div>
+      <div class="faq-a">Complete 4 tasks on X (follow, like+RT, share) and join Telegram. Once all tasks are done, claim 100,000 $HACK for free. One claim per wallet. On-chain verification.</div>
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">&gt; How does staking work?</div>
@@ -721,7 +720,7 @@
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
 const SALE_ADDRESS     = "0xFaBd3610FfFF899b3ec55624dcA92553C1C5ef23";
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
-const AIRDROP_ADDRESS = "0x7F8a38Bd737C3F5F921134F849cC9278843Eb137";
+const AIRDROP_ADDRESS = "0x1647dA5c081b3804342956086cece17A352c5f28";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const RATE            = 20000;
 
@@ -856,16 +855,11 @@ async function connectWallet() {
 
     await refreshBalance();
     await checkAirdropStatus();
-    // Update button text now that wallet is connected
     const aBtn = document.getElementById('airdropBtn');
     if (!aBtn.classList.contains('claimed-state')) {
       const allDone = ['follow','tg','like','rt','share'].every(t => completedTasks.has(t));
-      if (allDone) {
-        aBtn.disabled = false;
-        aBtn.textContent = '[ CLAIM 5,000 $HACK ]';
-      } else {
-        aBtn.textContent = '[ COMPLETE TASKS TO CLAIM ]';
-      }
+      aBtn.textContent = allDone ? '[ CLAIM 100,000 $HACK ]' : '[ COMPLETE TASKS TO CLAIM ]';
+      if (allDone) aBtn.disabled = false;
     }
 
     window.ethereum.on('accountsChanged', () => location.reload());
@@ -900,24 +894,25 @@ async function checkAirdropStatus() {
       btn.classList.add('claimed-state');
       await typeLog('airdropLog', 'warn', 'this wallet has already claimed the airdrop');
       showCheckinBtn();
-
-      // Yellow check-in button below log
-      if (!document.getElementById('checkinInlineBtn')) {
-        const ci = document.createElement('a');
-        ci.id = 'checkinInlineBtn';
-        ci.href = 'checkin.html';
-        ci.className = 'action-btn';
-        ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.6);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease';
-        ci.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
-        document.getElementById('airdropLog').parentNode.appendChild(ci);
-      }
+      showCheckinInline();
     }
   } catch(e) {}
 }
 
 function showCheckinBtn() {
   const el = document.getElementById('checkinNavBtn');
-  if (el) el.style.display = 'block';
+  if (el) el.style.display = 'inline-block';
+}
+
+function showCheckinInline() {
+  if (document.getElementById('checkinInlineBtn')) return;
+  const ci = document.createElement('a');
+  ci.id = 'checkinInlineBtn';
+  ci.href = 'checkin.html';
+  ci.className = 'action-btn';
+  ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
+  ci.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
+  document.getElementById('airdropLog').parentNode.appendChild(ci);
 }
 
 // ─── SOCIAL TASKS ────────────────────────────────────────────────────────────
@@ -929,7 +924,7 @@ function openShare(e) {
   const refPart = walletAddress
     ? '\n\nClaim here 👉hacktokenink.xyz?ref=' + walletAddress
     : '\n\nClaim here 👉hacktokenink.xyz';
-  const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 5,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
+  const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
   completeTask('share');
 }
@@ -947,7 +942,7 @@ function completeTask(id) {
     if (allDone) {
       const claimBtn = document.getElementById('airdropBtn');
       claimBtn.disabled = false;
-      claimBtn.textContent = signer ? '[ CLAIM 5,000 $HACK ]' : '[ CONNECT WALLET ]';
+      claimBtn.textContent = '[ CLAIM 100,000 $HACK ]';
     }
   }, 10000);
 }
@@ -977,7 +972,7 @@ async function executeAirdropClaim() {
     if (alreadyClaimed) {
       btn.textContent = '[ ALREADY CLAIMED ]';
       btn.classList.add('claimed-state');
-      const refUrl2 = 'https://hacktokenink.xyz/?ref=' + walletAddress;
+      const refUrl2 = 'https://hacktokenink.xyz?ref=' + walletAddress;
       await typeLog('airdropLog', 'warn', 'already claimed. share your ref link:');
       const ri = document.createElement('input');
       ri.value = refUrl2; ri.readOnly = true;
@@ -988,7 +983,7 @@ async function executeAirdropClaim() {
         if (Number(stats.count) > 0) {
           await typeLog('airdropLog', 'ok', 'invited: ' + stats.count + ' wallets // earned: ' + Number(ethers.formatEther(stats.earned)).toLocaleString() + ' $HACK');
         } else {
-          await typeLog('airdropLog', 'info', '+1,000 $HACK for each wallet you invite');
+          await typeLog('airdropLog', 'info', '+20,000 $HACK for each wallet you invite');
         }
       } catch(e) {}
       return;
@@ -1005,13 +1000,13 @@ async function executeAirdropClaim() {
     const tx = await airdropContract.claim(REF_ADDR, { value: feeWei });
     await typeLog('airdropLog', 'info', 'tx sent: ' + tx.hash.slice(0,20) + '...');
     await tx.wait();
-    await typeLog('airdropLog', 'ok', 'SUCCESS: 5,000 $HACK claimed!');
+    await typeLog('airdropLog', 'ok', 'SUCCESS: 100,000 $HACK claimed!');
     await typeLog('airdropLog', 'ok', '> welcome to the system, anon.');
 
     // Show referral link
-    const refUrl = 'https://hacktokenink.xyz/?ref=' + walletAddress;
+    const refUrl = 'https://hacktokenink.xyz?ref=' + walletAddress;
     await typeLog('airdropLog', 'info', 'your ref link: hacktokenink.xyz?ref=' + walletAddress.slice(0,10) + '...');
-    await typeLog('airdropLog', 'info', '+1,000 $HACK for each wallet you invite');
+    await typeLog('airdropLog', 'info', '+20,000 $HACK for each wallet you invite');
 
     // Show copy ref button
     const refWrap = document.createElement('div');
@@ -1061,18 +1056,16 @@ async function executeAirdropClaim() {
     stakeBtn.textContent = '[ STAKE YOUR $HACK ]';
     stakeBtn.onclick = () => switchTab('stake');
 
-    // Check-in button
-    const checkinBtn2 = document.createElement('button');
+    const checkinBtn2 = document.createElement('a');
+    checkinBtn2.href = 'checkin.html';
     checkinBtn2.className = 'action-btn';
-    checkinBtn2.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
+    checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
     checkinBtn2.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
-    checkinBtn2.onclick = () => window.location.href = 'checkin.html';
-
     wrap.appendChild(buyMoreBtn);
     wrap.appendChild(stakeBtn);
     wrap.appendChild(checkinBtn2);
-    btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
     showCheckinBtn();
+    btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
 
   } catch(e) {
     await typeLog('airdropLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
@@ -1387,22 +1380,23 @@ function toggleFaq(el) {
   el.classList.toggle('open');
 }
 
+// Close tasks modal on backdrop
+document.getElementById('tasksModal').addEventListener('click', function(e){
+  if(e.target===this) closeTasksModal();
+});
+
 // ─── MISC ────────────────────────────────────────────────────────────────────
 
 // Load reward pool without wallet — raw JSON-RPC fetch (no CORS issues)
-// Staking pool — 200B tokens hardcoded per tokenomics (20% of supply)
+// Staking pool — 200B per tokenomics (20% of supply)
 document.getElementById('st-pool').textContent = '200,000,000,000';
-
 async function loadPoolPublic() {
   try {
     const rpc = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
-    const sc  = new ethers.Contract(STAKING_ADDRESS, [
-      "function rewardPool() external view returns (uint256)"
-    ], rpc);
+    const sc  = new ethers.Contract(STAKING_ADDRESS, ["function rewardPool() external view returns (uint256)"], rpc);
     const pool = await sc.rewardPool();
-    const fmt  = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
-    document.getElementById('st-pool').textContent = fmt;
-  } catch(e) { /* keep hardcoded fallback */ }
+    document.getElementById('st-pool').textContent = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
+  } catch(e) {}
 }
 loadPoolPublic();
 let block = 21847293;
@@ -1419,6 +1413,51 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 </script>
+
+<!-- TASKS MODAL -->
+<div id="tasksModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#000;border:1px solid rgba(0,255,65,0.35);max-width:520px;width:100%;position:relative;box-shadow:0 0 40px rgba(0,255,65,0.12)">
+    <!-- Terminal header -->
+    <div style="padding:10px 16px;border-bottom:1px solid rgba(0,255,65,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(0,255,65,0.03)">
+      <div style="font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:3px;text-transform:uppercase">● ● ●&nbsp;&nbsp;&nbsp;// TASKS</div>
+      <button onclick="closeTasksModal()" style="background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px">[ × ]</button>
+    </div>
+    <div style="padding:20px 24px">
+      <div style="font-size:11px;color:rgba(0,255,65,0.35);margin-bottom:16px;letter-spacing:1px">&gt; complete all tasks to unlock 100,000 $HACK claim</div>
+
+      <!-- Task rows -->
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px">
+        <div class="modal-task" id="mt-follow">
+          <div class="mt-label">&gt; follow @HACKtokenINK on X</div>
+          <a class="mt-btn" href="https://twitter.com/intent/follow?screen_name=HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('follow')">[ FOLLOW ]</a>
+          <div class="mt-status" id="mst-follow"></div>
+        </div>
+        <div class="modal-task" id="mt-tg">
+          <div class="mt-label">&gt; join telegram channel</div>
+          <a class="mt-btn" href="https://t.me/HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('tg')">[ JOIN ]</a>
+          <div class="mt-status" id="mst-tg"></div>
+        </div>
+        <div class="modal-task" id="mt-like">
+          <div class="mt-label">&gt; like &amp; retweet the post</div>
+          <a class="mt-btn" href="https://twitter.com/intent/retweet?tweet_id=2033839538615759119" target="_blank" rel="noopener" onclick="completeTask('like'); completeTask('rt')">[ LIKE &amp; RT ]</a>
+          <div class="mt-status" id="mst-like"></div>
+        </div>
+        <div class="modal-task" id="mt-share">
+          <div class="mt-label">&gt; share $HACK with your followers</div>
+          <a class="mt-btn" href="#" onclick="openShare(event)">[ SHARE ]</a>
+          <div class="mt-status" id="mst-share"></div>
+        </div>
+      </div>
+
+      <div style="font-size:10px;color:rgba(0,255,65,0.25);margin-bottom:16px;letter-spacing:1px">&gt; tasks unlock after 10 seconds</div>
+
+      <button id="modalClaimBtn" onclick="closeTasksModal();handleAirdrop();" disabled
+        style="width:100%;padding:14px;background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.3);font-family:'VT323',monospace;font-size:clamp(16px,4vw,22px);letter-spacing:3px;cursor:not-allowed;transition:all .3s;white-space:nowrap">
+        [ COMPLETE ALL TASKS ]
+      </button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
 
