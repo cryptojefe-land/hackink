@@ -10,24 +10,24 @@
 <meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, token sale, crypto, web3, INK memecoin">
 <meta name="author" content="$HACK">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://hacktokenink.xyz">
+<link rel="canonical" href="https://hacktokenink.xyz/">
 
 <!-- ─── OPEN GRAPH (Facebook, Telegram, Discord, WhatsApp) ───────────────── -->
 <meta property="og:type"        content="website">
-<meta property="og:url"         content="https://hacktokenink.xyz">
+<meta property="og:url"         content="https://hacktokenink.xyz/">
 <meta property="og:title"       content="$HACK — Free Airdrop on INK Chain">
 <meta property="og:description" content="Claim 100,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
-<meta property="og:image"       content="https://hacktokenink.xyz/og-image.png">
+<meta property="og:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name"   content="$HACK">
 
 <!-- ─── TWITTER CARD ────────────────────────────────────────────────────── -->
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:url"         content="https://hacktokenink.xyz">
+<meta name="twitter:url"         content="https://hacktokenink.xyz/">
 <meta name="twitter:title"       content="$HACK — Free Airdrop on INK Chain">
 <meta name="twitter:description" content="Claim 100,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
-<meta name="twitter:image"       content="https://hacktokenink.xyz/og-image.png">
+<meta name="twitter:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 
 <!-- ─── FAVICON ─────────────────────────────────────────────────────────── -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='18' fill='%2300ff41'%3E%24H%3C/text%3E%3C/svg%3E">
@@ -347,16 +347,6 @@
     .terminal{padding:36px 14px 20px}
     .airdrop-info{flex-direction:column}
   }
-
-  /* Tasks modal */
-  .modal-task{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,65,0.1);background:rgba(0,255,65,0.01);flex-wrap:nowrap}
-  .mt-label{font-size:11px;color:rgba(0,255,65,0.5);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .mt-btn{background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.6);font-family:'Share Tech Mono',monospace;font-size:10px;padding:6px 12px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap;text-decoration:none;flex-shrink:0}
-  .mt-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 10px rgba(0,255,65,0.2)}
-  .mt-btn.done{border-color:rgba(0,255,65,0.1);color:rgba(0,255,65,0.2);pointer-events:none}
-  .mt-status{font-family:'VT323',monospace;font-size:18px;color:rgba(0,255,65,0.15);min-width:36px;text-align:right;flex-shrink:0}
-  .mt-status.done{color:#00ff41;text-shadow:0 0 8px rgba(0,255,65,0.8)}
-  #tasksModal.open{display:flex!important}
 </style>
 </head>
 <body>
@@ -446,34 +436,45 @@
   <div class="panel active" id="panel-airdrop">
     <div class="section-header"><div class="section-tag">// FREE AIRDROP</div></div>
     <div class="terminal">
-      <div class="airdrop-info" style="margin-bottom:16px">
-        <div class="airdrop-stat" style="padding:12px 8px">
-          <div class="airdrop-stat-label" style="font-size:8px">AIRDROP</div>
-          <div class="airdrop-stat-value" style="font-size:22px">100K <span style="font-size:11px;color:rgba(0,255,65,0.4)">$HACK</span></div>
+      <div class="airdrop-info">
+        <div class="airdrop-stat">
+          <div class="airdrop-stat-label">Airdrop Amount</div>
+          <div class="airdrop-stat-value">100,000</div>
         </div>
-        <div class="airdrop-stat" style="padding:12px 8px">
-          <div class="airdrop-stat-label" style="font-size:8px">REFERRAL</div>
-          <div class="airdrop-stat-value purple" style="font-size:22px">+20K <span style="font-size:11px;color:rgba(196,122,255,0.4)">$HACK</span></div>
+        <div class="airdrop-stat">
+          <div class="airdrop-stat-label">Per Wallet</div>
+          <div class="airdrop-stat-value purple">1x</div>
         </div>
-        <div class="airdrop-stat" style="padding:12px 8px">
-          <div class="airdrop-stat-label" style="font-size:8px">COST</div>
-          <div class="airdrop-stat-value" style="font-size:22px;color:#00ff41">FREE</div>
-        </div>
-      </div>
-
-      <!-- Tasks progress mini display -->
-      <div id="tasksProgress" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:10px 14px;border:1px solid rgba(0,255,65,0.1);background:rgba(0,255,65,0.01);cursor:pointer" onclick="openTasksModal()">
-        <div style="font-size:11px;color:rgba(0,255,65,0.5)">&gt; complete tasks to unlock claim</div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span id="tasksDot-follow" style="width:8px;height:8px;border-radius:50%;background:rgba(0,255,65,0.15);display:inline-block;transition:all .3s"></span>
-          <span id="tasksDot-tg"     style="width:8px;height:8px;border-radius:50%;background:rgba(0,255,65,0.15);display:inline-block;transition:all .3s"></span>
-          <span id="tasksDot-like"   style="width:8px;height:8px;border-radius:50%;background:rgba(0,255,65,0.15);display:inline-block;transition:all .3s"></span>
-          <span id="tasksDot-share"  style="width:8px;height:8px;border-radius:50%;background:rgba(0,255,65,0.15);display:inline-block;transition:all .3s"></span>
-          <span style="font-size:10px;color:rgba(0,255,65,0.3);margin-left:4px" id="tasksCount">0/4</span>
+        <div class="airdrop-stat">
+          <div class="airdrop-stat-label">Cost</div>
+          <div class="airdrop-stat-value">FREE</div>
         </div>
       </div>
 
-      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()">[ CONNECT WALLET ]</button>
+      <div class="tasks">
+        <div class="task">
+          <div class="task-label" id="lbl-follow">&gt; follow @HACKtokenINK on X</div>
+          <a class="task-btn" id="btn-follow" href="https://twitter.com/intent/follow?screen_name=HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('follow')">[ FOLLOW ]</a>
+          <div class="task-status" id="st-follow"></div>
+        </div>
+        <div class="task">
+          <div class="task-label" id="lbl-tg">&gt; join telegram channel</div>
+          <a class="task-btn" id="btn-tg" href="https://t.me/HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('tg')">[ JOIN ]</a>
+          <div class="task-status" id="st-tg"></div>
+        </div>
+        <div class="task">
+          <div class="task-label" id="lbl-like">&gt; like &amp; retweet the announcement post</div>
+          <a class="task-btn" id="btn-like" href="https://twitter.com/intent/retweet?tweet_id=2033839538615759119" target="_blank" rel="noopener" onclick="completeTask('like'); completeTask('rt');">[ LIKE &amp; RT ]</a>
+          <div class="task-status" id="st-like"></div>
+        </div>
+        <div class="task">
+          <div class="task-label" id="lbl-share">&gt; share $HACK with your followers</div>
+          <a class="task-btn" id="btn-share" href="#" target="_blank" rel="noopener" onclick="openShare(event)">[ SHARE ]</a>
+          <div class="task-status" id="st-share"></div>
+        </div>
+      </div>
+
+      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()" disabled>[ CONNECT WALLET ]</button>
       <div class="log" id="airdropLog"></div>
     </div>
   </div>
@@ -922,8 +923,8 @@ let completedTasks = new Set();
 function openShare(e) {
   e.preventDefault();
   const refPart = walletAddress
-    ? '\n\nClaim here 👉hacktokenink.xyz?ref=' + walletAddress
-    : '\n\nClaim here 👉hacktokenink.xyz';
+    ? '\n\nClaim here 👉hackink.xyz?ref=' + walletAddress
+    : '\n\nClaim here 👉hackink.xyz';
   const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
   completeTask('share');
@@ -972,7 +973,7 @@ async function executeAirdropClaim() {
     if (alreadyClaimed) {
       btn.textContent = '[ ALREADY CLAIMED ]';
       btn.classList.add('claimed-state');
-      const refUrl2 = 'https://hacktokenink.xyz?ref=' + walletAddress;
+      const refUrl2 = 'https://hacktokenink.xyz/?ref=' + walletAddress;
       await typeLog('airdropLog', 'warn', 'already claimed. share your ref link:');
       const ri = document.createElement('input');
       ri.value = refUrl2; ri.readOnly = true;
@@ -1004,8 +1005,8 @@ async function executeAirdropClaim() {
     await typeLog('airdropLog', 'ok', '> welcome to the system, anon.');
 
     // Show referral link
-    const refUrl = 'https://hacktokenink.xyz?ref=' + walletAddress;
-    await typeLog('airdropLog', 'info', 'your ref link: hacktokenink.xyz?ref=' + walletAddress.slice(0,10) + '...');
+    const refUrl = 'https://hacktokenink.xyz/?ref=' + walletAddress;
+    await typeLog('airdropLog', 'info', 'your ref link: hackink.xyz?ref=' + walletAddress.slice(0,10) + '...');
     await typeLog('airdropLog', 'info', '+20,000 $HACK for each wallet you invite');
 
     // Show copy ref button
@@ -1380,11 +1381,6 @@ function toggleFaq(el) {
   el.classList.toggle('open');
 }
 
-// Close tasks modal on backdrop
-document.getElementById('tasksModal').addEventListener('click', function(e){
-  if(e.target===this) closeTasksModal();
-});
-
 // ─── MISC ────────────────────────────────────────────────────────────────────
 
 // Load reward pool without wallet — raw JSON-RPC fetch (no CORS issues)
@@ -1413,51 +1409,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 </script>
-
-<!-- TASKS MODAL -->
-<div id="tasksModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;padding:20px">
-  <div style="background:#000;border:1px solid rgba(0,255,65,0.35);max-width:520px;width:100%;position:relative;box-shadow:0 0 40px rgba(0,255,65,0.12)">
-    <!-- Terminal header -->
-    <div style="padding:10px 16px;border-bottom:1px solid rgba(0,255,65,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(0,255,65,0.03)">
-      <div style="font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:3px;text-transform:uppercase">● ● ●&nbsp;&nbsp;&nbsp;// TASKS</div>
-      <button onclick="closeTasksModal()" style="background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px">[ × ]</button>
-    </div>
-    <div style="padding:20px 24px">
-      <div style="font-size:11px;color:rgba(0,255,65,0.35);margin-bottom:16px;letter-spacing:1px">&gt; complete all tasks to unlock 100,000 $HACK claim</div>
-
-      <!-- Task rows -->
-      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px">
-        <div class="modal-task" id="mt-follow">
-          <div class="mt-label">&gt; follow @HACKtokenINK on X</div>
-          <a class="mt-btn" href="https://twitter.com/intent/follow?screen_name=HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('follow')">[ FOLLOW ]</a>
-          <div class="mt-status" id="mst-follow"></div>
-        </div>
-        <div class="modal-task" id="mt-tg">
-          <div class="mt-label">&gt; join telegram channel</div>
-          <a class="mt-btn" href="https://t.me/HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('tg')">[ JOIN ]</a>
-          <div class="mt-status" id="mst-tg"></div>
-        </div>
-        <div class="modal-task" id="mt-like">
-          <div class="mt-label">&gt; like &amp; retweet the post</div>
-          <a class="mt-btn" href="https://twitter.com/intent/retweet?tweet_id=2033839538615759119" target="_blank" rel="noopener" onclick="completeTask('like'); completeTask('rt')">[ LIKE &amp; RT ]</a>
-          <div class="mt-status" id="mst-like"></div>
-        </div>
-        <div class="modal-task" id="mt-share">
-          <div class="mt-label">&gt; share $HACK with your followers</div>
-          <a class="mt-btn" href="#" onclick="openShare(event)">[ SHARE ]</a>
-          <div class="mt-status" id="mst-share"></div>
-        </div>
-      </div>
-
-      <div style="font-size:10px;color:rgba(0,255,65,0.25);margin-bottom:16px;letter-spacing:1px">&gt; tasks unlock after 10 seconds</div>
-
-      <button id="modalClaimBtn" onclick="closeTasksModal();handleAirdrop();" disabled
-        style="width:100%;padding:14px;background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.3);font-family:'VT323',monospace;font-size:clamp(16px,4vw,22px);letter-spacing:3px;cursor:not-allowed;transition:all .3s;white-space:nowrap">
-        [ COMPLETE ALL TASKS ]
-      </button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
 
