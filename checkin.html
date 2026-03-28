@@ -215,7 +215,7 @@
   </div>
 
   <footer>
-    <div>$HACK // hackink.xyz</div>
+    <div>$HACK // hacktokenink.xyz</div>
     <div class="fclock" id="fclock">SYS_TIME: 00:00:00</div>
   </footer>
 </div>
@@ -421,7 +421,7 @@ async function executeCheckin() {
   } catch(e) {
     const msg = e.reason || e.message || 'failed';
     const friendly = msg.includes('airdrop') || msg.includes('Claim 5')
-      ? 'claim 5,000 $HACK airdrop first at hackink.xyz'
+      ? 'claim 1000,000 $HACK airdrop first at hacktokenink.xyz'
       : msg;
     await typeLog('err', 'ERROR: ' + friendly);
     btn.disabled = false;
@@ -462,8 +462,8 @@ renderStreakGrid(0);
 // ─── SHARE MODAL ─────────────────────────────────────────────────────────────
 function showShareModal(streak, earned) {
   const refUrl = walletAddress
-    ? 'hackink.xyz/checkin.html?gm=' + walletAddress
-    : 'hackink.xyz/checkin.html';
+    ? 'hacktokenink.xyz/checkin.html?gm=' + walletAddress
+    : 'hacktokenink.xyz/checkin.html';
 
   const streakBar = '█'.repeat(streak) + '░'.repeat(14 - streak);
   const tweet =
