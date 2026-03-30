@@ -28,7 +28,37 @@
 <meta name="theme-color" content="#000000">
   
 <title>$HACK Genesis NFT — Mint</title>
+<!-- 1. Подключаем библиотеку -->
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+
+<!-- 2. НАСТРОЙКА ДЛЯ СЕТИ INK -->
+<script>
+  const INK_RPC = "https://rpc.inkonchain.com"; 
+  // Исправил: в v6 пишется ethers.JsonRpcProvider
+  const publicProvider = new ethers.JsonRpcProvider(INK_RPC);
+  
+  // ВАЖНО: Вставь сюда свой адрес контракта
+  const CONTRACT_ADDR = "0x86803d50b721E5616Ed7742c55CaC65D83B10c22"; 
+  
+  // ABI твоего контракта (минимум для работы статистики)
+  const ABI_READ = [
+    "function totalSupply() view returns (uint256)",
+    "function remainingSupply() view returns (uint256)",
+    "function mintActive() view returns (bool)",
+    "function mintedBy(address) view returns (uint256)"
+  ];
+
+  // Создаем читалку сразу
+  const readOnlyContract = new ethers.Contract(CONTRACT_ADDR, ABI_READ, publicProvider);
+</script>
+
+<style>
+  /* Твой CSS код остается без изменений */
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  ...
+</style>
+
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
   *{margin:0;padding:0;box-sizing:border-box}
@@ -280,32 +310,48 @@ async function connectWallet() {
 // ─── LOAD STATS ──────────────────────────────────────────────────────────────
 async function loadStats() {
   try {
-    const [minted, remaining, mintActive, myMints] = await Promise.all([
-      nftContract.totalSupply(),
-      nftContract.remainingSupply(),
-      nftContract.mintActive(),
-      nftContract.mintedBy(walletAddress)
+    // 1. Загружаем ОБЩИЕ данные через readOnlyContract (работает БЕЗ кошелька)
+    const [minted, remaining, mintActive] = await Promise.all([
+      readOnlyContract.totalSupply(),
+      readOnlyContract.remainingSupply(),
+      readOnlyContract.mintActive()
     ]);
+
+    // Обновляем текст на странице
     document.getElementById('sMinted').textContent    = Number(minted).toString();
     document.getElementById('sRemaining').textContent = Number(remaining).toString();
-    document.getElementById('myMints').textContent    = Number(myMints).toString();
 
     const mintBtn = document.getElementById('mintBtn');
+    let myMintsCount = 0;
+
+    // 2. Проверяем ЛИЧНЫЕ данные только если кошелек подключен (есть walletAddress)
+    if (typeof walletAddress !== 'undefined' && walletAddress) {
+      myMintsCount = await readOnlyContract.mintedBy(walletAddress);
+      document.getElementById('myMints').textContent = Number(myMintsCount).toString();
+    } else {
+      document.getElementById('myMints').textContent = "0";
+    }
+
+    // 3. Логика состояния кнопки
     if (!mintActive) {
       mintBtn.disabled = true;
       mintBtn.textContent = '[ MINT NOT ACTIVE ]';
-    } else if (Number(myMints) >= 3) {
-      mintBtn.disabled = true;
-      mintBtn.textContent = '[ ALREADY MINTED ]';
     } else if (Number(remaining) === 0) {
       mintBtn.disabled = true;
       mintBtn.textContent = '[ SOLD OUT ]';
+    } else if (walletAddress && Number(myMintsCount) >= 3) {
+      // Кнопка блокируется, только если кошелек подключен И лимит превышен
+      mintBtn.disabled = true;
+      mintBtn.textContent = '[ ALREADY MINTED ]';
     } else {
+      // Во всех остальных случаях (даже если кошелек не подключен) кнопка активна
       mintBtn.disabled = false;
       mintBtn.textContent = '[ MINT — 0.003 ETH ]';
       mintBtn.style.borderColor = '#00ff41';
     }
-  } catch(e) { console.error(e); }
+  } catch(e) { 
+    console.error("Ошибка при загрузке статистики:", e); 
+  }
 }
 
 // ─── LOAD USER NFTs ───────────────────────────────────────────────────────────
@@ -553,6 +599,7 @@ function tick() {
     [n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
 }
 setInterval(tick,1000); tick();
+  loadStats();
 </script>
 </body>
 </html>
