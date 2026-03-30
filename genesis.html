@@ -125,6 +125,12 @@
   .my-nft-label{font-size:9px;color:rgba(0,255,65,0.3);letter-spacing:1px}
 
   footer{border-top:1px solid rgba(0,255,65,0.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:rgba(0,255,65,0.2);letter-spacing:2px;flex-wrap:wrap;gap:8px;margin-top:40px}
+  .quick-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid rgba(0,255,65,0.08)}
+  .quick-btn{flex:1;min-width:140px;padding:10px 8px;background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.5);font-family:'VT323',monospace;font-size:17px;letter-spacing:2px;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:all .2s;white-space:nowrap}
+  .quick-btn:hover{border-color:rgba(0,255,65,0.5);color:#00ff41;background:rgba(0,255,65,0.04)}
+  .quick-btn.gold{border-color:rgba(247,201,72,0.25);color:rgba(247,201,72,0.6)}
+  .quick-btn.gold:hover{border-color:rgba(247,201,72,0.6);color:#f7c948;background:rgba(247,201,72,0.04)}
+  #shareModal.open{display:flex!important}
   .fclock{font-family:'VT323',monospace;font-size:15px;color:rgba(0,255,65,0.3)}
 
   @media(max-width:600px){
@@ -196,6 +202,11 @@
 
     <button class="action-btn" id="mintBtn" onclick="executeMint()" disabled>[ MINT ]</button>
     <div class="log" id="mintLog"></div>
+    <div id="quickBtnsInline" style="display:none" class="quick-btns">
+      <div style="width:100%;font-size:9px;color:rgba(0,255,65,0.3);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">&gt; what's next</div>
+      <a class="quick-btn" href="/">[ CLAIM AIRDROP ]</a>
+      <a class="quick-btn gold" href="/checkin">[ DAILY CHECK-IN ]</a>
+    </div>
   </div>
 
   <!-- BURN -->
@@ -393,6 +404,7 @@ async function executeMint() {
     drawNFTPreview(Math.floor(Math.random()*750)+1);
     await loadStats();
     await loadUserNFTs();
+    showShareModal();
   } catch(e) {
     await typeLog('mintLog','err','ERROR: '+(e.reason||e.message||'failed'));
     btn.disabled = false;
@@ -522,20 +534,59 @@ function drawNFTPreview(seed) {
 // Initial canvas draw
 drawNFTPreview(Math.floor(Math.random()*750)+1);
 
-// Load public stats on page load
+// Load public stats without wallet — raw JSON-RPC
 async function loadPublicStats() {
   try {
-    const rpc = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
-    const c   = new ethers.Contract(NFT_ADDRESS, [
-      "function totalSupply() external view returns (uint256)",
-      "function remainingSupply() external view returns (uint256)"
-    ], rpc);
-    const [minted, rem] = await Promise.all([c.totalSupply(), c.remainingSupply()]);
-    document.getElementById('sMinted').textContent    = Number(minted).toString();
-    document.getElementById('sRemaining').textContent = Number(rem).toString();
+    // totalSupply() selector: 0x18160ddd
+    // remainingSupply() selector: 0x375b5f2e
+    const call = async (selector) => {
+      const res = await fetch("https://rpc-gel.inkonchain.com", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_call",
+          params:[{to:NFT_ADDRESS,data:selector},"latest"]})
+      });
+      const j = await res.json();
+      return j.result && j.result !== "0x" ? Number(BigInt(j.result)) : null;
+    };
+    const [minted, rem] = await Promise.all([call("0x18160ddd"), call("0x375b5f2e")]);
+    if (minted !== null) document.getElementById('sMinted').textContent    = minted.toString();
+    if (rem    !== null) document.getElementById('sRemaining').textContent = rem.toString();
   } catch(e) {}
 }
 loadPublicStats();
+setInterval(loadPublicStats, 30000); // refresh every 30s
+
+// ─── SHARE MODAL ─────────────────────────────────────────────────────────────
+function showShareModal() {
+  const tweet =
+    'just minted $HACK OG NFT on INK chain @HACKtokenINK.\n' +
+    '\n' +
+    '750 total supply. mine is secured.\n' +
+    'burn it for 10,000,000 $HACK reward.\n' +
+    '\n' +
+    'mint still open 👉 hacktokenink.xyz/genesis\n' +
+    '\n' +
+    '$HACK #INK #NFT #OG';
+
+  document.getElementById('shareTweetText').textContent = tweet;
+  document.getElementById('shareTweetBtn').href =
+    'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
+  document.getElementById('shareModal').classList.add('open');
+  // show inline quick buttons too
+  const qi = document.getElementById('quickBtnsInline');
+  if (qi) qi.style.display = 'flex';
+}
+
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('open');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('shareModal').addEventListener('click', function(e){
+    if (e.target === this) closeShareModal();
+  });
+});
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
 function clearLog(id) { document.getElementById(id).innerHTML=''; }
@@ -554,5 +605,34 @@ function tick() {
 }
 setInterval(tick,1000); tick();
 </script>
+
+<!-- QUICK BUTTONS: airdrop + gm — shown after mint -->
+<div id="quickBtns" style="display:none" class="quick-btns">
+  <div style="width:100%;font-size:9px;color:rgba(0,255,65,0.3);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">&gt; while you're here</div>
+  <a class="quick-btn" href="/">[ CLAIM AIRDROP ]</a>
+  <a class="quick-btn gold" href="/checkin">[ DAILY CHECK-IN ]</a>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="shareModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#000;border:1px solid rgba(0,255,65,0.35);max-width:500px;width:100%;position:relative;box-shadow:0 0 40px rgba(0,255,65,0.12)">
+    <div style="padding:10px 16px;border-bottom:1px solid rgba(0,255,65,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(0,255,65,0.03)">
+      <div style="font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:3px;text-transform:uppercase">● ● ●&nbsp;&nbsp;&nbsp;// MINT CONFIRMED</div>
+      <button onclick="closeShareModal()" style="background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px">[ × ]</button>
+    </div>
+    <div style="padding:20px 24px">
+      <div style="font-family:'VT323',monospace;font-size:28px;color:#00ff41;margin-bottom:4px;text-shadow:0 0 12px rgba(0,255,65,0.5)">$HACK OG NFT — MINTED ✓</div>
+      <div style="font-size:11px;color:rgba(0,255,65,0.4);margin-bottom:16px;line-height:1.6">&gt; share your mint with the world</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,65,0.6);line-height:1.8;background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.1);padding:14px;margin-bottom:18px;white-space:pre-wrap" id="shareTweetText"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a id="shareTweetBtn" href="#" target="_blank" rel="noopener"
+          style="flex:1;display:block;padding:12px;background:transparent;border:1px solid #1d9bf0;color:#1d9bf0;font-family:'VT323',monospace;font-size:20px;letter-spacing:3px;text-align:center;text-decoration:none;transition:all .2s;white-space:nowrap"
+          onmouseover="this.style.background='rgba(29,155,240,0.08)'"
+          onmouseout="this.style.background='transparent'">[ POST ON X ]</a>
+        <button onclick="closeShareModal()" style="padding:12px 20px;background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.4);font-family:'VT323',monospace;font-size:18px;letter-spacing:2px;cursor:pointer;white-space:nowrap">[ SKIP ]</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
