@@ -650,5 +650,58 @@ setInterval(tick,1000); tick();
     }
   }, 3000); // Задержка 3 секунды
 </script>
+  <!-- ФИНАЛЬНЫЙ ФИКС — ВСТАВЛЯТЬ ПЕРЕД </body> -->
+<script>
+  (async function() {
+    // Ждем 1 секунду, чтобы основной код загрузился
+    await new Promise(r => setTimeout(r, 1000));
+    
+    const RPC = "https://rpc.inkonchain.com";
+    const ADDR = "0x8929A670737C827170889218684A1b782987E8E4";
+    const ABI_LITE = [
+      "function totalSupply() view returns (uint256)",
+      "function remainingSupply() view returns (uint256)",
+      "function mintActive() view returns (bool)"
+    ];
+
+    try {
+      // Подключаемся к Ink напрямую через библиотеку, которая у тебя уже есть выше
+      const prov = new ethers.JsonRpcProvider(RPC);
+      const con = new ethers.Contract(ADDR, ABI_LITE, prov);
+
+      console.log("Force loading stats...");
+      const [total, rem, active] = await Promise.all([
+        con.totalSupply(),
+        con.remainingSupply(),
+        con.mintActive()
+      ]);
+
+      // СИЛОЙ записываем данные в твои блоки
+      const mElem = document.getElementById('sMinted');
+      const rElem = document.getElementById('sRemaining');
+      const btn = document.getElementById('mintBtn');
+
+      if (mElem) mElem.innerText = total.toString();
+      if (rElem) rElem.innerText = rem.toString();
+      
+      if (btn) {
+        if (!active) {
+          btn.innerText = "[ MINT NOT ACTIVE ]";
+          btn.disabled = true;
+        } else if (rem == 0n) {
+          btn.innerText = "[ SOLD OUT ]";
+          btn.disabled = true;
+        } else {
+          btn.innerText = "[ MINT — 0.003 ETH ]";
+          btn.disabled = false;
+        }
+      }
+      console.log("Stats forced successfully!");
+    } catch (e) {
+      console.error("Critical error in fix:", e);
+    }
+  })();
+</script>
+
 </body>
 </html>
