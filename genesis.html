@@ -302,7 +302,7 @@ async function loadStats() {
       mintBtn.textContent = '[ SOLD OUT ]';
     } else {
       mintBtn.disabled = false;
-      mintBtn.textContent = '[ MINT — 0.0025 ETH ]';
+      mintBtn.textContent = '[ MINT — 0.003 ETH ]';
       mintBtn.style.borderColor = '#00ff41';
     }
   } catch(e) { console.error(e); }
@@ -374,7 +374,7 @@ function selectBurn(id) {
   if (card) card.classList.add('selected');
   const btn = document.getElementById('burnBtn');
   btn.disabled = false;
-  btn.textContent = `[ BURN #${String(id).padStart(3,'0')} — GET 100M $HACK ]`;
+  btn.textContent = `[ BURN #${String(id).padStart(3,'0')} — GET 10M $HACK ]`;
 }
 
 // ─── EXECUTE MINT ────────────────────────────────────────────────────────────
@@ -415,7 +415,7 @@ async function executeBurn() {
     const tx = await nftContract.burnForReward(selectedBurnId);
     await typeLog('burnLog','info','tx: '+tx.hash.slice(0,20)+'...');
     await tx.wait();
-    await typeLog('burnLog','ok','NFT burned. 100,000,000 $HACK incoming.');
+    await typeLog('burnLog','ok','NFT burned. 10,000,000 $HACK incoming.');
     await typeLog('burnLog','ok','> proof of conviction.');
     selectedBurnId = null;
     await loadStats();
