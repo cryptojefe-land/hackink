@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$HACK OG NFT — Mint</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#000;color:#00ff41;font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden}
+  .scanlines{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:100}
+  .grid{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,255,65,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,65,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:10;max-width:820px;margin:0 auto;padding:0 20px 80px}
+
+  /* NAV */
+  nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid rgba(0,255,65,0.2);margin-bottom:40px;gap:12px}
+  .logo{font-family:'VT323',monospace;font-size:26px;color:#00ff41;text-decoration:none;text-shadow:0 0 15px rgba(0,255,65,0.5);letter-spacing:3px}
+  .nav-r{display:flex;align-items:center;gap:12px}
+  .nav-link{font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:2px;text-transform:uppercase;text-decoration:none}
+  .nav-link:hover{color:#00ff41}
+  .dot{width:6px;height:6px;border-radius:50%;background:#00ff41;animation:blink 1.2s infinite;box-shadow:0 0 6px rgba(0,255,65,0.8);flex-shrink:0}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .conn-btn{background:transparent;border:1px solid rgba(0,255,65,0.4);color:rgba(0,255,65,0.7);font-family:'Share Tech Mono',monospace;font-size:10px;padding:7px 14px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+  .conn-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 12px rgba(0,255,65,0.2)}
+  .conn-btn.connected{border-color:rgba(0,255,65,0.3);color:rgba(0,255,65,0.4)}
+
+  /* HERO */
+  .hero{text-align:center;margin-bottom:40px}
+  .hero-title{font-family:'VT323',monospace;font-size:clamp(60px,14vw,120px);color:#00ff41;letter-spacing:4px;line-height:1;text-shadow:0 0 20px rgba(0,255,65,0.5),0 0 60px rgba(0,255,65,0.15);animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{text-shadow:0 0 20px rgba(0,255,65,0.5),0 0 60px rgba(0,255,65,0.15)}50%{text-shadow:0 0 35px rgba(0,255,65,0.9),0 0 80px rgba(0,255,65,0.3)}}
+  .hero-sub{font-size:clamp(10px,2.5vw,13px);color:rgba(0,255,65,0.5);letter-spacing:4px;text-transform:uppercase;margin-top:10px}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:28px;border:1px solid rgba(0,255,65,0.15)}
+  .st{padding:clamp(10px,2vw,16px) 8px;border-right:1px solid rgba(0,255,65,0.15);text-align:center;background:rgba(0,255,65,0.02);position:relative;overflow:hidden}
+  .st:last-child{border-right:none}
+  .st::before{content:'';position:absolute;top:0;left:-200%;width:200%;height:2px;background:linear-gradient(90deg,transparent,#00ff41,transparent);animation:sweep 4s linear infinite}
+  .st:nth-child(2)::before{animation-delay:1s;background:linear-gradient(90deg,transparent,#f7c948,transparent)}
+  .st:nth-child(3)::before{animation-delay:2s;background:linear-gradient(90deg,transparent,#00cfff,transparent)}
+  .st:nth-child(4)::before{animation-delay:3s;background:linear-gradient(90deg,transparent,#c47aff,transparent)}
+  @keyframes sweep{0%{left:-200%}100%{left:100%}}
+  .st-l{font-size:clamp(7px,1.5vw,9px);color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+  .st-v{font-family:'VT323',monospace;font-size:clamp(20px,4vw,30px);line-height:1}
+  .green{color:#00ff41;text-shadow:0 0 10px rgba(0,255,65,0.5)}
+  .gold{color:#f7c948;text-shadow:0 0 10px rgba(247,201,72,0.5)}
+  .cyan{color:#00cfff;text-shadow:0 0 10px rgba(0,207,255,0.5)}
+  .purple{color:#c47aff;text-shadow:0 0 10px rgba(196,122,255,0.5)}
+
+  /* TERMINAL */
+  .terminal{background:#000;border:1px solid rgba(0,255,65,0.25);padding:clamp(20px,4vw,28px);padding-top:clamp(36px,6vw,44px);position:relative;margin-bottom:16px;box-shadow:0 0 0 1px rgba(0,255,65,0.1),inset 0 0 30px rgba(0,255,65,0.02)}
+  .terminal::before{content:'● ● ●';position:absolute;top:12px;left:16px;font-size:10px;color:rgba(0,255,65,0.3);letter-spacing:4px}
+  .sec-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .sec-header::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,255,65,0.3),transparent)}
+  .sec-tag{font-size:10px;letter-spacing:3px;color:rgba(0,255,65,0.5);text-transform:uppercase;white-space:nowrap}
+
+  /* NFT PREVIEW */
+  .nft-preview{display:flex;gap:24px;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap}
+  .nft-img-wrap{flex-shrink:0;width:clamp(140px,30vw,200px);height:clamp(140px,30vw,200px);border:1px solid rgba(0,255,65,0.3);background:rgba(0,255,65,0.02);position:relative;overflow:hidden;box-shadow:0 0 20px rgba(0,255,65,0.08)}
+  .nft-img-wrap canvas{width:100%;height:100%}
+  .nft-info{flex:1;min-width:200px}
+  .nft-name{font-family:'VT323',monospace;font-size:clamp(22px,5vw,32px);color:#00ff41;line-height:1;margin-bottom:8px}
+  .nft-desc{font-size:11px;color:rgba(0,255,65,0.4);line-height:1.7;margin-bottom:12px}
+  .nft-trait{display:flex;gap:6px;flex-wrap:wrap}
+  .trait-pill{font-size:9px;color:rgba(0,255,65,0.5);border:1px solid rgba(0,255,65,0.15);padding:3px 8px;letter-spacing:1px}
+
+  /* MINT INFO ROW */
+  .mint-info{display:flex;gap:2px;margin-bottom:16px}
+  .mi{flex:1;padding:10px 12px;border:1px solid rgba(0,255,65,0.1);background:rgba(0,255,65,0.01);text-align:center}
+  .mi-l{font-size:9px;color:rgba(0,255,65,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+  .mi-v{font-family:'VT323',monospace;font-size:clamp(18px,4vw,24px);color:#00ff41}
+
+  /* BUTTONS */
+  .action-btn{width:100%;padding:clamp(12px,2.5vw,16px);background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:'VT323',monospace;font-size:clamp(16px,4vw,24px);letter-spacing:clamp(2px,1vw,5px);text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s;white-space:nowrap;margin-bottom:8px}
+  .action-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,65,0.1),transparent);transition:left .4s}
+  .action-btn:hover:not(:disabled){background:rgba(0,255,65,0.06);box-shadow:0 0 25px rgba(0,255,65,0.2);text-shadow:0 0 10px #00ff41}
+  .action-btn:hover:not(:disabled)::before{left:100%}
+  .action-btn:disabled{opacity:.3;cursor:not-allowed}
+  .burn-btn{border-color:rgba(255,50,70,0.5);color:rgba(255,50,70,0.7)}
+  .burn-btn:hover:not(:disabled){border-color:#ff3246;color:#ff3246;background:rgba(255,50,70,0.06);box-shadow:0 0 25px rgba(255,50,70,0.2);text-shadow:0 0 10px #ff3246}
+
+  /* LOG */
+  .log{font-size:11px;color:rgba(0,255,65,0.5);line-height:1.8;min-height:20px;margin-top:12px}
+  .log .ok{color:#00ff41}
+  .log .err{color:#ff0040}
+  .log .info{color:#00cfff}
+  .log .warn{color:#f7c948}
+
+  /* BURN INPUT */
+  .burn-row{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
+  .burn-input{flex:1;min-width:120px;background:rgba(0,255,65,0.02);border:1px solid rgba(0,255,65,0.2);color:#00ff41;font-family:'Share Tech Mono',monospace;font-size:14px;padding:10px 14px;outline:none}
+  .burn-input:focus{border-color:rgba(0,255,65,0.5)}
+  .burn-label{font-size:10px;color:rgba(0,255,65,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+
+  /* USER NFTs */
+  .my-nfts{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+  .my-nft{border:1px solid rgba(0,255,65,0.12);padding:10px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(0,255,65,0.01)}
+  .my-nft:hover{border-color:rgba(255,50,70,0.4);background:rgba(255,50,70,0.03)}
+  .my-nft.selected{border-color:#ff3246;background:rgba(255,50,70,0.06);box-shadow:0 0 10px rgba(255,50,70,0.15)}
+  .my-nft-id{font-family:'VT323',monospace;font-size:22px;color:#00ff41;line-height:1}
+  .my-nft-label{font-size:9px;color:rgba(0,255,65,0.3);letter-spacing:1px}
+
+  footer{border-top:1px solid rgba(0,255,65,0.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:rgba(0,255,65,0.2);letter-spacing:2px;flex-wrap:wrap;gap:8px;margin-top:40px}
+  .fclock{font-family:'VT323',monospace;font-size:15px;color:rgba(0,255,65,0.3)}
+
+  @media(max-width:600px){
+    .stats{grid-template-columns:1fr 1fr}
+    .st:nth-child(2){border-right:none}
+    .st:nth-child(3){border-top:1px solid rgba(0,255,65,0.12)}
+    .nft-preview{flex-direction:column;align-items:center;text-align:center}
+    .nft-trait{justify-content:center}
+    footer{flex-direction:column;text-align:center}
+  }
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="grid"></div>
+<div class="wrap">
+
+  <nav>
+    <a class="logo" href="/">$HACK</a>
+    <div class="nav-r">
+      <a class="nav-link" href="/">← BACK</a>
+      <div class="dot"></div>
+      <button class="conn-btn" id="connBtn" onclick="connectWallet()">[ CONNECT ]</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-title">OG NFT</div>
+    <div class="hero-sub">$HACK GENESIS COLLECTION // 750 TOTAL</div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="st"><div class="st-l">Minted</div><div class="st-v green" id="sMinted">—</div></div>
+    <div class="st"><div class="st-l">Remaining</div><div class="st-v gold" id="sRemaining">—</div></div>
+    <div class="st"><div class="st-l">Mint Price</div><div class="st-v cyan">0.0025 ETH</div></div>
+    <div class="st"><div class="st-l">Burn Reward</div><div class="st-v purple">100M $HACK</div></div>
+  </div>
+
+  <!-- MINT -->
+  <div class="sec-header"><div class="sec-tag">// MINT</div></div>
+  <div class="terminal">
+    <div class="nft-preview">
+      <div class="nft-img-wrap">
+        <canvas id="nftCanvas" width="200" height="200"></canvas>
+      </div>
+      <div class="nft-info">
+        <div class="nft-name">$HACK OG #???</div>
+        <div class="nft-desc">
+          Genesis collection. 750 total. Hard cap forever.<br>
+          Proof of work. The chain remembers.<br><br>
+          Burn for 100,000,000 $HACK reward.
+        </div>
+        <div class="nft-trait">
+          <div class="trait-pill">OG GENESIS</div>
+          <div class="trait-pill">750 SUPPLY</div>
+          <div class="trait-pill">INK CHAIN</div>
+          <div class="trait-pill">BURNABLE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mint-info">
+      <div class="mi"><div class="mi-l">Price</div><div class="mi-v">0.0025 ETH</div></div>
+      <div class="mi"><div class="mi-l">Max / Wallet</div><div class="mi-v">1 NFT</div></div>
+      <div class="mi"><div class="mi-l">Your Mints</div><div class="mi-v" id="myMints">—</div></div>
+    </div>
+
+    <button class="action-btn" id="mintBtn" onclick="executeMint()" disabled>[ CONNECT WALLET ]</button>
+    <div class="log" id="mintLog"></div>
+  </div>
+
+  <!-- BURN -->
+  <div class="sec-header" style="margin-top:24px"><div class="sec-tag">// BURN FOR REWARD</div></div>
+  <div class="terminal">
+    <div style="font-size:11px;color:rgba(0,255,65,0.4);margin-bottom:16px;line-height:1.7">
+      &gt; burn your NFT → receive 100,000,000 $HACK instantly<br>
+      &gt; action is irreversible — NFT is destroyed forever
+    </div>
+
+    <div id="myNFTsWrap" style="display:none">
+      <div class="burn-label">&gt; your NFTs — select to burn</div>
+      <div class="my-nfts" id="myNFTs"></div>
+    </div>
+
+    <div id="noNFTs" style="font-size:11px;color:rgba(0,255,65,0.2);padding:12px 0;display:none">&gt; no NFTs in this wallet</div>
+
+    <button class="action-btn burn-btn" id="burnBtn" onclick="executeBurn()" disabled>[ CONNECT WALLET ]</button>
+    <div class="log" id="burnLog"></div>
+  </div>
+
+  <footer>
+    <div>$HACK // hacktokenink.xyz</div>
+    <div class="fclock" id="fclock">SYS_TIME: 00:00:00</div>
+  </footer>
+</div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+const NFT_ADDRESS   = "REPLACE_WITH_DEPLOYED_NFT_ADDRESS";
+const HACK_ADDRESS  = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
+const INK_CHAIN = {
+  chainId:"0xDEF1", chainName:"Ink",
+  nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
+  rpcUrls:["https://rpc-gel.inkonchain.com"],
+  blockExplorerUrls:["https://explorer.inkonchain.com"]
+};
+
+const NFT_ABI = [
+  "function mint() external payable",
+  "function burnForReward(uint256 tokenId) external",
+  "function totalSupply() external view returns (uint256)",
+  "function remainingSupply() external view returns (uint256)",
+  "function mintedBy(address) external view returns (uint256)",
+  "function mintActive() external view returns (bool)",
+  "function burnActive() external view returns (bool)",
+  "function burnRewardPool() external view returns (uint256)",
+  "function ownerOf(uint256) external view returns (address)",
+  "function balanceOf(address) external view returns (uint256)",
+  "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)"
+];
+
+let provider, signer, walletAddress, nftContract;
+let selectedBurnId = null;
+let userTokenIds   = [];
+
+// ─── CONNECT ─────────────────────────────────────────────────────────────────
+async function connectWallet() {
+  if (!window.ethereum) { alert('MetaMask not found.'); return; }
+  try {
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts",[]);
+    const net = await provider.getNetwork();
+    if (net.chainId !== BigInt(57073)) {
+      try { await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:INK_CHAIN.chainId}]}); }
+      catch(e) { if(e.code===4902) await window.ethereum.request({method:'wallet_addEthereumChain',params:[INK_CHAIN]}); else throw e; }
+      provider = new ethers.BrowserProvider(window.ethereum);
+    }
+    signer      = await provider.getSigner();
+    walletAddress = await signer.getAddress();
+    nftContract   = new ethers.Contract(NFT_ADDRESS, NFT_ABI, signer);
+    const s = walletAddress.slice(0,6)+'...'+walletAddress.slice(-4);
+    document.getElementById('connBtn').textContent = s;
+    document.getElementById('connBtn').classList.add('connected');
+    window.ethereum.on('accountsChanged',()=>location.reload());
+    window.ethereum.on('chainChanged',()=>location.reload());
+    await loadStats();
+    await loadUserNFTs();
+  } catch(e) { alert('Failed: '+(e.message||e)); }
+}
+
+// ─── LOAD STATS ──────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const [minted, remaining, mintActive, myMints] = await Promise.all([
+      nftContract.totalSupply(),
+      nftContract.remainingSupply(),
+      nftContract.mintActive(),
+      nftContract.mintedBy(walletAddress)
+    ]);
+    document.getElementById('sMinted').textContent    = Number(minted).toString();
+    document.getElementById('sRemaining').textContent = Number(remaining).toString();
+    document.getElementById('myMints').textContent    = Number(myMints).toString();
+
+    const mintBtn = document.getElementById('mintBtn');
+    if (!mintActive) {
+      mintBtn.disabled = true;
+      mintBtn.textContent = '[ MINT NOT ACTIVE ]';
+    } else if (Number(myMints) >= 1) {
+      mintBtn.disabled = true;
+      mintBtn.textContent = '[ ALREADY MINTED ]';
+    } else if (Number(remaining) === 0) {
+      mintBtn.disabled = true;
+      mintBtn.textContent = '[ SOLD OUT ]';
+    } else {
+      mintBtn.disabled = false;
+      mintBtn.textContent = '[ MINT — 0.0025 ETH ]';
+      mintBtn.style.borderColor = '#00ff41';
+    }
+  } catch(e) { console.error(e); }
+}
+
+// ─── LOAD USER NFTs ───────────────────────────────────────────────────────────
+async function loadUserNFTs() {
+  try {
+    const bal = await nftContract.balanceOf(walletAddress);
+    const burnActive = await nftContract.burnActive();
+    const burnBtn = document.getElementById('burnBtn');
+
+    if (Number(bal) === 0) {
+      document.getElementById('noNFTs').style.display = 'block';
+      burnBtn.disabled = true;
+      burnBtn.textContent = '[ NO NFTs TO BURN ]';
+      return;
+    }
+
+    // Scan for user tokens via Transfer events
+    const rpc = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
+    const readContract = new ethers.Contract(NFT_ADDRESS, NFT_ABI, rpc);
+    const filter = readContract.filters.Transfer(null, walletAddress);
+    const events = await readContract.queryFilter(filter, 0, 'latest');
+    userTokenIds = [];
+    for (const ev of events) {
+      const id = Number(ev.args.tokenId);
+      try {
+        const owner = await readContract.ownerOf(id);
+        if (owner.toLowerCase() === walletAddress.toLowerCase()) {
+          userTokenIds.push(id);
+        }
+      } catch(e) {}
+    }
+
+    if (userTokenIds.length === 0) {
+      document.getElementById('noNFTs').style.display = 'block';
+      burnBtn.disabled = true;
+      burnBtn.textContent = '[ NO NFTs TO BURN ]';
+      return;
+    }
+
+    document.getElementById('myNFTsWrap').style.display = 'block';
+    const grid = document.getElementById('myNFTs');
+    grid.innerHTML = '';
+    userTokenIds.forEach(id => {
+      const div = document.createElement('div');
+      div.className = 'my-nft';
+      div.id = 'nft-card-'+id;
+      div.innerHTML = `<div class="my-nft-id">#${String(id).padStart(3,'0')}</div><div class="my-nft-label">OG GENESIS</div>`;
+      div.onclick = () => selectBurn(id);
+      grid.appendChild(div);
+    });
+
+    if (!burnActive) {
+      burnBtn.disabled = true;
+      burnBtn.textContent = '[ BURN NOT ACTIVE ]';
+    } else {
+      burnBtn.disabled = true;
+      burnBtn.textContent = '[ SELECT NFT TO BURN ]';
+    }
+  } catch(e) { console.error(e); }
+}
+
+function selectBurn(id) {
+  selectedBurnId = id;
+  document.querySelectorAll('.my-nft').forEach(el => el.classList.remove('selected'));
+  const card = document.getElementById('nft-card-'+id);
+  if (card) card.classList.add('selected');
+  const btn = document.getElementById('burnBtn');
+  btn.disabled = false;
+  btn.textContent = `[ BURN #${String(id).padStart(3,'0')} — GET 100M $HACK ]`;
+}
+
+// ─── EXECUTE MINT ────────────────────────────────────────────────────────────
+async function executeMint() {
+  if (!signer) { await connectWallet(); return; }
+  const btn = document.getElementById('mintBtn');
+  btn.disabled = true;
+  clearLog('mintLog');
+  try {
+    await typeLog('mintLog','info','minting $HACK OG NFT...');
+    const tx = await nftContract.mint({ value: ethers.parseEther("0.0025") });
+    await typeLog('mintLog','info','tx: '+tx.hash.slice(0,20)+'...');
+    const receipt = await tx.wait();
+    await typeLog('mintLog','ok','SUCCESS: $HACK OG NFT minted!');
+    await typeLog('mintLog','ok','> welcome to the genesis, anon.');
+    drawNFTPreview(Math.floor(Math.random()*750)+1);
+    await loadStats();
+    await loadUserNFTs();
+  } catch(e) {
+    await typeLog('mintLog','err','ERROR: '+(e.reason||e.message||'failed'));
+    btn.disabled = false;
+  }
+}
+
+// ─── EXECUTE BURN ────────────────────────────────────────────────────────────
+async function executeBurn() {
+  if (!signer || selectedBurnId === null) return;
+  const confirmed = confirm(
+    `Burn NFT #${selectedBurnId}?\n\nThis will DESTROY your NFT permanently.\nYou will receive 100,000,000 $HACK in return.\n\nThis cannot be undone.`
+  );
+  if (!confirmed) return;
+
+  const btn = document.getElementById('burnBtn');
+  btn.disabled = true;
+  clearLog('burnLog');
+  try {
+    await typeLog('burnLog','warn','burning NFT #'+String(selectedBurnId).padStart(3,'0')+'...');
+    const tx = await nftContract.burnForReward(selectedBurnId);
+    await typeLog('burnLog','info','tx: '+tx.hash.slice(0,20)+'...');
+    await tx.wait();
+    await typeLog('burnLog','ok','NFT burned. 100,000,000 $HACK incoming.');
+    await typeLog('burnLog','ok','> proof of conviction.');
+    selectedBurnId = null;
+    await loadStats();
+    await loadUserNFTs();
+  } catch(e) {
+    await typeLog('burnLog','err','ERROR: '+(e.reason||e.message||'failed'));
+    btn.disabled = false;
+  }
+}
+
+// ─── NFT CANVAS PREVIEW ──────────────────────────────────────────────────────
+function drawNFTPreview(seed) {
+  const canvas = document.getElementById('nftCanvas');
+  const ctx    = canvas.getContext('2d');
+  const S      = 200;
+  const r      = new Math.seedrandom ? Math.seedrandom(seed) : {random: ()=>Math.random()};
+  const rnd    = () => Math.random();
+
+  const palettes = [
+    ['#00ff41','#00cf35'],['#f7c948','#c49820'],
+    ['#00cfff','#0090bb'],['#c47aff','#8040cc'],['#ff3246','#bb1828']
+  ];
+  const pal = palettes[seed % palettes.length];
+
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0,0,S,S);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,255,65,0.06)';
+  for(let x=0;x<S;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,S);ctx.stroke();}
+  for(let y=0;y<S;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(S,y);ctx.stroke();}
+
+  // Glow bg
+  const grad = ctx.createRadialGradient(S/2,S/2,10,S/2,S/2,80);
+  grad.addColorStop(0,pal[0]+'22');
+  grad.addColorStop(1,'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,S,S);
+
+  // Hexagon
+  const cx=S/2, cy=S/2+10, hr=70;
+  ctx.beginPath();
+  for(let i=0;i<6;i++){
+    const a=Math.PI/180*(60*i-30);
+    i===0?ctx.moveTo(cx+hr*Math.cos(a),cy+hr*Math.sin(a)):ctx.lineTo(cx+hr*Math.cos(a),cy+hr*Math.sin(a));
+  }
+  ctx.closePath();
+  ctx.fillStyle='rgba(0,8,2,0.9)';
+  ctx.fill();
+  ctx.strokeStyle=pal[0];
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  // Eyes based on seed
+  const eyeType = seed % 5;
+  ctx.fillStyle = pal[0];
+  if(eyeType===0){ // terminal
+    ctx.fillRect(cx-38,cy-25,28,16); ctx.fillRect(cx+10,cy-25,28,16);
+    ctx.fillStyle='#000'; ctx.fillRect(cx-35,cy-22,22,10); ctx.fillRect(cx+13,cy-22,22,10);
+    ctx.fillStyle=pal[0]; ctx.fillRect(cx-32,cy-19,14,6); ctx.fillRect(cx+16,cy-19,14,6);
+  } else if(eyeType===1){ // cyclops
+    ctx.beginPath(); ctx.arc(cx,cy-18,14,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#000'; ctx.beginPath(); ctx.arc(cx,cy-18,6,0,Math.PI*2); ctx.fill();
+  } else if(eyeType===2){ // visor
+    ctx.fillRect(cx-40,cy-24,80,16);
+    ctx.fillStyle='rgba(0,0,0,0.5)';
+    for(let xi=cx-38;xi<cx+38;xi+=10) ctx.fillRect(xi,cy-24,4,16);
+  } else if(eyeType===3){ // x eyes
+    ctx.strokeStyle=pal[0]; ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(cx-38,cy-28);ctx.lineTo(cx-18,cy-10);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx-18,cy-28);ctx.lineTo(cx-38,cy-10);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+18,cy-28);ctx.lineTo(cx+38,cy-10);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+38,cy-28);ctx.lineTo(cx+18,cy-10);ctx.stroke();
+  } else { // laser
+    ctx.fillRect(cx-42,cy-20,84,8);
+    ctx.fillStyle=pal[0]+'44';
+    ctx.fillRect(cx-42,cy-26,84,20);
+  }
+
+  // Mouth
+  ctx.fillStyle = pal[0];
+  const mouthType = seed % 3;
+  if(mouthType===0){
+    ctx.font='bold 14px monospace'; ctx.fillText('> _',cx-20,cy+28);
+  } else if(mouthType===1){
+    for(let i=0;i<5;i++) ctx.fillRect(cx-34+i*16,cy+16,10,8);
+  } else {
+    ctx.beginPath(); ctx.arc(cx,cy+20,22,0,Math.PI); ctx.stroke();
+  }
+
+  // Border
+  ctx.strokeStyle=pal[0]; ctx.lineWidth=2;
+  ctx.strokeRect(4,4,S-8,S-8);
+  // OG badge
+  ctx.fillStyle='rgba(0,8,2,0.9)';
+  ctx.fillRect(cx-40,S-28,80,20);
+  ctx.strokeStyle=pal[0]; ctx.lineWidth=1;
+  ctx.strokeRect(cx-40,S-28,80,20);
+  ctx.fillStyle=pal[0]; ctx.font='bold 11px monospace';
+  ctx.textAlign='center'; ctx.fillText('OG GENESIS',cx,S-14);
+  ctx.textAlign='left';
+}
+
+// Initial canvas draw
+drawNFTPreview(Math.floor(Math.random()*750)+1);
+
+// Load public stats on page load
+async function loadPublicStats() {
+  try {
+    const rpc = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
+    const c   = new ethers.Contract(NFT_ADDRESS, [
+      "function totalSupply() external view returns (uint256)",
+      "function remainingSupply() external view returns (uint256)"
+    ], rpc);
+    const [minted, rem] = await Promise.all([c.totalSupply(), c.remainingSupply()]);
+    document.getElementById('sMinted').textContent    = Number(minted).toString();
+    document.getElementById('sRemaining').textContent = Number(rem).toString();
+  } catch(e) {}
+}
+loadPublicStats();
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function clearLog(id) { document.getElementById(id).innerHTML=''; }
+function delay(ms)    { return new Promise(r=>setTimeout(r,ms)); }
+async function typeLog(logId, cls, text) {
+  const log  = document.getElementById(logId);
+  const line = document.createElement('div');
+  line.className = cls; log.appendChild(line);
+  for(const ch of('> '+text)){ line.textContent+=ch; await delay(14); }
+}
+
+function tick() {
+  const n=new Date();
+  document.getElementById('fclock').textContent='SYS_TIME: '+
+    [n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>String(x).padStart(2,'0')).join(':');
+}
+setInterval(tick,1000); tick();
+</script>
+</body>
+</html>
