@@ -294,7 +294,7 @@ async function loadStats() {
     if (!mintActive) {
       mintBtn.disabled = true;
       mintBtn.textContent = '[ MINT NOT ACTIVE ]';
-    } else if (Number(myMints) >= 1) {
+    } else if (Number(myMints) >= 3) {
       mintBtn.disabled = true;
       mintBtn.textContent = '[ ALREADY MINTED ]';
     } else if (Number(remaining) === 0) {
