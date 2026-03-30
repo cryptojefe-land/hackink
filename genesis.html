@@ -385,7 +385,7 @@ async function executeMint() {
   clearLog('mintLog');
   try {
     await typeLog('mintLog','info','minting $HACK OG NFT...');
-    const tx = await nftContract.mint({ value: ethers.parseEther("0") });
+    const tx = await nftContract.mint({ value: ethers.parseEther("0.003") });
     await typeLog('mintLog','info','tx: '+tx.hash.slice(0,20)+'...');
     const receipt = await tx.wait();
     await typeLog('mintLog','ok','SUCCESS: $HACK OG NFT minted!');
