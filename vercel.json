@@ -9,8 +9,8 @@
       "destination": "/index.html"
     },
     {
-      "source": "/nft",
-      "destination": "/nft.html"
+      "source": "/genesis",
+      "destination": "/genesis.html"
     }
   ]
 }
