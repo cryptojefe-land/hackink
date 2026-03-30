@@ -600,6 +600,55 @@ function tick() {
 }
 setInterval(tick,1000); tick();
   loadStats();
+<script>
+  // ЭТО ИСПРАВЛЕНИЕ: ЧИТАЕМ ДАННЫЕ БЕЗ КОШЕЛЬКА
+  (async function() {
+    const INK_RPC = "https://rpc.inkonchain.com";
+    const CONTRACT_ADDR = "0x8929A670737C827170889218684A1b782987E8E4";
+    
+    // Короткий список команд для блокчейна
+    const ABI_FIX = [
+      "function totalSupply() view returns (uint256)",
+      "function remainingSupply() view returns (uint256)",
+      "function mintActive() view returns (bool)"
+    ];
+
+    try {
+      // Подключаемся к сети Ink напрямую
+      const provider = new ethers.JsonRpcProvider(INK_RPC);
+      const contract = new ethers.Contract(CONTRACT_ADDR, ABI_FIX, provider);
+
+      // Забираем цифры
+      const [minted, remaining, active] = await Promise.all([
+        contract.totalSupply(),
+        contract.remainingSupply(),
+        contract.mintActive()
+      ]);
+
+      // Вставляем цифры в твои блоки на сайте
+      document.getElementById('sMinted').innerText = minted.toString();
+      document.getElementById('sRemaining').innerText = remaining.toString();
+      
+      // Настраиваем кнопку
+      const btn = document.getElementById('mintBtn');
+      if (!active) {
+        btn.innerText = "[ MINT NOT ACTIVE ]";
+        btn.disabled = true;
+      } else if (remaining == 0n) {
+        btn.innerText = "[ SOLD OUT ]";
+        btn.disabled = true;
+      } else {
+        btn.innerText = "[ MINT — 0.003 ETH ]";
+        btn.disabled = false;
+        btn.style.borderColor = '#00ff41';
+      }
+      
+      console.log("Статистика Ink загружена автоматически!");
+    } catch (e) {
+      console.error("Ошибка авто-загрузки:", e);
+    }
+  })();
 </script>
+
 </body>
 </html>
