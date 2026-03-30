@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/checkin",
+      "destination": "/checkin.html"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/nft",
+      "destination": "/nft.html"
+    }
+  ]
+}
