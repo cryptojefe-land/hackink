@@ -252,15 +252,22 @@ async function connectWallet() {
   if (!window.ethereum) { alert('MetaMask not found.'); return; }
   try {
     provider = new ethers.BrowserProvider(window.ethereum);
-    await provider.send("eth_requestAccounts",[]);
-    const net = await provider.getNetwork();
-    if (net.chainId !== BigInt(57073)) {
-      try { await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:INK_CHAIN.chainId}]}); }
-      catch(e) { if(e.code===4902) await window.ethereum.request({method:'wallet_addEthereumChain',params:[INK_CHAIN]}); else throw e; }
+    await provider.send("eth_requestAccounts", []);
+    const network = await provider.getNetwork();
+
+    if (network.chainId !== BigInt(57073)) {
+      try {
+        await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId: INK_CHAIN.chainId}] });
+      } catch(e) {
+        if (e.code === 4902) {
+          await window.ethereum.request({ method:'wallet_addEthereumChain', params:[INK_CHAIN] });
+        } else throw e;
+      }
       provider = new ethers.BrowserProvider(window.ethereum);
     }
-    signer      = await provider.getSigner();
-    walletAddress = await signer.getAddress();
+
+    signer          = await provider.getSigner();
+    walletAddress   = await signer.getAddress();
     nftContract   = new ethers.Contract(NFT_ADDRESS, NFT_ABI, signer);
     const s = walletAddress.slice(0,6)+'...'+walletAddress.slice(-4);
     document.getElementById('connBtn').textContent = s;
