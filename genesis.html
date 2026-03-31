@@ -396,7 +396,7 @@ async function executeMint() {
   clearLog('mintLog');
   try {
     await typeLog('mintLog','info','minting $HACK OG NFT...');
-    const tx = await nftContract.mint({ value: ethers.parseEther("0.003") });
+    const tx = await nftContract.mint({ value: ethers.parseEther("0.003"), gasLimit: 300000 });
     await typeLog('mintLog','info','tx: '+tx.hash.slice(0,20)+'...');
     const receipt = await tx.wait();
     await typeLog('mintLog','ok','SUCCESS: $HACK OG NFT minted!');
@@ -441,6 +441,7 @@ async function executeBurn() {
 // ─── NFT CANVAS PREVIEW ──────────────────────────────────────────────────────
 function drawNFTPreview(seed) {
   const canvas = document.getElementById('nftCanvas');
+  if (!canvas) return; // file uses <img> instead of canvas
   const ctx    = canvas.getContext('2d');
   const S      = 200;
   const r      = new Math.seedrandom ? Math.seedrandom(seed) : {random: ()=>Math.random()};
@@ -536,26 +537,34 @@ drawNFTPreview(Math.floor(Math.random()*750)+1);
 
 // Load public stats without wallet — raw JSON-RPC
 async function loadPublicStats() {
-  try {
-    // totalSupply() selector: 0x18160ddd
-    // remainingSupply() selector: 0x375b5f2e
-    const call = async (selector) => {
-      const res = await fetch("https://rpc-gel.inkonchain.com", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_call",
-          params:[{to:NFT_ADDRESS,data:selector},"latest"]})
-      });
-      const j = await res.json();
-      return j.result && j.result !== "0x" ? Number(BigInt(j.result)) : null;
-    };
-    const [minted, rem] = await Promise.all([call("0x18160ddd"), call("0x375b5f2e")]);
-    if (minted !== null) document.getElementById('sMinted').textContent    = minted.toString();
-    if (rem    !== null) document.getElementById('sRemaining').textContent = rem.toString();
-  } catch(e) {}
+  const RPCS = [
+    "https://rpc-gel.inkonchain.com",
+    "https://rpc.inkonchain.com"
+  ];
+  for (const rpc of RPCS) {
+    try {
+      const ethCall = async (sel) => {
+        const res = await fetch(rpc, {
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({jsonrpc:"2.0",id:1,method:"eth_call",
+            params:[{to:NFT_ADDRESS,data:sel},"latest"]})
+        });
+        const j = await res.json();
+        if (j.error || !j.result || j.result==="0x") throw new Error("bad result");
+        return Number(BigInt(j.result));
+      };
+      const [minted, rem] = await Promise.all([
+        ethCall("0x18160ddd"),  // totalSupply()
+        ethCall("0xda0239a6")   // remainingSupply()
+      ]);
+      document.getElementById('sMinted').textContent    = minted.toString();
+      document.getElementById('sRemaining').textContent = rem.toString();
+      return;
+    } catch(e) { console.warn('Stats RPC failed:', rpc, e.message); }
+  }
 }
 loadPublicStats();
-setInterval(loadPublicStats, 30000); // refresh every 30s
+setInterval(loadPublicStats, 30000);
 
 // ─── SHARE MODAL ─────────────────────────────────────────────────────────────
 function showShareModal() {
