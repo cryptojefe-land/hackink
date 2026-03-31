@@ -912,8 +912,16 @@ function showCheckinInline() {
   ci.href = 'checkin.html';
   ci.className = 'action-btn';
   ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
-  ci.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
-  document.getElementById('airdropLog').parentNode.appendChild(ci);
+  ci.textContent = '[ DAILY CHECK-IN ]';
+  const nftCi = document.createElement('a');
+  nftCi.id = 'nftInlineBtn';
+  nftCi.href = 'https://hacktokenink.xyz/genesis';
+  nftCi.className = 'action-btn';
+  nftCi.style.cssText = 'display:block;margin-top:8px;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
+  nftCi.textContent = '[ MINT OG NFT — GENESIS ]';
+  const logParent = document.getElementById('airdropLog').parentNode;
+  logParent.appendChild(ci);
+  logParent.appendChild(nftCi);
 }
 
 // ─── SOCIAL TASKS ────────────────────────────────────────────────────────────
