@@ -138,6 +138,45 @@
   .quick-btn.gold{border-color:rgba(247,201,72,0.25);color:rgba(247,201,72,0.6)}
   .quick-btn.gold:hover{border-color:rgba(247,201,72,0.6);color:#f7c948;background:rgba(247,201,72,0.04)}
   #shareModal.open{display:flex!important}
+
+  /* ── MINT QUANTITY MODAL ── */
+  #mintModal{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;padding:20px}
+  #mintModal.open{display:flex!important}
+  .modal-box{background:#000;border:1px solid rgba(0,255,65,0.35);max-width:420px;width:100%;position:relative;box-shadow:0 0 40px rgba(0,255,65,0.1)}
+  .modal-header{padding:10px 16px;border-bottom:1px solid rgba(0,255,65,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(0,255,65,0.03)}
+  .modal-title{font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:3px;text-transform:uppercase}
+  .modal-close{background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px}
+  .modal-body{padding:24px}
+  .qty-label{font-size:11px;color:rgba(0,255,65,0.4);margin-bottom:16px;line-height:1.6}
+  .qty-row{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+  .qty-btn{width:80px;height:80px;background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.5);font-family:'VT323',monospace;font-size:36px;cursor:pointer;transition:all .2s;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+  .qty-btn:hover{border-color:#00ff41;color:#00ff41;background:rgba(0,255,65,0.04);box-shadow:0 0 16px rgba(0,255,65,0.15)}
+  .qty-btn.active{border-color:#00ff41;color:#00ff41;background:rgba(0,255,65,0.08);box-shadow:0 0 20px rgba(0,255,65,0.2)}
+  .qty-sub{font-size:9px;letter-spacing:1px;color:rgba(0,255,65,0.35);font-family:'Share Tech Mono',monospace}
+  .qty-btn.active .qty-sub{color:rgba(0,255,65,0.6)}
+  .qty-total{font-size:11px;color:rgba(0,255,65,0.35);text-align:center;margin-bottom:20px;letter-spacing:1px}
+  .qty-total span{color:#00ff41}
+  .confirm-mint-btn{width:100%;padding:14px;background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:'VT323',monospace;font-size:22px;letter-spacing:4px;cursor:pointer;transition:all .3s}
+  .confirm-mint-btn:hover{background:rgba(0,255,65,0.06);box-shadow:0 0 25px rgba(0,255,65,0.2);text-shadow:0 0 10px #00ff41}
+  .confirm-mint-btn:disabled{opacity:.3;cursor:not-allowed}
+
+  /* ── BRIDGE MODAL ── */
+  #bridgeModal{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.93);align-items:center;justify-content:center;padding:20px}
+  #bridgeModal.open{display:flex!important}
+  .bridge-box{background:#000;border:1px solid rgba(247,201,72,0.4);max-width:460px;width:100%;box-shadow:0 0 40px rgba(247,201,72,0.08)}
+  .bridge-header{padding:10px 16px;border-bottom:1px solid rgba(247,201,72,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(247,201,72,0.03)}
+  .bridge-title{font-size:10px;color:rgba(247,201,72,0.6);letter-spacing:3px;text-transform:uppercase}
+  .bridge-close{background:transparent;border:1px solid rgba(247,201,72,0.2);color:rgba(247,201,72,0.5);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px}
+  .bridge-body{padding:24px}
+  .bridge-err{font-family:'VT323',monospace;font-size:26px;color:#f7c948;margin-bottom:6px;text-shadow:0 0 12px rgba(247,201,72,0.4)}
+  .bridge-msg{font-size:11px;color:rgba(247,201,72,0.55);line-height:1.7;margin-bottom:20px}
+  .bridge-info{border:1px solid rgba(247,201,72,0.15);padding:12px 16px;margin-bottom:20px;background:rgba(247,201,72,0.02)}
+  .bridge-info div{font-size:11px;color:rgba(247,201,72,0.45);line-height:1.8}
+  .bridge-info span{color:#f7c948}
+  .bridge-link{display:block;width:100%;padding:14px;background:transparent;border:1px solid #f7c948;color:#f7c948;font-family:'VT323',monospace;font-size:20px;letter-spacing:3px;text-align:center;text-decoration:none;transition:all .2s;margin-bottom:8px;cursor:pointer}
+  .bridge-link:hover{background:rgba(247,201,72,0.07);box-shadow:0 0 20px rgba(247,201,72,0.15);text-shadow:0 0 8px #f7c948}
+  .bridge-skip{width:100%;padding:10px;background:transparent;border:1px solid rgba(247,201,72,0.15);color:rgba(247,201,72,0.35);font-family:'VT323',monospace;font-size:16px;letter-spacing:2px;cursor:pointer;transition:all .2s}
+  .bridge-skip:hover{border-color:rgba(247,201,72,0.3);color:rgba(247,201,72,0.5)}
   .fclock{font-family:'VT323',monospace;font-size:15px;color:rgba(0,255,65,0.3)}
 
   @media(max-width:600px){
@@ -207,7 +246,7 @@
       <div class="mi"><div class="mi-l">Your Mints</div><div class="mi-v" id="myMints">—</div></div>
     </div>
 
-    <button class="action-btn" id="mintBtn" onclick="executeMint()" disabled>[ MINT ]</button>
+    <button class="action-btn" id="mintBtn" onclick="openMintModal()" disabled>[ MINT ]</button>
     <div class="log" id="mintLog"></div>
     <div id="quickBtnsInline" style="display:none" class="quick-btns">
       <div style="width:100%;font-size:9px;color:rgba(0,255,65,0.3);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">&gt; what's next</div>
@@ -395,25 +434,122 @@ function selectBurn(id) {
   btn.textContent = `[ BURN #${String(id).padStart(3,'0')} — GET 10M $HACK ]`;
 }
 
+// ─── MINT QUANTITY MODAL ─────────────────────────────────────────────────────
+let selectedQty = 0;
+
+function openMintModal() {
+  if (!signer) { connectWallet(); return; }
+  selectedQty = 0;
+  document.getElementById('confirmMintBtn').disabled = true;
+  document.getElementById('qtyTotal').textContent = 'select quantity above';
+  // reset active states
+  [1,2,3].forEach(n => document.getElementById('qty'+n).classList.remove('active'));
+
+  // figure out how many this wallet can still mint
+  const myMints = parseInt(document.getElementById('myMints').textContent) || 0;
+  const canMint = Math.max(0, 3 - myMints);
+
+  // hide qty buttons user can't use
+  [1,2,3].forEach(n => {
+    const btn = document.getElementById('qty'+n);
+    if (n > canMint) {
+      btn.disabled = true;
+      btn.style.opacity = '0.2';
+      btn.style.cursor = 'not-allowed';
+    } else {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+    }
+  });
+
+  document.getElementById('qtyRemaining').textContent = canMint + ' available';
+  document.getElementById('mintModal').classList.add('open');
+}
+
+function closeMintModal() {
+  document.getElementById('mintModal').classList.remove('open');
+}
+
+function selectQty(n) {
+  selectedQty = n;
+  [1,2,3].forEach(i => document.getElementById('qty'+i).classList.remove('active'));
+  document.getElementById('qty'+n).classList.add('active');
+  const total = (0.003 * n).toFixed(3);
+  document.getElementById('qtyTotal').innerHTML = `total: <span style="color:#00ff41">${total} ETH</span> for ${n} NFT${n>1?'s':''}`;
+  document.getElementById('confirmMintBtn').disabled = false;
+}
+
+// ─── BRIDGE MODAL ────────────────────────────────────────────────────────────
+function openBridgeModal(need, have) {
+  document.getElementById('bridgeNeed').textContent = need.toFixed(4);
+  document.getElementById('bridgeHave').textContent = have.toFixed(4);
+  // relay link with amount pre-filled
+  const amountWei = Math.ceil(need * 1e18);
+  document.getElementById('bridgeLinkBtn').href =
+    `https://relay.link/bridge/ink?toChainId=57073&currency=eth`;
+  document.getElementById('bridgeModal').classList.add('open');
+}
+
+function closeBridgeModal() {
+  document.getElementById('bridgeModal').classList.remove('open');
+}
+
 // ─── EXECUTE MINT ────────────────────────────────────────────────────────────
 async function executeMint() {
   if (!signer) { await connectWallet(); return; }
+  if (selectedQty < 1) return;
+
+  closeMintModal();
+
   const btn = document.getElementById('mintBtn');
   btn.disabled = true;
   clearLog('mintLog');
+
+  const pricePerMint = ethers.parseEther("0.003");
+  const totalCost    = pricePerMint * BigInt(selectedQty);
+
   try {
-    await typeLog('mintLog','info','minting $HACK OG NFT...');
-    const tx = await nftContract.mint({ value: ethers.parseEther("0.003"), gasLimit: 300000 });
-    await typeLog('mintLog','info','tx: '+tx.hash.slice(0,20)+'...');
-    const receipt = await tx.wait();
-    await typeLog('mintLog','ok','SUCCESS: $HACK OG NFT minted!');
+    // ── balance check ──────────────────────────────────────────────────────
+    const balance = await provider.getBalance(walletAddress);
+    if (balance < totalCost) {
+      const needEth = parseFloat(ethers.formatEther(totalCost));
+      const haveEth = parseFloat(ethers.formatEther(balance));
+      openBridgeModal(needEth, haveEth);
+      btn.disabled = false;
+      return;
+    }
+
+    // ── mint loop ──────────────────────────────────────────────────────────
+    await typeLog('mintLog','info',`minting ${selectedQty} $HACK OG NFT${selectedQty>1?'s':''}...`);
+
+    for (let i = 0; i < selectedQty; i++) {
+      await typeLog('mintLog','info', `mint ${i+1}/${selectedQty}...`);
+      const tx = await nftContract.mint({ value: pricePerMint, gasLimit: 300000 });
+      await typeLog('mintLog','info','tx: '+tx.hash.slice(0,20)+'...');
+      await tx.wait();
+      await typeLog('mintLog','ok', `✓ NFT ${i+1} minted!`);
+    }
+
+    await typeLog('mintLog','ok', `SUCCESS: ${selectedQty} NFT${selectedQty>1?'s':''} minted!`);
     await typeLog('mintLog','ok','> welcome to the genesis, anon.');
     drawNFTPreview(Math.floor(Math.random()*750)+1);
     await loadStats();
     await loadUserNFTs();
     showShareModal();
   } catch(e) {
-    await typeLog('mintLog','err','ERROR: '+(e.reason||e.message||'failed'));
+    const msg = e.reason || e.message || 'failed';
+    // catch insufficient funds from wallet rejection too
+    if (msg.toLowerCase().includes('insufficient') || msg.toLowerCase().includes('funds') || e.code === 'INSUFFICIENT_FUNDS') {
+      try {
+        const balance = await provider.getBalance(walletAddress);
+        const needEth = parseFloat(ethers.formatEther(totalCost));
+        const haveEth = parseFloat(ethers.formatEther(balance));
+        openBridgeModal(needEth, haveEth);
+      } catch(_) {}
+    } else {
+      await typeLog('mintLog','err','ERROR: '+msg);
+    }
     btn.disabled = false;
   }
 }
@@ -602,6 +738,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('shareModal').addEventListener('click', function(e){
     if (e.target === this) closeShareModal();
   });
+  document.getElementById('mintModal').addEventListener('click', function(e){
+    if (e.target === this) closeMintModal();
+  });
+  document.getElementById('bridgeModal').addEventListener('click', function(e){
+    if (e.target === this) closeBridgeModal();
+  });
 });
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
@@ -627,6 +769,53 @@ setInterval(tick,1000); tick();
   <div style="width:100%;font-size:9px;color:rgba(0,255,65,0.3);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">&gt; while you're here</div>
   <a class="quick-btn" href="/">[ CLAIM AIRDROP ]</a>
   <a class="quick-btn gold" href="/checkin">[ DAILY CHECK-IN ]</a>
+</div>
+
+<!-- MINT QUANTITY MODAL -->
+<div id="mintModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;padding:20px">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">● ● ●&nbsp;&nbsp;&nbsp;// SELECT QUANTITY</div>
+      <button onclick="closeMintModal()" class="modal-close">[ × ]</button>
+    </div>
+    <div class="modal-body">
+      <div class="qty-label">&gt; how many do you want to mint?<br>&gt; max 3 per wallet — <span id="qtyRemaining">—</span> remaining in wallet</div>
+      <div class="qty-row">
+        <button class="qty-btn" id="qty1" onclick="selectQty(1)">
+          1<div class="qty-sub">0.003 ETH</div>
+        </button>
+        <button class="qty-btn" id="qty2" onclick="selectQty(2)">
+          2<div class="qty-sub">0.006 ETH</div>
+        </button>
+        <button class="qty-btn" id="qty3" onclick="selectQty(3)">
+          3<div class="qty-sub">0.009 ETH</div>
+        </button>
+      </div>
+      <div class="qty-total" id="qtyTotal">select quantity above</div>
+      <button class="confirm-mint-btn" id="confirmMintBtn" onclick="executeMint()" disabled>[ CONFIRM MINT ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- BRIDGE MODAL -->
+<div id="bridgeModal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.93);align-items:center;justify-content:center;padding:20px">
+  <div class="bridge-box">
+    <div class="bridge-header">
+      <div class="bridge-title">● ● ●&nbsp;&nbsp;&nbsp;// INSUFFICIENT FUNDS</div>
+      <button onclick="closeBridgeModal()" class="bridge-close">[ × ]</button>
+    </div>
+    <div class="bridge-body">
+      <div class="bridge-err">NOT ENOUGH ETH</div>
+      <div class="bridge-msg">&gt; you don't have enough ETH on INK chain to complete this mint.<br>&gt; bridge ETH from another chain to continue.</div>
+      <div class="bridge-info">
+        <div>&gt; need: <span id="bridgeNeed">—</span> ETH</div>
+        <div>&gt; have: <span id="bridgeHave">—</span> ETH</div>
+        <div>&gt; bridge to: <span>INK chain</span></div>
+      </div>
+      <a id="bridgeLinkBtn" href="https://relay.link/bridge/ink" target="_blank" rel="noopener" class="bridge-link">[ BRIDGE TO INK VIA RELAY ]</a>
+      <button onclick="closeBridgeModal()" class="bridge-skip">[ SKIP — I'LL DO IT LATER ]</button>
+    </div>
+  </div>
 </div>
 
 <!-- SHARE MODAL -->
