@@ -10,13 +10,13 @@
 <meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, token sale, crypto, web3, INK memecoin">
 <meta name="author" content="$HACK">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://hacktokenink.xyz/">
+<link rel="canonical" href="https://hackink.xyz">
 
 <!-- ─── OPEN GRAPH (Facebook, Telegram, Discord, WhatsApp) ───────────────── -->
 <meta property="og:type"        content="website">
-<meta property="og:url"         content="https://hacktokenink.xyz/">
+<meta property="og:url"         content="https://hackink.xyz">
 <meta property="og:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta property="og:description" content="Claim 100,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
+<meta property="og:description" content="Claim 5,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
 <meta property="og:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
@@ -24,9 +24,9 @@
 
 <!-- ─── TWITTER CARD ────────────────────────────────────────────────────── -->
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:url"         content="https://hacktokenink.xyz/">
+<meta name="twitter:url"         content="https://hackink.xyz">
 <meta name="twitter:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta name="twitter:description" content="Claim 100,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
+<meta name="twitter:description" content="Claim 5,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
 <meta name="twitter:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 
 <!-- ─── FAVICON ─────────────────────────────────────────────────────────── -->
@@ -347,19 +347,6 @@
     .terminal{padding:36px 14px 20px}
     .airdrop-info{flex-direction:column}
   }
-
-  /* Bridge modal */
-  #bridgeModal.open{display:flex!important}
-  .bridge-modal-inner{background:#000;border:1px solid rgba(0,255,65,0.35);max-width:480px;width:100%;position:relative;box-shadow:0 0 40px rgba(0,255,65,0.12)}
-  .bridge-modal-header{padding:10px 16px;border-bottom:1px solid rgba(0,255,65,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(0,255,65,0.03)}
-  .bridge-modal-tag{font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:3px;text-transform:uppercase}
-  .bridge-modal-body{padding:22px 24px}
-  .bridge-modal-title{font-family:'VT323',monospace;font-size:28px;color:#00ff41;margin-bottom:6px;text-shadow:0 0 10px rgba(0,255,65,0.4)}
-  .bridge-modal-desc{font-size:11px;color:rgba(0,255,65,0.45);line-height:1.7;margin-bottom:20px}
-  .bridge-link{display:block;padding:13px;background:transparent;border:1px solid rgba(0,255,65,0.5);color:#00ff41;font-family:'VT323',monospace;font-size:20px;letter-spacing:3px;text-align:center;text-decoration:none;transition:all .2s;margin-bottom:8px}
-  .bridge-link:hover{background:rgba(0,255,65,0.06);box-shadow:0 0 20px rgba(0,255,65,0.2)}
-  .bridge-skip{width:100%;padding:10px;background:transparent;border:1px solid rgba(0,255,65,0.12);color:rgba(0,255,65,0.35);font-family:'VT323',monospace;font-size:16px;letter-spacing:2px;cursor:pointer;transition:all .2s}
-  .bridge-skip:hover{border-color:rgba(0,255,65,0.25);color:rgba(0,255,65,0.5)}
 </style>
 </head>
 <body>
@@ -371,7 +358,7 @@
   <nav>
     <div class="nav-logo">$HACK</div>
     <div class="nav-right">
-      <a class="nav-link" id="checkinNavBtn" href="checkin.html" style="display:none;border:1px solid rgba(247,201,72,0.5);color:#f7c948;padding:6px 12px;transition:all .2s;text-decoration:none;font-size:10px;letter-spacing:2px">[ CHECK-IN ]</a>
+      <a class="nav-link" id="checkinNavBtn" href="checkin.html" style="display:none;border:1px solid rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);padding:6px 12px;transition:all .2s;text-decoration:none" onmouseover="this.style.borderColor='#f7c948';this.style.color='#f7c948'" onmouseout="this.style.borderColor='rgba(247,201,72,0.4)';this.style.color='rgba(247,201,72,0.7)'">[ CHECK-IN ]</a>
       <div class="nav-status">
         <div class="dot"></div>
         INK // BLOCK #<span id="blocknum">21847293</span>
@@ -452,7 +439,7 @@
       <div class="airdrop-info">
         <div class="airdrop-stat">
           <div class="airdrop-stat-label">Airdrop Amount</div>
-          <div class="airdrop-stat-value">100,000</div>
+          <div class="airdrop-stat-value">5,000</div>
         </div>
         <div class="airdrop-stat">
           <div class="airdrop-stat-label">Per Wallet</div>
@@ -477,7 +464,7 @@
         </div>
         <div class="task">
           <div class="task-label" id="lbl-like">&gt; like &amp; retweet the announcement post</div>
-          <a class="task-btn" id="btn-like" href="https://twitter.com/intent/retweet?tweet_id=2037437834689143047" target="_blank" rel="noopener" onclick="completeTask('like'); completeTask('rt');">[ LIKE &amp; RT ]</a>
+          <a class="task-btn" id="btn-like" href="https://twitter.com/intent/retweet?tweet_id=2033839538615759119" target="_blank" rel="noopener" onclick="completeTask('like'); completeTask('rt');">[ LIKE &amp; RT ]</a>
           <div class="task-status" id="st-like"></div>
         </div>
         <div class="task">
@@ -583,7 +570,7 @@
     <div class="ticker">
       <span class="ticker-item">$HACK</span>
       <span class="ticker-item">PRICE: <span>1 USD = 20,000 $HACK</span></span>
-      <span class="ticker-item">AIRDROP: <span>100,000 $HACK FREE</span></span>
+      <span class="ticker-item">AIRDROP: <span>5,000 $HACK FREE</span></span>
       <span class="ticker-item">DEX LISTING: <span>APRIL 20</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
@@ -592,7 +579,7 @@
       <span class="ticker-item">CONTRACT: <span>RENOUNCED</span></span>
       <span class="ticker-item">$HACK</span>
       <span class="ticker-item">PRICE: <span>1 USD = 20,000 $HACK</span></span>
-      <span class="ticker-item">AIRDROP: <span>100,000 $HACK FREE</span></span>
+      <span class="ticker-item">AIRDROP: <span>5,000 $HACK FREE</span></span>
       <span class="ticker-item">DEX LISTING: <span>APRIL 20</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
@@ -633,7 +620,7 @@
     </div>
     <div class="contract-row">
       <div class="contract-label">AIRDROP</div>
-      <div class="contract-addr" id="addr-airdrop">0x1647dA5c081b3804342956086cece17A352c5f28</div>
+      <div class="contract-addr" id="addr-airdrop">0x7F8a38Bd737C3F5F921134F849cC9278843Eb137</div>
       <button class="copy-btn" onclick="copyAddr('addr-airdrop',this)">[ COPY ]</button>
     </div>
     <div class="contract-row">
@@ -657,7 +644,7 @@
       <div class="rm-status">[DONE]</div>
       <div class="rm-content">
         <div class="rm-title">Sale + Airdrop Launch</div>
-        <div class="rm-desc">Public sale live. Free airdrop — 100,000 $HACK per wallet. No KYC.</div>
+        <div class="rm-desc">Public sale live. Free airdrop — 5,000 $HACK per wallet. No KYC.</div>
       </div>
     </div>
     <div class="rm-item done">
@@ -707,7 +694,7 @@
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">&gt; How does the airdrop work?</div>
-      <div class="faq-a">Complete 4 tasks on X (follow, like+RT, share) and join Telegram. Once all tasks are done, claim 100,000 $HACK for free. One claim per wallet. On-chain verification.</div>
+      <div class="faq-a">Complete 4 tasks on X (follow, like+RT, share) and join Telegram. Once all tasks are done, claim 5,000 $HACK for free. One claim per wallet. On-chain verification.</div>
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">&gt; How does staking work?</div>
@@ -734,7 +721,7 @@
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
 const SALE_ADDRESS     = "0xFaBd3610FfFF899b3ec55624dcA92553C1C5ef23";
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
-const AIRDROP_ADDRESS = "0x1647dA5c081b3804342956086cece17A352c5f28";
+const AIRDROP_ADDRESS = "0x7F8a38Bd737C3F5F921134F849cC9278843Eb137";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const RATE            = 20000;
 
@@ -869,12 +856,16 @@ async function connectWallet() {
 
     await refreshBalance();
     await checkAirdropStatus();
-    await checkEthBalance();
+    // Update button text now that wallet is connected
     const aBtn = document.getElementById('airdropBtn');
     if (!aBtn.classList.contains('claimed-state')) {
       const allDone = ['follow','tg','like','rt','share'].every(t => completedTasks.has(t));
-      aBtn.textContent = allDone ? '[ CLAIM 100,000 $HACK ]' : '[ COMPLETE TASKS TO CLAIM ]';
-      if (allDone) aBtn.disabled = false;
+      if (allDone) {
+        aBtn.disabled = false;
+        aBtn.textContent = '[ CLAIM 5,000 $HACK ]';
+      } else {
+        aBtn.textContent = '[ COMPLETE TASKS TO CLAIM ]';
+      }
     }
 
     window.ethereum.on('accountsChanged', () => location.reload());
@@ -909,33 +900,24 @@ async function checkAirdropStatus() {
       btn.classList.add('claimed-state');
       await typeLog('airdropLog', 'warn', 'this wallet has already claimed the airdrop');
       showCheckinBtn();
-      showCheckinInline();
+
+      // Yellow check-in button below log
+      if (!document.getElementById('checkinInlineBtn')) {
+        const ci = document.createElement('a');
+        ci.id = 'checkinInlineBtn';
+        ci.href = 'checkin.html';
+        ci.className = 'action-btn';
+        ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.6);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease';
+        ci.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
+        document.getElementById('airdropLog').parentNode.appendChild(ci);
+      }
     }
   } catch(e) {}
 }
 
 function showCheckinBtn() {
   const el = document.getElementById('checkinNavBtn');
-  if (el) el.style.display = 'inline-block';
-}
-
-function showCheckinInline() {
-  if (document.getElementById('checkinInlineBtn')) return;
-  const ci = document.createElement('a');
-  ci.id = 'checkinInlineBtn';
-  ci.href = 'checkin.html';
-  ci.className = 'action-btn';
-  ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
-  ci.textContent = '[ DAILY CHECK-IN ]';
-  const nftCi = document.createElement('a');
-  nftCi.id = 'nftInlineBtn';
-  nftCi.href = 'https://hacktokenink.xyz/genesis';
-  nftCi.className = 'action-btn';
-  nftCi.style.cssText = 'display:block;margin-top:8px;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
-  nftCi.textContent = '[ MINT OG NFT — GENESIS ]';
-  const logParent = document.getElementById('airdropLog').parentNode;
-  logParent.appendChild(ci);
-  logParent.appendChild(nftCi);
+  if (el) el.style.display = 'block';
 }
 
 // ─── SOCIAL TASKS ────────────────────────────────────────────────────────────
@@ -945,9 +927,9 @@ let completedTasks = new Set();
 function openShare(e) {
   e.preventDefault();
   const refPart = walletAddress
-    ? '\n\nClaim here 👉hacktokenink.xyz?ref=' + walletAddress
-    : '\n\nClaim here 👉hacktokenink.xyz';
-  const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
+    ? '\n\nClaim here 👉hackink.xyz?ref=' + walletAddress
+    : '\n\nClaim here 👉hackink.xyz';
+  const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 5,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
   completeTask('share');
 }
@@ -965,7 +947,7 @@ function completeTask(id) {
     if (allDone) {
       const claimBtn = document.getElementById('airdropBtn');
       claimBtn.disabled = false;
-      claimBtn.textContent = '[ CLAIM 100,000 $HACK ]';
+      claimBtn.textContent = signer ? '[ CLAIM 5,000 $HACK ]' : '[ CONNECT WALLET ]';
     }
   }, 10000);
 }
@@ -995,7 +977,7 @@ async function executeAirdropClaim() {
     if (alreadyClaimed) {
       btn.textContent = '[ ALREADY CLAIMED ]';
       btn.classList.add('claimed-state');
-      const refUrl2 = 'https://hacktokenink.xyz/?ref=' + walletAddress;
+      const refUrl2 = 'https://hackink.xyz?ref=' + walletAddress;
       await typeLog('airdropLog', 'warn', 'already claimed. share your ref link:');
       const ri = document.createElement('input');
       ri.value = refUrl2; ri.readOnly = true;
@@ -1006,7 +988,7 @@ async function executeAirdropClaim() {
         if (Number(stats.count) > 0) {
           await typeLog('airdropLog', 'ok', 'invited: ' + stats.count + ' wallets // earned: ' + Number(ethers.formatEther(stats.earned)).toLocaleString() + ' $HACK');
         } else {
-          await typeLog('airdropLog', 'info', '+20,000 $HACK for each wallet you invite');
+          await typeLog('airdropLog', 'info', '+1,000 $HACK for each wallet you invite');
         }
       } catch(e) {}
       return;
@@ -1023,13 +1005,13 @@ async function executeAirdropClaim() {
     const tx = await airdropContract.claim(REF_ADDR, { value: feeWei });
     await typeLog('airdropLog', 'info', 'tx sent: ' + tx.hash.slice(0,20) + '...');
     await tx.wait();
-    await typeLog('airdropLog', 'ok', 'SUCCESS: 100,000 $HACK claimed!');
+    await typeLog('airdropLog', 'ok', 'SUCCESS: 5,000 $HACK claimed!');
     await typeLog('airdropLog', 'ok', '> welcome to the system, anon.');
 
     // Show referral link
-    const refUrl = 'https://hacktokenink.xyz/?ref=' + walletAddress;
+    const refUrl = 'https://hackink.xyz?ref=' + walletAddress;
     await typeLog('airdropLog', 'info', 'your ref link: hackink.xyz?ref=' + walletAddress.slice(0,10) + '...');
-    await typeLog('airdropLog', 'info', '+20,000 $HACK for each wallet you invite');
+    await typeLog('airdropLog', 'info', '+1,000 $HACK for each wallet you invite');
 
     // Show copy ref button
     const refWrap = document.createElement('div');
@@ -1079,22 +1061,18 @@ async function executeAirdropClaim() {
     stakeBtn.textContent = '[ STAKE YOUR $HACK ]';
     stakeBtn.onclick = () => switchTab('stake');
 
-    const checkinBtn2 = document.createElement('a');
-    checkinBtn2.href = 'checkin.html';
+    // Check-in button
+    const checkinBtn2 = document.createElement('button');
     checkinBtn2.className = 'action-btn';
-    checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
-    checkinBtn2.textContent = '[ DAILY CHECK-IN ]';
-    const nftBtn2 = document.createElement('a');
-    nftBtn2.href = 'https://hacktokenink.xyz/genesis';
-    nftBtn2.className = 'action-btn';
-    nftBtn2.style.cssText = 'display:block;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
-    nftBtn2.textContent = '[ MINT OG NFT — GENESIS ]';
+    checkinBtn2.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
+    checkinBtn2.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
+    checkinBtn2.onclick = () => window.location.href = 'checkin.html';
+
     wrap.appendChild(buyMoreBtn);
     wrap.appendChild(stakeBtn);
     wrap.appendChild(checkinBtn2);
-    wrap.appendChild(nftBtn2);
-    showCheckinBtn();
     btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
+    showCheckinBtn();
 
   } catch(e) {
     await typeLog('airdropLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
@@ -1409,38 +1387,22 @@ function toggleFaq(el) {
   el.classList.toggle('open');
 }
 
-
-// ─── BRIDGE MODAL ─────────────────────────────────────────────────────────────
-function closeBridgeModal() {
-  document.getElementById('bridgeModal').classList.remove('open');
-}
-document.addEventListener('DOMContentLoaded', () => {
-  const bm = document.getElementById('bridgeModal');
-  if (bm) bm.addEventListener('click', e => { if (e.target === bm) closeBridgeModal(); });
-});
-
-async function checkEthBalance() {
-  try {
-    const bal = await provider.getBalance(walletAddress);
-    // less than 0.0005 ETH = warn
-    if (bal < BigInt("500000000000000")) {
-      document.getElementById('bridgeModal').classList.add('open');
-    }
-  } catch(e) {}
-}
-
 // ─── MISC ────────────────────────────────────────────────────────────────────
 
 // Load reward pool without wallet — raw JSON-RPC fetch (no CORS issues)
-// Staking pool — 200B per tokenomics (20% of supply)
+// Staking pool — 200B tokens hardcoded per tokenomics (20% of supply)
 document.getElementById('st-pool').textContent = '200,000,000,000';
+
 async function loadPoolPublic() {
   try {
     const rpc = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
-    const sc  = new ethers.Contract(STAKING_ADDRESS, ["function rewardPool() external view returns (uint256)"], rpc);
+    const sc  = new ethers.Contract(STAKING_ADDRESS, [
+      "function rewardPool() external view returns (uint256)"
+    ], rpc);
     const pool = await sc.rewardPool();
-    document.getElementById('st-pool').textContent = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
-  } catch(e) {}
+    const fmt  = Number(ethers.formatEther(pool)).toLocaleString(undefined,{maximumFractionDigits:0});
+    document.getElementById('st-pool').textContent = fmt;
+  } catch(e) { /* keep hardcoded fallback */ }
 }
 loadPoolPublic();
 let block = 21847293;
@@ -1457,25 +1419,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 </script>
-
-<!-- BRIDGE MODAL -->
-<div id="bridgeModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;padding:20px">
-  <div class="bridge-modal-inner">
-    <div class="bridge-modal-header">
-      <div class="bridge-modal-tag">● ● ●&nbsp;&nbsp;&nbsp;// LOW BALANCE</div>
-      <button onclick="closeBridgeModal()" style="background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px">[ × ]</button>
-    </div>
-    <div class="bridge-modal-body">
-      <div class="bridge-modal-title">NOT ENOUGH ETH ON INK</div>
-      <div class="bridge-modal-desc">
-        &gt; your wallet has insufficient ETH on INK Chain<br>
-        &gt; bridge ETH to INK to pay for gas and transactions<br>
-        &gt; relay.link supports fast bridging from most networks
-      </div>
-      <a class="bridge-link" href="https://relay.link/bridge/ink" target="_blank" rel="noopener">[ BRIDGE TO INK — relay.link ]</a>
-      <button class="bridge-skip" onclick="closeBridgeModal()">[ continue anyway ]</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
+
