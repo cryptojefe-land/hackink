@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ─── SEO ──────────────────────────────────────────────────────────────── -->
-<title>$HACK — Free Airdrop</title>
+<title>$HACK — Free Airdrop & OG NFT on INK Chain</title>
 <meta name="description" content="Claim your free $HACK airdrop on INK Chain. 750 OG NFTs — burn one to receive 10,000,000 $HACK. No KYC. No bullshit. On-chain only.">
 <meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, OG NFT, genesis, crypto, web3, INK memecoin">
 <meta name="author" content="$HACK">
@@ -34,7 +34,7 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23000000'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='100' fill='%2300ff41'%3E%24%3C/text%3E%3C/svg%3E">
 <meta name="theme-color" content="#000000">
 
-<title>$HACK — Free Airdrop</title>
+<title>$HACK — Free Airdrop & OG NFT on INK Chain</title>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Rajdhani:wght@400;600;700&display=swap');
@@ -370,17 +370,18 @@
   <div class="hero">
     <div class="hero-title" data-text="$HACK">$HACK</div>
     <div class="hero-sub">ACCESS GRANTED // CLAIM YOUR TOKENS</div>
-    <div class="terminal-line">&gt; sale: <span>OPEN</span> // airdrop: <span>OPEN</span></div>
+    <div class="terminal-line">&gt; airdrop: <span>OPEN</span> // OG NFT: <span>LIVE</span></div>
+    <div class="terminal-line">&gt; chain: <span>INK</span> // supply: <span>750 NFTs</span> <span style="color:rgba(0,255,65,0.3)">|</span> <span>burn → 10M $HACK</span></div>
   </div>
 
   <div class="stats-strip">
     <div class="stat-block">
       <div class="stat-label">Airdrop</div>
-      <div class="stat-value green">10%</div>
+      <div class="stat-value green">FREE</div>
     </div>
     <div class="stat-block-cyan">
-      <div class="stat-label">Sale Pool</div>
-      <div class="stat-value cyan">30%</div>
+      <div class="stat-label">OG NFT Supply</div>
+      <div class="stat-value cyan">750</div>
     </div>
     <div class="ink-block">
       <div class="ink-label">Chain</div>
@@ -438,7 +439,7 @@
         </div>
       </div>
 
-      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="connectWallet()" enabled>[ CONNECT WALLET ]</button>
+      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()">[ CONNECT WALLET ]</button>
       <div class="log" id="airdropLog"></div>
     </div>
   </div>
@@ -521,7 +522,7 @@
     <div class="step">
       <div class="step-num">02</div>
       <div class="step-title">Share / Approve</div>
-      <div class="step-desc">Airdrop: complete tasks on X. Sale: approve token spend once.</div>
+      <div class="step-desc">Complete tasks on X + join Telegram. All tasks unlock the claim.</div>
     </div>
     <div class="step">
       <div class="step-num">03</div>
@@ -811,6 +812,7 @@ async function connectWallet() {
     if (!aBtn.classList.contains('claimed-state')) {
       const allDone = ['follow','tg','like','rt','share'].every(t => completedTasks.has(t));
       aBtn.textContent = allDone ? '[ CLAIM 100,000 $HACK ]' : '[ COMPLETE TASKS TO CLAIM ]';
+      aBtn.onclick = handleAirdrop;
       if (allDone) aBtn.disabled = false;
     }
 
@@ -1283,4 +1285,3 @@ updateClock();
 </script>
 </body>
 </html>
-
