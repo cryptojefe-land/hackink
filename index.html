@@ -6,8 +6,8 @@
 
 <!-- ─── SEO ──────────────────────────────────────────────────────────────── -->
 <title>$HACK — Free Airdrop & Token Sale on INK Chain</title>
-<meta name="description" content="Claim your free $HACK airdrop or buy tokens for USDC on INK Chain. No KYC. No bullshit. On-chain only. 1 USD = 20,000 $HACK.">
-<meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, token sale, crypto, web3, INK memecoin">
+<meta name="description" content="Claim your free $HACK airdrop on INK Chain. 750 OG NFTs — burn one to receive 10,000,000 $HACK. No KYC. No bullshit. On-chain only.">
+<meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, OG NFT, genesis, crypto, web3, INK memecoin">
 <meta name="author" content="$HACK">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://hacktokenink.xyz/">
@@ -16,7 +16,7 @@
 <meta property="og:type"        content="website">
 <meta property="og:url"         content="https://hacktokenink.xyz/">
 <meta property="og:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta property="og:description" content="Claim 100,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
+<meta property="og:description" content="Claim 100,000 $HACK free. 750 OG NFTs — burn one to receive 10,000,000 $HACK. No KYC. No bullshit. On-chain only.">
 <meta property="og:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 <meta property="og:image:width"  content="1200">
 <meta property="og:image:height" content="630">
@@ -26,7 +26,7 @@
 <meta name="twitter:card"        content="summary_large_image">
 <meta name="twitter:url"         content="https://hacktokenink.xyz/">
 <meta name="twitter:title"       content="$HACK — Free Airdrop on INK Chain">
-<meta name="twitter:description" content="Claim 100,000 $HACK free or buy with USDC. No KYC. No bullshit. On-chain only.">
+<meta name="twitter:description" content="Claim 100,000 $HACK free. 750 OG NFTs — burn one to receive 10,000,000 $HACK. No KYC. No bullshit. On-chain only.">
 <meta name="twitter:image"       content="https://cryptojefe-land.github.io/hackink/og-image.png">
 
 <!-- ─── FAVICON ─────────────────────────────────────────────────────────── -->
@@ -392,45 +392,10 @@
   <!-- TABS -->
   <div class="tabs">
     <div class="tab active" onclick="switchTab('airdrop')">[ AIRDROP ]</div>
-    <div class="tab" onclick="switchTab('sale')">[ BUY ]</div>
     <div class="tab" onclick="switchTab('stake')">[ STAKE ]</div>
     
   </div>
 
-  <!-- SALE PANEL -->
-  <div class="panel" id="panel-sale">
-    <div class="section-header"><div class="section-tag">// CLAIM INTERFACE</div></div>
-    <div class="terminal">
-      <div class="wallet-bar" id="walletBar">
-        <div>WALLET: <span id="walletAddr">—</span></div>
-        <div><span id="usdcBalance">—</span></div>
-      </div>
-
-      <div style="display:flex;gap:4px;margin-bottom:16px;">
-        <div style="font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;align-self:center;margin-right:8px;">PAY WITH:</div>
-        <button class="token-sel active" id="sel-USDC" onclick="selectToken('USDC')">USDC</button>
-        <button class="token-sel" id="sel-USDC.e" onclick="selectToken('USDC.e')">USDC.e</button>
-        <button class="token-sel" id="sel-USDT0" onclick="selectToken('USDT0')">USDT0</button>
-      </div>
-      <div class="amount-row">
-        <div class="amount-group">
-          <div class="amount-label">You pay</div>
-          <div class="amount-input-wrap">
-            <div class="amount-prefix" id="tokenPrefix">USDC</div>
-            <input class="amount-input" id="usdcInput" type="number" min="0" step="any" value="1" inputmode="decimal" oninput="calcTokens()">
-          </div>
-        </div>
-        <div class="arrow-sep">→</div>
-        <div class="output-group">
-          <div class="amount-label">You receive</div>
-          <div class="output-display" id="tokenOut">20,000<span>$HACK</span></div>
-        </div>
-      </div>
-      <button class="action-btn" id="buyBtn" onclick="executeBuy()">[ EXECUTE CLAIM ]</button>
-      <div class="log" id="buyLog"></div>
-      <a class="share-btn" id="buyShareBtn" target="_blank" rel="noopener">[ SHARE ON X ]</a>
-    </div>
-  </div>
 
   <!-- AIRDROP PANEL -->
   <div class="panel active" id="panel-airdrop">
@@ -605,6 +570,32 @@
     </div>
   </div>
 
+  <!-- OG NFT INFO -->
+  <div class="section-header" style="margin-top:50px"><div class="section-tag">// OG GENESIS NFT</div></div>
+  <div class="terminal" style="margin-bottom:0">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:20px;border:1px solid rgba(0,255,65,0.12)">
+      <div style="padding:14px 8px;text-align:center;background:rgba(0,255,65,0.02);border-right:1px solid rgba(0,255,65,0.1)">
+        <div style="font-size:9px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">Total Supply</div>
+        <div style="font-family:'VT323',monospace;font-size:28px;color:#00ff41;text-shadow:0 0 10px rgba(0,255,65,0.4)">750</div>
+      </div>
+      <div style="padding:14px 8px;text-align:center;background:rgba(0,255,65,0.02);border-right:1px solid rgba(0,255,65,0.1)">
+        <div style="font-size:9px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">Burn Reward</div>
+        <div style="font-family:'VT323',monospace;font-size:28px;color:#c47aff;text-shadow:0 0 10px rgba(196,122,255,0.4)">10M $HACK</div>
+      </div>
+      <div style="padding:14px 8px;text-align:center;background:rgba(0,255,65,0.02)">
+        <div style="font-size:9px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">Mint Price</div>
+        <div style="font-family:'VT323',monospace;font-size:28px;color:#f7c948;text-shadow:0 0 10px rgba(247,201,72,0.4)">0.003 ETH</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:rgba(0,255,65,0.4);line-height:1.9;margin-bottom:16px">
+      <div>&gt; 750 OG NFTs. hard cap. no second collection. ever.</div>
+      <div>&gt; burn 1 NFT → receive <span style="color:#c47aff">10,000,000 $HACK</span> instantly. on-chain. automatic. irreversible.</div>
+      <div>&gt; OG holders: <span style="color:#f7c948">boosted staking rewards</span> + <span style="color:#00ff41">permanent on-chain OG status</span> + whitelist for everything that comes next.</div>
+      <div>&gt; the chain remembers who was early.</div>
+    </div>
+    <a href="https://hacktokenink.xyz/genesis" class="action-btn" style="display:block;text-align:center;text-decoration:none;font-size:clamp(16px,4vw,22px);color:#c47aff;border-color:rgba(196,122,255,0.6);padding:14px;letter-spacing:3px">[ MINT OG NFT — hacktokenink.xyz/genesis ]</a>
+  </div>
+
   <!-- CONTRACTS -->
   <div class="section-header" style="margin-top:50px"><div class="section-tag">// CONTRACT ADDRESSES</div></div>
   <div class="contracts-block">
@@ -627,8 +618,15 @@
     <div class="rm-item done">
       <div class="rm-status">[DONE]</div>
       <div class="rm-content">
-        <div class="rm-title">Sale + Airdrop Launch</div>
-        <div class="rm-desc">Public sale live. Free airdrop — 100,000 $HACK per wallet. No KYC.</div>
+        <div class="rm-title">Airdrop Launch</div>
+        <div class="rm-desc">Free airdrop — 100,000 $HACK per wallet. No KYC. Tasks on X + Telegram.</div>
+      </div>
+    </div>
+    <div class="rm-item done">
+      <div class="rm-status">[DONE]</div>
+      <div class="rm-content">
+        <div class="rm-title">OG Genesis NFT — 750 Total</div>
+        <div class="rm-desc">750 OG NFTs. Hard cap forever. No second collection. Burn 1 NFT → receive 10,000,000 $HACK. On-chain, automatic, irreversible. OG holders get boosted staking rewards + permanent on-chain status.</div>
       </div>
     </div>
     <div class="rm-item done">
@@ -673,8 +671,8 @@
       <div class="faq-a">INK is a fast EVM-compatible Layer 2 blockchain. To use it, add the network to MetaMask: RPC https://rpc-gel.inkonchain.com — Chain ID 57073 — Symbol ETH.</div>
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
-      <div class="faq-q">&gt; How do I buy $HACK?</div>
-      <div class="faq-a">Connect your wallet on INK Chain, switch to the BUY tab, select your payment token (USDC / USDC.e / USDT0), enter amount and hit Execute Claim. 1 USD = 20,000 $HACK.</div>
+      <div class="faq-q">&gt; What is the OG Genesis NFT?</div>
+      <div class="faq-a">750 OG NFTs deployed on INK Chain. Hard cap — no second collection, ever. Mint price: 0.003 ETH, max 3 per wallet. Burn your NFT on-chain to receive 10,000,000 $HACK automatically and irreversibly. OG holders get boosted staking rewards and permanent on-chain OG status.</div>
     </div>
     <div class="faq-item" onclick="toggleFaq(this)">
       <div class="faq-q">&gt; How does the airdrop work?</div>
@@ -703,18 +701,9 @@
 </div>
 <script>
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
-const SALE_ADDRESS     = "0xFaBd3610FfFF899b3ec55624dcA92553C1C5ef23";
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
 const AIRDROP_ADDRESS = "0x1647dA5c081b3804342956086cece17A352c5f28";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
-const RATE            = 20000;
-
-const TOKENS = {
-  "USDC":   { address: "0x2D270e6886d130D724215A266106e6832161EAEd", decimals: 6 },
-  "USDC.e": { address: "0xF1815bd50389c46847f0Bda824eC8da914045D14", decimals: 6 },
-  "USDT0":  { address: "0x0200C29006150606B650577BBE7B6248F58470c1", decimals: 6 },
-};
-let selectedToken = "USDC";
 
 const INK_CHAIN = {
   chainId:           "0xDEF1",
@@ -724,12 +713,6 @@ const INK_CHAIN = {
   blockExplorerUrls: ["https://explorer.inkonchain.com"]
 };
 
-const SALE_ABI = [
-  "function buy(address token, uint256 paymentAmount) external",
-  "function preview(address token, uint256 paymentAmount) external view returns (uint256)",
-  "function remainingHack() external view returns (uint256)",
-  "function saleActive() external view returns (bool)"
-];
 
 const AIRDROP_ABI = [
   "function claim(address referrer) external payable",
@@ -773,23 +756,15 @@ function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => {
     t.classList.toggle('active',
       (i===0 && tab==='airdrop') ||
-      (i===1 && tab==='sale')    ||
-      (i===2 && tab==='stake')
+      (i===1 && tab==='stake')
     );
   });
   document.getElementById('panel-airdrop').classList.toggle('active', tab==='airdrop');
-  document.getElementById('panel-sale').classList.toggle('active',    tab==='sale');
   document.getElementById('panel-stake').classList.toggle('active',   tab==='stake');
   if (tab==='stake' && signer) loadStakes();
 }
 
 // ─── UI ──────────────────────────────────────────────────────────────────────
-function calcTokens() {
-  const u = parseFloat(document.getElementById('usdcInput').value) || 0;
-  const t = Math.round(u * RATE);
-  document.getElementById('tokenOut').innerHTML =
-    t > 0 ? t.toLocaleString() + '<span>$HACK</span>' : '—<span>$HACK</span>';
-}
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -825,20 +800,13 @@ async function connectWallet() {
 
     signer          = await provider.getSigner();
     walletAddress   = await signer.getAddress();
-    saleContract    = new ethers.Contract(SALE_ADDRESS,    SALE_ABI,    signer);
     airdropContract  = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
     stakingContract  = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
-    for (const [name, t] of Object.entries(TOKENS)) {
-      paymentContracts[name] = new ethers.Contract(t.address, ERC20_ABI, signer);
-    }
 
     const short = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
     document.getElementById('connectBtn').textContent = short;
     document.getElementById('connectBtn').classList.add('connected');
-    document.getElementById('walletAddr').textContent = short;
-    document.getElementById('walletBar').classList.add('show');
 
-    await refreshBalance();
     await checkAirdropStatus();
     const aBtn = document.getElementById('airdropBtn');
     if (!aBtn.classList.contains('claimed-state')) {
@@ -855,17 +823,6 @@ async function connectWallet() {
   }
 }
 
-async function refreshBalance() {
-  try {
-    const contract = paymentContracts[selectedToken];
-    if (!contract) return;
-    const raw = await contract.balanceOf(walletAddress);
-    const dec = TOKENS[selectedToken].decimals;
-    const bal = Number(raw) / (10 ** dec);
-    document.getElementById('usdcBalance').textContent =
-      bal.toLocaleString(undefined, {maximumFractionDigits:2}) + ' ' + selectedToken;
-  } catch(e) {}
-}
 
 // ─── AIRDROP STATUS ──────────────────────────────────────────────────────────
 async function checkAirdropStatus() {
@@ -1037,11 +994,11 @@ async function executeAirdropClaim() {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-top:16px;animation:fadein .4s ease';
 
-    const buyMoreBtn = document.createElement('button');
-    buyMoreBtn.className = 'action-btn';
-    buyMoreBtn.style.cssText = 'border-color:rgba(0,255,65,0.4);color:rgba(0,255,65,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
-    buyMoreBtn.textContent = '[ BUY MORE $HACK ]';
-    buyMoreBtn.onclick = () => switchTab('sale');
+    const mintNftBtn = document.createElement('a');
+    mintNftBtn.href = 'genesis.html';
+    mintNftBtn.className = 'action-btn';
+    mintNftBtn.style.cssText = 'display:block;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,20px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
+    mintNftBtn.textContent = '[ MINT OG NFT — BURN FOR 10M $HACK ]';
 
     const stakeBtn = document.createElement('button');
     stakeBtn.className = 'action-btn';
@@ -1054,7 +1011,7 @@ async function executeAirdropClaim() {
     checkinBtn2.className = 'action-btn';
     checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
     checkinBtn2.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
-    wrap.appendChild(buyMoreBtn);
+    wrap.appendChild(mintNftBtn);
     wrap.appendChild(stakeBtn);
     wrap.appendChild(checkinBtn2);
     showCheckinBtn();
@@ -1067,82 +1024,6 @@ async function executeAirdropClaim() {
 }
 
 // ─── TOKEN SELECTOR ──────────────────────────────────────────────────────────
-function selectToken(name) {
-  selectedToken = name;
-  document.querySelectorAll('.token-sel').forEach(b => b.classList.remove('active'));
-  document.getElementById('sel-' + name).classList.add('active');
-  document.getElementById('tokenPrefix').textContent = name;
-  calcTokens();
-  if (signer) refreshBalance();
-}
-
-// ─── BUY FLOW ────────────────────────────────────────────────────────────────
-async function executeBuy() {
-  clearLog('buyLog');
-  document.getElementById('buyShareBtn').classList.remove('visible');
-  const btn = document.getElementById('buyBtn');
-
-  if (!signer) {
-    await typeLog('buyLog', 'warn', 'connect your wallet first...');
-    await connectWallet();
-    if (!signer) return;
-  }
-
-  const amount = parseFloat(document.getElementById('usdcInput').value);
-  if (!amount || amount <= 0) {
-    await typeLog('buyLog', 'err', 'ERROR: enter a valid ' + selectedToken + ' amount'); return;
-  }
-
-  const token    = TOKENS[selectedToken];
-  const rawAmt   = BigInt(Math.round(amount * (10 ** token.decimals)));
-  const payContract = paymentContracts[selectedToken];
-  btn.disabled = true;
-
-  try {
-    await typeLog('buyLog', 'info', 'checking sale status...');
-    const active = await saleContract.saleActive();
-    if (!active) { await typeLog('buyLog', 'err', 'ERROR: sale is paused'); btn.disabled=false; return; }
-
-    const remaining    = await saleContract.remainingHack();
-    const hackExpected = await saleContract.preview(token.address, rawAmt);
-    if (remaining < hackExpected) {
-      await typeLog('buyLog', 'err', 'ERROR: not enough tokens in sale pool'); btn.disabled=false; return;
-    }
-    const hackFormatted = Number(ethers.formatEther(hackExpected)).toLocaleString();
-    await typeLog('buyLog', 'ok', 'sale OK — ' + hackFormatted + ' $HACK to receive');
-
-    await typeLog('buyLog', 'info', 'checking ' + selectedToken + ' allowance...');
-    const allowance = await payContract.allowance(walletAddress, SALE_ADDRESS);
-    if (allowance < rawAmt) {
-      await typeLog('buyLog', 'warn', 'approve ' + selectedToken + ' — confirm in wallet...');
-      const approveTx = await payContract.approve(SALE_ADDRESS, rawAmt);
-      await typeLog('buyLog', 'info', 'approval tx: ' + approveTx.hash.slice(0,18) + '...');
-      await approveTx.wait();
-      await typeLog('buyLog', 'ok', selectedToken + ' approved');
-    } else {
-      await typeLog('buyLog', 'ok', selectedToken + ' allowance OK');
-    }
-
-    await typeLog('buyLog', 'info', 'confirm buy transaction in wallet...');
-    const buyTx = await saleContract.buy(token.address, rawAmt);
-    await typeLog('buyLog', 'info', 'tx: ' + buyTx.hash.slice(0,18) + '...');
-    await buyTx.wait();
-    await typeLog('buyLog', 'ok', 'SUCCESS: ' + hackFormatted + ' $HACK incoming!');
-    await typeLog('buyLog', 'ok', '> welcome to the system, anon.');
-
-    await refreshBalance();
-
-    const tweet = 'just bought ' + hackFormatted + ' $HACK for ' + amount + ' ' + selectedToken + ' 🖥️\n\non-chain. no KYC. no bullshit. on @HACKtokenINK\n\n#HACK #INK #memecoin';
-    const shareBtn = document.getElementById('buyShareBtn');
-    shareBtn.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet);
-    shareBtn.classList.add('visible');
-
-  } catch(e) {
-    await typeLog('buyLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
-  } finally {
-    btn.disabled = false;
-  }
-}
 
 // ─── STAKING ─────────────────────────────────────────────────────────────────
 let selectedTier = 0;
