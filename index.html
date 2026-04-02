@@ -770,7 +770,7 @@
         <span id="tmValTxt">&gt; validating...</span>
       </div>
       <div class="tm-bar" id="tmBar"><div class="tm-bar-fill" id="tmBarFill"></div></div>
-      <button class="tm-claim" id="tmClaimBtn" onclick="tmClaim()" disabled>[ CLAIM 100,000 $HACK ]</button>
+      <button class="tm-claim" id="tmClaimBtn" onclick="tmClaim()" disabled>[ CLAIM ]</button>
       <div class="tm-hint" id="tmHint">&gt; complete all 4 tasks to unlock claim</div>
     </div>
   </div>
@@ -888,7 +888,7 @@ async function connectWallet() {
     const aBtn = document.getElementById('airdropBtn');
     if (!aBtn.classList.contains('claimed-state')) {
       document.getElementById('airdropLockedMsg').style.display = 'none';
-      aBtn.textContent = '[ START TASKS & CLAIM ]';
+      aBtn.textContent = '[ COMPLETE & CLAIM ]';
       aBtn.disabled = false;
       aBtn.onclick = handleAirdrop;
     }
