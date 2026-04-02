@@ -333,6 +333,43 @@
   footer{border-top:1px solid rgba(0,255,65,0.12);padding-top:28px;display:flex;justify-content:space-between;align-items:center;font-size:clamp(8px,2vw,10px);color:rgba(0,255,65,0.25);letter-spacing:clamp(1px,.5vw,2px);gap:12px;flex-wrap:wrap}
   .counter{font-family:'VT323',monospace;font-size:clamp(14px,3vw,18px);color:rgba(0,255,65,0.35)}
 
+  /* ── TASKS MODAL ─────────────────────────────────────────────── */
+  #tasksModal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.94);align-items:center;justify-content:center;padding:16px}
+  #tasksModal.open{display:flex!important}
+  .tm-box{background:#000;border:1px solid rgba(0,255,65,0.4);max-width:460px;width:100%;box-shadow:0 0 60px rgba(0,255,65,0.1),inset 0 0 40px rgba(0,255,65,0.02);max-height:90vh;overflow-y:auto}
+  .tm-hdr{padding:12px 18px;border-bottom:1px solid rgba(0,255,65,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(0,255,65,0.03);position:sticky;top:0}
+  .tm-hdr-title{font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:3px;text-transform:uppercase}
+  .tm-hdr-close{background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.4);font-family:'Share Tech Mono',monospace;font-size:11px;padding:5px 12px;cursor:pointer;letter-spacing:2px;transition:all .2s}
+  .tm-hdr-close:hover{border-color:#00ff41;color:#00ff41}
+  .tm-body{padding:22px}
+  .tm-amount{text-align:center;margin-bottom:22px;padding:16px;border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.02)}
+  .tm-amount-val{font-family:'VT323',monospace;font-size:52px;color:#00ff41;line-height:1;text-shadow:0 0 20px rgba(0,255,65,0.5)}
+  .tm-amount-lbl{font-size:10px;color:rgba(0,255,65,0.35);letter-spacing:3px;margin-top:4px}
+  .tm-tasks{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+  .tm-task{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.01);transition:all .25s}
+  .tm-task.done{border-color:rgba(0,255,65,0.3);background:rgba(0,255,65,0.04)}
+  .tm-num{font-family:'VT323',monospace;font-size:22px;color:rgba(0,255,65,0.18);width:26px;flex-shrink:0;line-height:1}
+  .tm-lbl{flex:1;font-size:11px;color:rgba(0,255,65,0.5);line-height:1.4}
+  .tm-task.done .tm-lbl{color:rgba(0,255,65,0.22);text-decoration:line-through}
+  .tm-act{background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.6);font-family:'Share Tech Mono',monospace;font-size:10px;padding:7px 12px;cursor:pointer;letter-spacing:2px;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;flex-shrink:0}
+  .tm-act:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 10px rgba(0,255,65,0.15)}
+  .tm-act.done{border-color:rgba(0,255,65,0.1);color:rgba(0,255,65,0.18);pointer-events:none}
+  .tm-chk{font-family:'VT323',monospace;font-size:20px;color:rgba(0,255,65,0.12);width:22px;text-align:center;flex-shrink:0;transition:all .3s}
+  .tm-task.done .tm-chk{color:#00ff41;text-shadow:0 0 10px rgba(0,255,65,0.8)}
+  .tm-validating{display:none;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,65,0.15);margin-bottom:14px;font-size:11px;color:rgba(0,255,65,0.45)}
+  .tm-validating.show{display:flex}
+  .tm-spin{width:14px;height:14px;border:2px solid rgba(0,255,65,0.15);border-top-color:#00ff41;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .tm-bar{height:2px;background:rgba(0,255,65,0.08);margin-bottom:14px;overflow:hidden;display:none}
+  .tm-bar.show{display:block}
+  .tm-bar-fill{height:100%;background:#00ff41;width:0%;transition:width .12s linear;box-shadow:0 0 8px rgba(0,255,65,0.6)}
+  .tm-claim{width:100%;padding:15px;background:transparent;border:1px solid rgba(0,255,65,0.18);color:rgba(0,255,65,0.22);font-family:'VT323',monospace;font-size:22px;letter-spacing:4px;cursor:not-allowed;transition:all .3s;position:relative;overflow:hidden}
+  .tm-claim.ready{border-color:#00ff41;color:#00ff41;cursor:pointer;text-shadow:0 0 10px rgba(0,255,65,0.5);box-shadow:0 0 20px rgba(0,255,65,0.1)}
+  .tm-claim.ready:hover{background:rgba(0,255,65,0.08);box-shadow:0 0 30px rgba(0,255,65,0.25)}
+  .tm-claim::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,65,0.1),transparent);transition:left .4s}
+  .tm-claim.ready:hover::before{left:100%}
+  .tm-hint{font-size:10px;color:rgba(0,255,65,0.2);text-align:center;margin-top:12px;letter-spacing:1px;line-height:1.6;min-height:16px}
+
   @media(max-width:640px){
     .container{padding:0 16px 60px}
     nav{margin-bottom:40px}
@@ -420,27 +457,10 @@
         </div>
       </div>
 
-      <div class="tasks">
-        <div class="task">
-          <div class="task-label" id="lbl-follow">&gt; follow @HACKtokenINK on X</div>
-          <a class="task-btn" id="btn-follow" href="https://twitter.com/intent/follow?screen_name=HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('follow')">[ FOLLOW ]</a>
-          <div class="task-status" id="st-follow"></div>
-        </div>
-        <div class="task">
-          <div class="task-label" id="lbl-tg">&gt; join telegram channel</div>
-          <a class="task-btn" id="btn-tg" href="https://t.me/HACKtokenINK" target="_blank" rel="noopener" onclick="completeTask('tg')">[ JOIN ]</a>
-          <div class="task-status" id="st-tg"></div>
-        </div>
-        <div class="task">
-          <div class="task-label" id="lbl-like">&gt; like &amp; retweet the announcement post</div>
-          <a class="task-btn" id="btn-like" href="https://twitter.com/intent/retweet?tweet_id=2039653646116241857" target="_blank" rel="noopener" onclick="completeTask('like'); completeTask('rt');">[ LIKE &amp; RT ]</a>
-          <div class="task-status" id="st-like"></div>
-        </div>
-        <div class="task">
-          <div class="task-label" id="lbl-share">&gt; share $HACK with your followers</div>
-          <a class="task-btn" id="btn-share" href="#" target="_blank" rel="noopener" onclick="openShare(event)">[ SHARE ]</a>
-          <div class="task-status" id="st-share"></div>
-        </div>
+      <div id="airdropLockedMsg" style="padding:16px 0 20px;font-size:11px;color:rgba(0,255,65,0.35);line-height:1.9">
+        <div>&gt; connect wallet to unlock tasks</div>
+        <div>&gt; complete 4 tasks → claim 100,000 $HACK</div>
+        <div>&gt; one claim per wallet. on-chain. instant.</div>
       </div>
 
       <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()">[ CONNECT WALLET ]</button>
@@ -703,6 +723,59 @@
 
 
 </div>
+<!-- ── TASKS MODAL ── -->
+<div id="tasksModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.94);align-items:center;justify-content:center;padding:16px">
+  <div class="tm-box">
+    <div class="tm-hdr">
+      <div class="tm-hdr-title">● ● ●&nbsp;&nbsp;&nbsp;// COMPLETE TASKS</div>
+      <button class="tm-hdr-close" onclick="closeTasksModal()">[ × ]</button>
+    </div>
+    <div class="tm-body">
+      <div class="tm-amount">
+        <div class="tm-amount-val">100,000</div>
+        <div class="tm-amount-lbl">$HACK — FREE AIRDROP</div>
+      </div>
+      <div class="tm-tasks">
+        <!-- task 1 -->
+        <div class="tm-task" id="tm-follow">
+          <div class="tm-num">01</div>
+          <div class="tm-lbl">follow @HACKtokenINK on X</div>
+          <a class="tm-act" id="tma-follow" href="https://twitter.com/intent/follow?screen_name=HACKtokenINK" target="_blank" rel="noopener" onclick="modalTask('follow',this)">[ FOLLOW ]</a>
+          <div class="tm-chk" id="tmc-follow">○</div>
+        </div>
+        <!-- task 2 -->
+        <div class="tm-task" id="tm-tg">
+          <div class="tm-num">02</div>
+          <div class="tm-lbl">join the Telegram channel</div>
+          <a class="tm-act" id="tma-tg" href="https://t.me/HACKtokenINK" target="_blank" rel="noopener" onclick="modalTask('tg',this)">[ JOIN ]</a>
+          <div class="tm-chk" id="tmc-tg">○</div>
+        </div>
+        <!-- task 3 -->
+        <div class="tm-task" id="tm-like">
+          <div class="tm-num">03</div>
+          <div class="tm-lbl">like &amp; retweet the announcement post</div>
+          <a class="tm-act" id="tma-like" href="https://twitter.com/intent/retweet?tweet_id=2039653646116241857" target="_blank" rel="noopener" onclick="modalTask('like',this);modalTask('rt',null)">[ LIKE &amp; RT ]</a>
+          <div class="tm-chk" id="tmc-like">○</div>
+        </div>
+        <!-- task 4 -->
+        <div class="tm-task" id="tm-share">
+          <div class="tm-num">04</div>
+          <div class="tm-lbl">share $HACK with your followers</div>
+          <button class="tm-act" id="tma-share" onclick="modalShare(this)">[ SHARE ]</button>
+          <div class="tm-chk" id="tmc-share">○</div>
+        </div>
+      </div>
+      <div class="tm-validating" id="tmVal">
+        <div class="tm-spin"></div>
+        <span id="tmValTxt">&gt; validating...</span>
+      </div>
+      <div class="tm-bar" id="tmBar"><div class="tm-bar-fill" id="tmBarFill"></div></div>
+      <button class="tm-claim" id="tmClaimBtn" onclick="tmClaim()" disabled>[ CLAIM 100,000 $HACK ]</button>
+      <div class="tm-hint" id="tmHint">&gt; complete all 4 tasks to unlock claim</div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
@@ -814,10 +887,10 @@ async function connectWallet() {
     await checkAirdropStatus();
     const aBtn = document.getElementById('airdropBtn');
     if (!aBtn.classList.contains('claimed-state')) {
-      const allDone = ['follow','tg','like','rt','share'].every(t => completedTasks.has(t));
-      aBtn.textContent = allDone ? '[ CLAIM 100,000 $HACK ]' : '[ COMPLETE TASKS TO CLAIM ]';
+      document.getElementById('airdropLockedMsg').style.display = 'none';
+      aBtn.textContent = '[ START TASKS & CLAIM ]';
+      aBtn.disabled = false;
       aBtn.onclick = handleAirdrop;
-      if (allDone) aBtn.disabled = false;
     }
 
     window.ethereum.on('accountsChanged', () => location.reload());
@@ -870,36 +943,197 @@ function showCheckinInline() {
   logParent.appendChild(nftCi);
 }
 
-// ─── SOCIAL TASKS ────────────────────────────────────────────────────────────
-const TASKS = ['follow','tg','like','rt','share'];
-let completedTasks = new Set();
+// ─── TASKS MODAL ─────────────────────────────────────────────────────────────
+const MODAL_TASKS = ['follow','tg','like','rt','share'];
+let modalDone = new Set();
 
-function openShare(e) {
-  e.preventDefault();
+function openTasksModal() {
+  document.getElementById('tasksModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeTasksModal() {
+  document.getElementById('tasksModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// called when user clicks task button; btn is the button element (or null for 'rt')
+function modalTask(id, btn) {
+  if (modalDone.has(id)) return;
+  setTimeout(() => {
+    modalDone.add(id);
+    // 'rt' shares the visual row with 'like'
+    const visId = (id === 'rt') ? 'like' : id;
+    const row  = document.getElementById('tm-' + visId);
+    const chk  = document.getElementById('tmc-' + visId);
+    const act  = document.getElementById('tma-' + visId);
+    if (row) row.classList.add('done');
+    if (chk) chk.textContent = '✓';
+    if (act) act.classList.add('done');
+    checkModalDone();
+  }, 4000);
+}
+
+function modalShare(btn) {
   const refPart = walletAddress
     ? '\n\nClaim here 👉hacktokenink.xyz?ref=' + walletAddress
     : '\n\nClaim here 👉hacktokenink.xyz';
   const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
-  completeTask('share');
+  modalTask('share', btn);
 }
 
-function completeTask(id) {
-  setTimeout(() => {
-    completedTasks.add(id);
-    const lbl = document.getElementById('lbl-'+id);
-    const st  = document.getElementById('st-'+id);
-    const btn = document.getElementById('btn-'+id);
-    if (lbl) lbl.classList.add('done');
-    if (st)  { st.textContent = '[OK]'; st.classList.add('done'); }
-    if (btn) btn.classList.add('done');
-    const allDone = TASKS.every(t => completedTasks.has(t));
-    if (allDone) {
-      const claimBtn = document.getElementById('airdropBtn');
-      claimBtn.disabled = false;
-      claimBtn.textContent = '[ CLAIM 100,000 $HACK ]';
+function checkModalDone() {
+  const visual = ['follow','tg','like','share'];
+  const doneCount = visual.filter(t =>
+    t === 'like' ? (modalDone.has('like') || modalDone.has('rt')) : modalDone.has(t)
+  ).length;
+  const hint = document.getElementById('tmHint');
+  hint.textContent = '> ' + doneCount + ' / 4 tasks completed';
+  const allDone = MODAL_TASKS.every(t => modalDone.has(t));
+  if (allDone) {
+    const btn = document.getElementById('tmClaimBtn');
+    btn.disabled = false;
+    btn.classList.add('ready');
+    hint.textContent = '> all tasks done — ready to claim ✓';
+  }
+}
+
+async function tmClaim() {
+  if (!signer) return;
+  const claimBtn = document.getElementById('tmClaimBtn');
+  const valEl    = document.getElementById('tmVal');
+  const valTxt   = document.getElementById('tmValTxt');
+  const barEl    = document.getElementById('tmBar');
+  const barFill  = document.getElementById('tmBarFill');
+  const hint     = document.getElementById('tmHint');
+
+  claimBtn.disabled = true;
+  claimBtn.classList.remove('ready');
+  valEl.classList.add('show');
+  barEl.classList.add('show');
+  valTxt.textContent = '> checking status...';
+
+  // animate bar to ~85% while waiting
+  let pct = 0;
+  const barInt = setInterval(() => { if (pct < 85) { pct += 1.5; barFill.style.width = pct + '%'; } }, 60);
+
+  try {
+    const active = await airdropContract.airdropActive();
+    if (!active) {
+      clearInterval(barInt); valEl.classList.remove('show'); barEl.classList.remove('show');
+      hint.style.color = '#ff0040'; hint.textContent = '> error: airdrop is paused';
+      claimBtn.disabled = false; claimBtn.classList.add('ready'); return;
     }
-  }, 10000);
+    const already = await airdropContract.claimed(walletAddress);
+    if (already) {
+      clearInterval(barInt);
+      closeTasksModal();
+      await handleAlreadyClaimed(); return;
+    }
+    const pool = await airdropContract.remainingPool();
+    if (pool < BigInt('5000000000000000000000')) {
+      clearInterval(barInt); valEl.classList.remove('show'); barEl.classList.remove('show');
+      hint.style.color = '#ff0040'; hint.textContent = '> error: pool is empty';
+      claimBtn.disabled = false; claimBtn.classList.add('ready'); return;
+    }
+    valTxt.textContent = '> confirm in wallet...';
+    const feeWei = BigInt('20000000000000'); // 0.00002 ETH
+    const tx = await airdropContract.claim(REF_ADDR, { value: feeWei });
+    valTxt.textContent = '> tx sent, confirming...';
+    await tx.wait();
+    clearInterval(barInt);
+    barFill.style.width = '100%';
+    await delay(300);
+    closeTasksModal();
+    await onClaimSuccess();
+  } catch(e) {
+    clearInterval(barInt);
+    valEl.classList.remove('show'); barEl.classList.remove('show');
+    hint.style.color = '#ff0040';
+    hint.textContent = '> error: ' + (e.reason || e.message || 'transaction failed').slice(0,60);
+    claimBtn.disabled = false; claimBtn.classList.add('ready');
+  }
+}
+
+async function handleAlreadyClaimed() {
+  const btn = document.getElementById('airdropBtn');
+  btn.textContent = '[ ALREADY CLAIMED ]';
+  btn.disabled = true;
+  btn.classList.add('claimed-state');
+  const lk = document.getElementById('airdropLockedMsg');
+  if (lk) lk.style.display = 'none';
+  clearLog('airdropLog');
+  await typeLog('airdropLog', 'warn', 'this wallet has already claimed the airdrop');
+  const refUrl = 'https://hacktokenink.xyz/?ref=' + walletAddress;
+  const ri = document.createElement('input');
+  ri.value = refUrl; ri.readOnly = true;
+  ri.style.cssText = 'width:100%;background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.6);font-family:Share Tech Mono,monospace;font-size:10px;padding:8px 10px;outline:none;margin-top:8px';
+  document.getElementById('airdropLog').appendChild(ri);
+  try {
+    const stats = await airdropContract.getReferralStats(walletAddress);
+    if (Number(stats.count) > 0)
+      await typeLog('airdropLog', 'ok', 'invited: ' + stats.count + ' wallets // earned: ' + Number(ethers.formatEther(stats.earned)).toLocaleString() + ' $HACK');
+    else
+      await typeLog('airdropLog', 'info', '+20,000 $HACK for each wallet you invite');
+  } catch(e) {}
+  showCheckinBtn();
+  showCheckinInline();
+}
+
+async function onClaimSuccess() {
+  const btn = document.getElementById('airdropBtn');
+  const lk  = document.getElementById('airdropLockedMsg');
+  if (lk) lk.style.display = 'none';
+  clearLog('airdropLog');
+  airdropState = 'done';
+  btn.textContent = '[ CLAIMED ✓ ]';
+  btn.classList.add('claimed-state');
+  btn.disabled = true;
+
+  await typeLog('airdropLog', 'ok', 'SUCCESS: 100,000 $HACK claimed!');
+  await typeLog('airdropLog', 'ok', '> welcome to the system, anon.');
+
+  const refUrl = 'https://hacktokenink.xyz/?ref=' + walletAddress;
+  await typeLog('airdropLog', 'info', 'your ref link: +20,000 $HACK per invite');
+  const refWrap = document.createElement('div');
+  refWrap.style.cssText = 'margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+  const refInput = document.createElement('input');
+  refInput.value = refUrl; refInput.readOnly = true;
+  refInput.style.cssText = 'flex:1;background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.6);font-family:Share Tech Mono,monospace;font-size:10px;padding:8px 10px;outline:none;min-width:0';
+  const copyRefBtn = document.createElement('button');
+  copyRefBtn.textContent = '[ COPY ]';
+  copyRefBtn.style.cssText = 'background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.6);font-family:Share Tech Mono,monospace;font-size:10px;padding:8px 12px;cursor:pointer;letter-spacing:2px;white-space:nowrap';
+  copyRefBtn.onclick = () => {
+    navigator.clipboard.writeText(refUrl);
+    copyRefBtn.textContent = '[ COPIED ✓ ]'; copyRefBtn.style.color = '#00ff41';
+    setTimeout(() => { copyRefBtn.textContent = '[ COPY ]'; copyRefBtn.style.color = ''; }, 2000);
+  };
+  refWrap.appendChild(refInput); refWrap.appendChild(copyRefBtn);
+  document.getElementById('airdropLog').appendChild(refWrap);
+  try {
+    const stats = await airdropContract.getReferralStats(walletAddress);
+    if (Number(stats.count) > 0)
+      await typeLog('airdropLog', 'ok', 'invited: ' + stats.count + ' wallets // earned: ' + Number(ethers.formatEther(stats.earned)).toLocaleString() + ' $HACK');
+  } catch(e) {}
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-top:16px;animation:fadein .4s ease';
+  const mintNftBtn = document.createElement('a');
+  mintNftBtn.href = 'genesis.html'; mintNftBtn.className = 'action-btn';
+  mintNftBtn.style.cssText = 'display:block;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,20px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
+  mintNftBtn.textContent = '[ MINT OG NFT — BURN FOR 10M $HACK ]';
+  const stakeBtn2 = document.createElement('button');
+  stakeBtn2.className = 'action-btn';
+  stakeBtn2.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
+  stakeBtn2.textContent = '[ STAKE YOUR $HACK ]';
+  stakeBtn2.onclick = () => switchTab('stake');
+  const checkinBtn2 = document.createElement('a');
+  checkinBtn2.href = 'checkin.html'; checkinBtn2.className = 'action-btn';
+  checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
+  checkinBtn2.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
+  wrap.appendChild(mintNftBtn); wrap.appendChild(stakeBtn2); wrap.appendChild(checkinBtn2);
+  showCheckinBtn();
+  btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
 }
 
 // ─── AIRDROP FLOW ────────────────────────────────────────────────────────────
@@ -910,123 +1144,17 @@ async function handleAirdrop() {
     await connectWallet();
     if (!signer) return;
   }
-  await executeAirdropClaim();
-}
-
-async function executeAirdropClaim() {
   const btn = document.getElementById('airdropBtn');
-  clearLog('airdropLog');
-  btn.disabled = true;
-
-  try {
-    await typeLog('airdropLog', 'info', 'checking airdrop status...');
-    const active = await airdropContract.airdropActive();
-    if (!active) { await typeLog('airdropLog', 'err', 'ERROR: airdrop is paused'); btn.disabled=false; return; }
-
-    const alreadyClaimed = await airdropContract.claimed(walletAddress);
-    if (alreadyClaimed) {
-      btn.textContent = '[ ALREADY CLAIMED ]';
-      btn.classList.add('claimed-state');
-      const refUrl2 = 'https://hacktokenink.xyz/?ref=' + walletAddress;
-      await typeLog('airdropLog', 'warn', 'already claimed. share your ref link:');
-      const ri = document.createElement('input');
-      ri.value = refUrl2; ri.readOnly = true;
-      ri.style.cssText = 'width:100%;background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.6);font-family:Share Tech Mono,monospace;font-size:10px;padding:8px 10px;outline:none;margin-top:8px';
-      document.getElementById('airdropLog').appendChild(ri);
-      try {
-        const stats = await airdropContract.getReferralStats(walletAddress);
-        if (Number(stats.count) > 0) {
-          await typeLog('airdropLog', 'ok', 'invited: ' + stats.count + ' wallets // earned: ' + Number(ethers.formatEther(stats.earned)).toLocaleString() + ' $HACK');
-        } else {
-          await typeLog('airdropLog', 'info', '+20,000 $HACK for each wallet you invite');
-        }
-      } catch(e) {}
-      return;
-    }
-
-    const pool = await airdropContract.remainingPool();
-    if (pool < BigInt("5000000000000000000000")) {
-      await typeLog('airdropLog', 'err', 'ERROR: airdrop pool is empty');
-      btn.disabled=false; return;
-    }
-
-    const feeWei = BigInt("20000000000000"); // fixed: 0.00002 ETH
-    await typeLog('airdropLog', 'info', 'fee: 0.00002 ETH // confirm in wallet...');
-    const tx = await airdropContract.claim(REF_ADDR, { value: feeWei });
-    await typeLog('airdropLog', 'info', 'tx sent: ' + tx.hash.slice(0,20) + '...');
-    await tx.wait();
-    await typeLog('airdropLog', 'ok', 'SUCCESS: 100,000 $HACK claimed!');
-    await typeLog('airdropLog', 'ok', '> welcome to the system, anon.');
-
-    // Show referral link
-    const refUrl = 'https://hacktokenink.xyz/?ref=' + walletAddress;
-    await typeLog('airdropLog', 'info', 'your ref link: hackink.xyz?ref=' + walletAddress.slice(0,10) + '...');
-    await typeLog('airdropLog', 'info', '+20,000 $HACK for each wallet you invite');
-
-    // Show copy ref button
-    const refWrap = document.createElement('div');
-    refWrap.style.cssText = 'margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap';
-    const refInput = document.createElement('input');
-    refInput.value = refUrl;
-    refInput.readOnly = true;
-    refInput.style.cssText = 'flex:1;background:rgba(0,255,65,0.03);border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.6);font-family:Share Tech Mono,monospace;font-size:10px;padding:8px 10px;outline:none;min-width:0';
-    const copyRefBtn = document.createElement('button');
-    copyRefBtn.textContent = '[ COPY ]';
-    copyRefBtn.style.cssText = 'background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.6);font-family:Share Tech Mono,monospace;font-size:10px;padding:8px 12px;cursor:pointer;letter-spacing:2px;white-space:nowrap';
-    copyRefBtn.onclick = () => {
-      navigator.clipboard.writeText(refUrl);
-      copyRefBtn.textContent = '[ COPIED ✓ ]';
-      copyRefBtn.style.color = '#00ff41';
-      setTimeout(()=>{ copyRefBtn.textContent='[ COPY ]'; copyRefBtn.style.color=''; }, 2000);
-    };
-    refWrap.appendChild(refInput);
-    refWrap.appendChild(copyRefBtn);
-    document.getElementById('airdropLog').appendChild(refWrap);
-
-    // Load referral stats
-    try {
-      const stats = await airdropContract.getReferralStats(walletAddress);
-      if (Number(stats.count) > 0) {
-        await typeLog('airdropLog', 'ok', 'invited: ' + stats.count + ' wallets // earned: ' + Number(ethers.formatEther(stats.earned)).toLocaleString() + ' $HACK');
-      }
-    } catch(e) {}
-
-    airdropState = 'done';
-    btn.textContent = '[ CLAIMED ✓ ]';
-    btn.classList.add('claimed-state');
-
-    // Show buy + stake buttons
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-top:16px;animation:fadein .4s ease';
-
-    const mintNftBtn = document.createElement('a');
-    mintNftBtn.href = 'genesis.html';
-    mintNftBtn.className = 'action-btn';
-    mintNftBtn.style.cssText = 'display:block;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,20px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
-    mintNftBtn.textContent = '[ MINT OG NFT — BURN FOR 10M $HACK ]';
-
-    const stakeBtn = document.createElement('button');
-    stakeBtn.className = 'action-btn';
-    stakeBtn.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
-    stakeBtn.textContent = '[ STAKE YOUR $HACK ]';
-    stakeBtn.onclick = () => switchTab('stake');
-
-    const checkinBtn2 = document.createElement('a');
-    checkinBtn2.href = 'checkin.html';
-    checkinBtn2.className = 'action-btn';
-    checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
-    checkinBtn2.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
-    wrap.appendChild(mintNftBtn);
-    wrap.appendChild(stakeBtn);
-    wrap.appendChild(checkinBtn2);
-    showCheckinBtn();
-    btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
-
-  } catch(e) {
-    await typeLog('airdropLog', 'err', 'ERROR: ' + (e.reason || e.message || 'transaction failed'));
-    btn.disabled = false;
-  }
+  if (btn.classList.contains('claimed-state')) return;
+  openTasksModal();
 }
+
+// close modal on backdrop click
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('tasksModal').addEventListener('click', function(e) {
+    if (e.target === this) closeTasksModal();
+  });
+});
 
 // ─── TOKEN SELECTOR ──────────────────────────────────────────────────────────
 
