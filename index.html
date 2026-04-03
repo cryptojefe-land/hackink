@@ -647,14 +647,14 @@
       </div>
     </div>
     <div class="rm-item done">
-      <div class="rm-status">[DONE]</div>
+      <div class="rm-status">[LIVE]</div>
       <div class="rm-content">
         <div class="rm-title">OG Genesis NFT — 750 Total</div>
         <div class="rm-desc">750 OG NFTs. Hard cap forever. No second collection. Burn 1 NFT → receive 10,000,000 $HACK. On-chain, automatic, irreversible. OG holders get boosted staking rewards + permanent on-chain status.</div>
       </div>
     </div>
     <div class="rm-item done">
-      <div class="rm-status">[DONE]</div>
+      <div class="rm-status">[LIVE]</div>
       <div class="rm-content">
         <div class="rm-title">Staking Protocol</div>
         <div class="rm-desc">On-chain staking live. Up to 1200% APY. Three lock tiers: 7 / 30 / 90 days.</div>
@@ -770,7 +770,7 @@
         <span id="tmValTxt">&gt; validating...</span>
       </div>
       <div class="tm-bar" id="tmBar"><div class="tm-bar-fill" id="tmBarFill"></div></div>
-      <button class="tm-claim" id="tmClaimBtn" onclick="tmClaim()" disabled>[ CLAIM 100,000 $HACK ]</button>
+      <button class="tm-claim" id="tmClaimBtn" onclick="tmClaim()" disabled>[ CLAIM $HACK ]</button>
       <div class="tm-hint" id="tmHint">&gt; complete all 4 tasks to unlock claim</div>
     </div>
   </div>
@@ -1005,8 +1005,8 @@ function modalTask(id, btn) {
 
 function modalShare(btn) {
   const refPart = walletAddress
-    ? '\n\nClaim here 👉hacktokenink.xyz?ref=' + walletAddress
-    : '\n\nClaim here 👉hacktokenink.xyz';
+    ? '\n\nClaim here 👉hacktokenink.xyz/?ref=' + walletAddress
+    : '\n\nClaim here 👉hacktokenink.xyz/';
   const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
   modalTask('share', btn);
@@ -1138,7 +1138,7 @@ async function onClaimSuccess() {
   const checkinBtn2 = document.createElement('a');
   checkinBtn2.href = 'checkin.html'; checkinBtn2.className = 'action-btn';
   checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
-  checkinBtn2.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
+  checkinBtn2.textContent = '[ DAILY CHECK-IN ]';
   wrap.appendChild(mintNftBtn); wrap.appendChild(stakeBtn2); wrap.appendChild(checkinBtn2);
   showCheckinBtn();
   btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
