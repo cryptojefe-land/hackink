@@ -7,7 +7,7 @@
 <!-- ─── SEO ──────────────────────────────────────────────────────────────── -->
 <title>$HACK — Free Airdrop & OG NFT on INK Chain</title>
 <meta name="description" content="Claim your free $HACK airdrop on INK Chain. 750 OG NFTs — burn one to receive 10,000,000 $HACK. No KYC. No bullshit. On-chain only.">
-<meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, OG NFT, genesis, crypto, web3, INK memecoin, inkonchain">
+<meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, OG NFT, genesis, crypto, web3, INK memecoin">
 <meta name="author" content="$HACK">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://hacktokenink.xyz/">
@@ -638,7 +638,7 @@
     <div class="rm-item soon">
       <div class="rm-status">[SOON]</div>
       <div class="rm-content">
-        <div class="rm-title">DEX Listing — Q2, 2026</div>
+        <div class="rm-title">DEX Listing — q2, 2026</div>
         <div class="rm-desc">$HACK goes live on DEX. Trading opens. LP unlocked for the public.</div>
       </div>
     </div>
@@ -749,15 +749,6 @@
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
 const AIRDROP_ADDRESS = "0x1647dA5c081b3804342956086cece17A352c5f28";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
-const CHECKIN_ADDRESS = "0xd3Cb09767006Ffca00906f7FB0fbB196A6c52dCC";
-
-const CHECKIN_ABI = [
-  "function checkIn() external payable",
-  "function lastCheckIn(address) external view returns (uint256)",
-  "function checkInFeeWei() external view returns (uint256)",
-  "function checkInReward() external view returns (uint256)",
-  "function canCheckIn(address) external view returns (bool)"
-];
 
 const INK_CHAIN = {
   chainId:           "0xDEF1",
@@ -801,7 +792,7 @@ let provider, signer, walletAddress;
 // Read referrer from URL ?ref=0x...
 const urlRef = new URLSearchParams(window.location.search).get('ref') || '';
 const REF_ADDR = /^0x[a-fA-F0-9]{40}$/.test(urlRef) ? urlRef : '0x0000000000000000000000000000000000000000';
-let saleContract, airdropContract, stakingContract, checkinContract;
+let saleContract, airdropContract, stakingContract;
 let paymentContracts = {};
 let twitterShared = false;
 
@@ -856,7 +847,6 @@ async function connectWallet() {
     walletAddress   = await signer.getAddress();
     airdropContract  = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
     stakingContract  = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
-    checkinContract  = new ethers.Contract(CHECKIN_ADDRESS, CHECKIN_ABI, signer);
 
     const short = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
     document.getElementById('connectBtn').textContent = short;
@@ -906,29 +896,21 @@ function showCheckinInline() {
   if (document.getElementById('checkinInlineBtn')) return;
   const logParent = document.getElementById('airdropLog').parentNode;
 
-  // check-in button
-  const ci = document.createElement('button');
+  const ci = document.createElement('a');
   ci.id = 'checkinInlineBtn';
+  ci.href = 'checkin.html';
   ci.className = 'action-btn';
-  ci.style.cssText = 'display:block;width:100%;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;animation:fadein .4s ease;white-space:nowrap;cursor:pointer;background:transparent';
-  ci.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
-  ci.onclick = () => executeCheckin('checkinInlineLog');
-  logParent.appendChild(ci);
+  ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
+  ci.textContent = '[ DAILY CHECK-IN ]';
 
-  // log for checkin output
-  const ciLog = document.createElement('div');
-  ciLog.id = 'checkinInlineLog';
-  ciLog.className = 'log';
-  ciLog.style.cssText = 'margin-top:8px;font-size:11px;min-height:0';
-  logParent.appendChild(ciLog);
-
-  // OG NFT button
   const nftCi = document.createElement('a');
   nftCi.id = 'nftInlineBtn';
   nftCi.href = 'https://hacktokenink.xyz/genesis';
   nftCi.className = 'action-btn';
   nftCi.style.cssText = 'display:block;margin-top:8px;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
   nftCi.textContent = '[ MINT OG NFT — GENESIS ]';
+
+  logParent.appendChild(ci);
   logParent.appendChild(nftCi);
 
   // compact ref block under buttons
@@ -991,7 +973,7 @@ function modalTask(id, btn) {
 
 function modalShare(btn) {
   const refPart = walletAddress
-    ? '\n\nClaim here 👉hacktokenink.xyz?ref=' + walletAddress
+    ? '\n\nClaim here 👉hacktokenink.xyz/?ref=' + walletAddress
     : '\n\nClaim here 👉hacktokenink.xyz';
   const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
@@ -1121,20 +1103,11 @@ async function onClaimSuccess() {
   stakeBtn2.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
   stakeBtn2.textContent = '[ STAKE YOUR $HACK ]';
   stakeBtn2.onclick = () => switchTab('stake');
-  const checkinBtn2 = document.createElement('button');
-  checkinBtn2.id = 'checkinSuccessBtn';
-  checkinBtn2.className = 'action-btn';
-  checkinBtn2.style.cssText = 'display:block;width:100%;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;white-space:nowrap;cursor:pointer;background:transparent';
+  const checkinBtn2 = document.createElement('a');
+  checkinBtn2.href = 'checkin.html'; checkinBtn2.className = 'action-btn';
+  checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
   checkinBtn2.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
-  checkinBtn2.onclick = () => executeCheckin('checkinSuccessLog');
   wrap.appendChild(mintNftBtn); wrap.appendChild(stakeBtn2); wrap.appendChild(checkinBtn2);
-
-  // log div for checkin result
-  const ciLog2 = document.createElement('div');
-  ciLog2.id = 'checkinSuccessLog';
-  ciLog2.className = 'log';
-  ciLog2.style.cssText = 'margin-top:8px;font-size:11px;min-height:0';
-  wrap.appendChild(ciLog2);
   showCheckinBtn();
   btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
 
@@ -1163,79 +1136,6 @@ async function onClaimSuccess() {
   refBlock.appendChild(row);
   // insert after wrap (buttons)
   wrap.parentNode.insertBefore(refBlock, wrap.nextSibling);
-}
-
-// ─── CHECKIN ─────────────────────────────────────────────────────────────────
-async function executeCheckin(logId) {
-  if (!signer || !checkinContract) return;
-  const btn = document.getElementById('checkinInlineBtn') || document.getElementById('checkinSuccessBtn');
-  const log = document.getElementById(logId);
-  if (!log) return;
-
-  log.innerHTML = '';
-  if (btn) btn.disabled = true;
-
-  const appendLog = (cls, txt) => {
-    const d = document.createElement('div');
-    d.className = cls;
-    d.textContent = '> ' + txt;
-    log.appendChild(d);
-  };
-
-  try {
-    // Check if already checked in today
-    let canDo = true;
-    try {
-      canDo = await checkinContract.canCheckIn(walletAddress);
-    } catch(e) {
-      // fallback: try lastCheckIn
-      try {
-        const last = await checkinContract.lastCheckIn(walletAddress);
-        const nextAt = Number(last) + 86400;
-        if (Math.floor(Date.now() / 1000) < nextAt) canDo = false;
-      } catch(e2) {}
-    }
-
-    if (!canDo) {
-      appendLog('warn', 'already checked in today. come back tomorrow.');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = '[ CHECKED IN ✓ — COME BACK TOMORROW ]';
-        btn.style.opacity = '0.4';
-        btn.style.cursor = 'not-allowed';
-      }
-      return;
-    }
-
-    // Get fee
-    const tx = await checkinContract.checkin(REF_ADDR, { value: BigInt("20000000000000") });
-    await typeLog('info', 'tx: ' + tx.hash.slice(0,20) + '...');
-    const receipt = await tx.wait();
-    await typeLog('ok', 'check-in complete!');
-
-    appendLog('info', 'confirm check-in in wallet...');
-    const tx = await checkinContract.checkIn({ value: feeWei });
-    appendLog('info', 'tx: ' + tx.hash.slice(0, 20) + '...');
-    await tx.wait();
-    appendLog('ok', 'SUCCESS: +500 $HACK earned!');
-    appendLog('ok', '> streak continues, anon.');
-
-    if (btn) {
-      btn.textContent = '[ CHECKED IN ✓ — COME BACK TOMORROW ]';
-      btn.disabled = true;
-      btn.style.opacity = '0.4';
-      btn.style.cursor = 'not-allowed';
-    }
-  } catch(e) {
-    const msg = e.reason || e.message || 'failed';
-    if (msg.toLowerCase().includes('already') || msg.toLowerCase().includes('24')) {
-      appendLog('warn', 'already checked in today. come back tomorrow.');
-      if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed'; btn.textContent = '[ CHECKED IN ✓ — COME BACK TOMORROW ]'; }
-    } else {
-      appendLog('err', 'error: ' + msg.slice(0, 80));
-      if (btn) btn.disabled = false;
-    }
-  }
 }
 
 // ─── AIRDROP FLOW ────────────────────────────────────────────────────────────
