@@ -7,7 +7,7 @@
 <!-- ─── SEO ──────────────────────────────────────────────────────────────── -->
 <title>$HACK — Free Airdrop & OG NFT on INK Chain</title>
 <meta name="description" content="Claim your free $HACK airdrop on INK Chain. 750 OG NFTs — burn one to receive 10,000,000 $HACK. No KYC. No bullshit. On-chain only.">
-<meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, OG NFT, genesis, crypto, web3, INK memecoin">
+<meta name="keywords" content="HACK, $HACK, memecoin, INK chain, airdrop, OG NFT, genesis, crypto, web3, INK memecoin, inkonchain, ink">
 <meta name="author" content="$HACK">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://hacktokenink.xyz/">
@@ -137,16 +137,7 @@
   .log .info{color:#00cfff}
   .log .warn{color:#f7c948}
 
-  /* countdown */
-  .countdown-block{border:1px solid rgba(0,255,65,0.2);background:rgba(0,255,65,0.02);padding:28px;margin-bottom:0;text-align:center}
-  .countdown-title{font-size:12px;color:rgba(0,255,65,0.5);letter-spacing:3px;margin-bottom:6px}
-  .countdown-sub{font-size:11px;color:rgba(0,255,65,0.25);letter-spacing:2px;margin-bottom:24px}
-  .countdown-cells{display:flex;justify-content:center;align-items:center;gap:clamp(4px,2vw,12px);flex-wrap:nowrap;width:100%}
-  .cd-cell{text-align:center;flex:1;min-width:0}
-  .cd-val{font-family:'VT323',monospace;font-size:clamp(36px,8vw,80px);color:#00ff41;line-height:1;text-shadow:0 0 20px rgba(0,255,65,0.5)}
-  .cd-val.expired{color:#ff0040}
-  .cd-unit{font-size:clamp(8px,1.5vw,10px);color:rgba(0,255,65,0.35);letter-spacing:2px;margin-top:4px}
-  .cd-sep{font-family:'VT323',monospace;font-size:clamp(32px,6vw,60px);color:rgba(0,255,65,0.2);line-height:1;align-self:flex-start;margin-top:4px;flex-shrink:0}
+  /* countdown removed */
 
   /* contracts */
   .contracts-block{display:flex;flex-direction:column;gap:4px;margin-bottom:0}
@@ -232,13 +223,7 @@
   .tier-btn.active .tier-apy{color:#f7c948;text-shadow:0 0 8px rgba(247,201,72,0.6)}
   .tier-btn.active .tier-days{text-shadow:0 0 12px rgba(0,255,65,0.6)}
 
-  /* Countdown цифры с неоном */
-  .cd-val{font-family:'VT323',monospace;font-size:clamp(36px,8vw,80px);color:#00ff41;line-height:1;text-shadow:0 0 20px rgba(0,255,65,0.8),0 0 40px rgba(0,255,65,0.3);animation:cd-pulse 1s ease-in-out infinite}
-  @keyframes cd-pulse{0%,100%{text-shadow:0 0 20px rgba(0,255,65,0.8),0 0 40px rgba(0,255,65,0.3)}50%{text-shadow:0 0 30px rgba(0,255,65,1),0 0 60px rgba(0,255,65,0.5),0 0 90px rgba(0,255,65,0.2)}}
-  .cd-val.expired{color:#ff0040;text-shadow:0 0 20px rgba(255,0,64,0.8);animation:none}
-
-  /* Countdown block border glow */
-  .countdown-block{border:1px solid rgba(0,255,65,0.2);background:rgba(0,255,65,0.02);padding:28px;margin-bottom:0;text-align:center;box-shadow:0 0 30px rgba(0,255,65,0.06),inset 0 0 40px rgba(0,255,65,0.02)}
+  /* Countdown block removed */
 
   /* Неон на stat values */
   .stat-value.green{color:#00ff41;text-shadow:0 0 15px rgba(0,255,65,0.7),0 0 30px rgba(0,255,65,0.2)}
@@ -560,7 +545,6 @@
       <span class="ticker-item">$HACK</span>
       <span class="ticker-item">PRICE: <span>1 USD = 20,000 $HACK</span></span>
       <span class="ticker-item">AIRDROP: <span>100,000 $HACK FREE</span></span>
-      <span class="ticker-item">DEX LISTING: <span>APRIL 20</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
       <span class="ticker-item">TAX: <span>0/0</span></span>
@@ -569,7 +553,6 @@
       <span class="ticker-item">$HACK</span>
       <span class="ticker-item">PRICE: <span>1 USD = 20,000 $HACK</span></span>
       <span class="ticker-item">AIRDROP: <span>100,000 $HACK FREE</span></span>
-      <span class="ticker-item">DEX LISTING: <span>APRIL 20</span></span>
       <span class="ticker-item">SUPPLY: <span>1,000,000,000,000</span></span>
       <span class="ticker-item">CHAIN: <span>INK</span></span>
       <span class="ticker-item">TAX: <span>0/0</span></span>
@@ -578,21 +561,6 @@
     </div>
   </div>
 
-  <!-- COUNTDOWN -->
-  <div class="section-header" style="margin-top:0"><div class="section-tag">// DEX LISTING</div></div>
-  <div class="countdown-block">
-    <div class="countdown-title">&gt; DEX listing countdown</div>
-    <div class="countdown-sub">April 20, 2026 — 00:00 UTC</div>
-    <div class="countdown-cells">
-      <div class="cd-cell"><div class="cd-val" id="cd-d">00</div><div class="cd-unit">DAYS</div></div>
-      <div class="cd-sep">:</div>
-      <div class="cd-cell"><div class="cd-val" id="cd-h">00</div><div class="cd-unit">HOURS</div></div>
-      <div class="cd-sep">:</div>
-      <div class="cd-cell"><div class="cd-val" id="cd-m">00</div><div class="cd-unit">MIN</div></div>
-      <div class="cd-sep">:</div>
-      <div class="cd-cell"><div class="cd-val" id="cd-s">00</div><div class="cd-unit">SEC</div></div>
-    </div>
-  </div>
 
   <!-- OG NFT INFO -->
   <div class="section-header" style="margin-top:50px"><div class="section-tag">// OG GENESIS NFT</div></div>
@@ -670,7 +638,7 @@
     <div class="rm-item soon">
       <div class="rm-status">[SOON]</div>
       <div class="rm-content">
-        <div class="rm-title">DEX Listing — April 20, 2026</div>
+        <div class="rm-title">DEX Listing — q2, 2026</div>
         <div class="rm-desc">$HACK goes live on DEX. Trading opens. LP unlocked for the public.</div>
       </div>
     </div>
@@ -754,7 +722,7 @@
         <div class="tm-task" id="tm-like">
           <div class="tm-num">03</div>
           <div class="tm-lbl">like &amp; retweet the announcement post</div>
-          <a class="tm-act" id="tma-like" href="https://twitter.com/intent/retweet?tweet_id=2040009685495947519" target="_blank" rel="noopener" onclick="modalTask('like',this);modalTask('rt',null)">[ LIKE &amp; RT ]</a>
+          <a class="tm-act" id="tma-like" href="https://twitter.com/intent/retweet?tweet_id=2039653646116241857" target="_blank" rel="noopener" onclick="modalTask('like',this);modalTask('rt',null)">[ LIKE &amp; RT ]</a>
           <div class="tm-chk" id="tmc-like">○</div>
         </div>
         <!-- task 4 -->
@@ -770,7 +738,7 @@
         <span id="tmValTxt">&gt; validating...</span>
       </div>
       <div class="tm-bar" id="tmBar"><div class="tm-bar-fill" id="tmBarFill"></div></div>
-      <button class="tm-claim" id="tmClaimBtn" onclick="tmClaim()" disabled>[ CLAIM $HACK ]</button>
+      <button class="tm-claim" id="tmClaimBtn" onclick="tmClaim()" disabled>[ CLAIM 100,000 $HACK ]</button>
       <div class="tm-hint" id="tmHint">&gt; complete all 4 tasks to unlock claim</div>
     </div>
   </div>
@@ -930,7 +898,7 @@ function showCheckinInline() {
 
   const ci = document.createElement('a');
   ci.id = 'checkinInlineBtn';
-  ci.href = 'https://hacktokenink.xyz/checkin';
+  ci.href = 'checkin.html';
   ci.className = 'action-btn';
   ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
   ci.textContent = '[ DAILY CHECK-IN ]';
@@ -1006,7 +974,7 @@ function modalTask(id, btn) {
 function modalShare(btn) {
   const refPart = walletAddress
     ? '\n\nClaim here 👉hacktokenink.xyz/?ref=' + walletAddress
-    : '\n\nClaim here 👉hacktokenink.xyz/';
+    : '\n\nClaim here 👉hacktokenink.xyz';
   const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
   modalTask('share', btn);
@@ -1138,7 +1106,7 @@ async function onClaimSuccess() {
   const checkinBtn2 = document.createElement('a');
   checkinBtn2.href = 'checkin.html'; checkinBtn2.className = 'action-btn';
   checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
-  checkinBtn2.textContent = '[ DAILY CHECK-IN ]';
+  checkinBtn2.textContent = '[ DAILY CHECK-IN — +500 $HACK ]';
   wrap.appendChild(mintNftBtn); wrap.appendChild(stakeBtn2); wrap.appendChild(checkinBtn2);
   showCheckinBtn();
   btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
@@ -1380,30 +1348,6 @@ async function executeUnstake(stakeIndex) {
     await typeLog('stakeLog','err','ERROR: ' + (e.reason || e.message || 'failed'));
   }
 }
-
-// ─── COUNTDOWN ───────────────────────────────────────────────────────────────
-const LISTING_DATE = new Date('2026-04-20T00:00:00Z');
-function updateCountdown() {
-  const now  = new Date();
-  const diff = LISTING_DATE - now;
-  if (diff <= 0) {
-    ['cd-d','cd-h','cd-m','cd-s'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.textContent = '00'; el.classList.add('expired'); }
-    });
-    return;
-  }
-  const d = Math.floor(diff / 86400000);
-  const h = Math.floor((diff % 86400000) / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  const s = Math.floor((diff % 60000) / 1000);
-  document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
-  document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
-  document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
-  document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
-}
-setInterval(updateCountdown, 1000);
-updateCountdown();
 
 // ─── COPY ADDRESS ────────────────────────────────────────────────────────────
 function copyAddr(elemId, btn) {
