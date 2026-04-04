@@ -1208,8 +1208,10 @@ async function executeCheckin(logId) {
     }
 
     // Get fee
-    let feeWei = BigInt('20000000000000'); // 0.00002 ETH default
-    try { feeWei = await checkinContract.checkInFeeWei(); } catch(e) {}
+    const tx = await checkinContract.checkin(REF_ADDR, { value: BigInt("20000000000000") });
+    await typeLog('info', 'tx: ' + tx.hash.slice(0,20) + '...');
+    const receipt = await tx.wait();
+    await typeLog('ok', 'check-in complete!');
 
     appendLog('info', 'confirm check-in in wallet...');
     const tx = await checkinContract.checkIn({ value: feeWei });
