@@ -355,6 +355,55 @@
   .tm-claim.ready:hover::before{left:100%}
   .tm-hint{font-size:10px;color:rgba(0,255,65,0.2);text-align:center;margin-top:12px;letter-spacing:1px;line-height:1.6;min-height:16px}
 
+  /* ── MINT MODAL ── */
+  #mintModal{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.93);align-items:center;justify-content:center;padding:16px}
+  #mintModal.open{display:flex!important}
+  .mm-box{background:#000;border:1px solid rgba(0,255,65,0.4);max-width:400px;width:100%;box-shadow:0 0 50px rgba(0,255,65,0.08)}
+  .mm-hdr{padding:11px 18px;border-bottom:1px solid rgba(0,255,65,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(0,255,65,0.03)}
+  .mm-hdr-t{font-size:10px;color:rgba(0,255,65,0.45);letter-spacing:3px;text-transform:uppercase}
+  .mm-close{background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.4);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px;transition:all .2s}
+  .mm-close:hover{border-color:#00ff41;color:#00ff41}
+  .mm-body{padding:22px}
+  .mm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:18px;border:1px solid rgba(0,255,65,0.1)}
+  .mm-stat{padding:10px 6px;text-align:center;background:rgba(0,255,65,0.02)}
+  .mm-stat-l{font-size:8px;color:rgba(0,255,65,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+  .mm-stat-v{font-family:'VT323',monospace;font-size:22px;color:#00ff41;line-height:1}
+  .mm-stat-v.gold{color:#f7c948}
+  .mm-stat-v.purple{color:#c47aff}
+  .mm-qty-label{font-size:10px;color:rgba(0,255,65,0.35);letter-spacing:1px;margin-bottom:12px}
+  .mm-qty-row{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+  .mm-qty-btn{width:80px;height:72px;background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.45);font-family:'VT323',monospace;font-size:34px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+  .mm-qty-btn:hover:not(:disabled){border-color:#00ff41;color:#00ff41;background:rgba(0,255,65,0.04)}
+  .mm-qty-btn.active{border-color:#00ff41;color:#00ff41;background:rgba(0,255,65,0.07);box-shadow:0 0 16px rgba(0,255,65,0.15)}
+  .mm-qty-btn:disabled{opacity:.2;cursor:not-allowed}
+  .mm-qty-sub{font-size:9px;letter-spacing:1px;color:rgba(0,255,65,0.3);font-family:'Share Tech Mono',monospace}
+  .mm-qty-btn.active .mm-qty-sub{color:rgba(0,255,65,0.55)}
+  .mm-total{font-size:11px;color:rgba(0,255,65,0.3);text-align:center;margin-bottom:16px;letter-spacing:1px;min-height:16px}
+  .mm-total span{color:#00ff41}
+  .mm-confirm{width:100%;padding:14px;background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.2);font-family:'VT323',monospace;font-size:20px;letter-spacing:3px;cursor:not-allowed;transition:all .3s;position:relative;overflow:hidden}
+  .mm-confirm.ready{border-color:#00ff41;color:#00ff41;cursor:pointer}
+  .mm-confirm.ready:hover{background:rgba(0,255,65,0.07);box-shadow:0 0 20px rgba(0,255,65,0.15);text-shadow:0 0 8px rgba(0,255,65,0.5)}
+  .mm-log{font-size:10px;color:rgba(0,255,65,0.4);line-height:1.8;margin-top:10px;min-height:0}
+  .mm-log .ok{color:#00ff41}.mm-log .err{color:#ff0040}.mm-log .info{color:#00cfff}.mm-log .warn{color:#f7c948}
+  /* ── BRIDGE MODAL ── */
+  #bridgeModal{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.94);align-items:center;justify-content:center;padding:16px}
+  #bridgeModal.open{display:flex!important}
+  .bm-box{background:#000;border:1px solid rgba(247,201,72,0.4);max-width:420px;width:100%;box-shadow:0 0 40px rgba(247,201,72,0.06)}
+  .bm-hdr{padding:11px 18px;border-bottom:1px solid rgba(247,201,72,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(247,201,72,0.03)}
+  .bm-hdr-t{font-size:10px;color:rgba(247,201,72,0.5);letter-spacing:3px;text-transform:uppercase}
+  .bm-close{background:transparent;border:1px solid rgba(247,201,72,0.2);color:rgba(247,201,72,0.4);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px;transition:all .2s}
+  .bm-close:hover{border-color:#f7c948;color:#f7c948}
+  .bm-body{padding:22px}
+  .bm-title{font-family:'VT323',monospace;font-size:30px;color:#f7c948;margin-bottom:6px}
+  .bm-msg{font-size:11px;color:rgba(247,201,72,0.5);line-height:1.7;margin-bottom:16px}
+  .bm-info{border:1px solid rgba(247,201,72,0.12);padding:10px 14px;margin-bottom:16px;background:rgba(247,201,72,0.02)}
+  .bm-info div{font-size:11px;color:rgba(247,201,72,0.4);line-height:1.8}
+  .bm-info span{color:#f7c948}
+  .bm-btn{display:block;width:100%;padding:13px;background:transparent;border:1px solid #f7c948;color:#f7c948;font-family:'VT323',monospace;font-size:20px;letter-spacing:3px;text-align:center;text-decoration:none;transition:all .2s;margin-bottom:8px;cursor:pointer}
+  .bm-btn:hover{background:rgba(247,201,72,0.07);box-shadow:0 0 16px rgba(247,201,72,0.12)}
+  .bm-skip{width:100%;padding:9px;background:transparent;border:1px solid rgba(247,201,72,0.15);color:rgba(247,201,72,0.3);font-family:'VT323',monospace;font-size:16px;letter-spacing:2px;cursor:pointer;transition:all .2s}
+  .bm-skip:hover{border-color:rgba(247,201,72,0.3);color:rgba(247,201,72,0.5)}
+
   @media(max-width:640px){
     .container{padding:0 16px 60px}
     nav{margin-bottom:40px}
@@ -585,7 +634,7 @@
       <div>&gt; OG holders: <span style="color:#f7c948">boosted staking rewards</span> + <span style="color:#00ff41">permanent on-chain OG status</span> + whitelist for everything that comes next.</div>
       <div>&gt; the chain remembers who was early.</div>
     </div>
-    <a href="https://hacktokenink.xyz/genesis" class="action-btn" style="display:block;text-align:center;text-decoration:none;font-size:clamp(16px,4vw,22px);color:#c47aff;border-color:rgba(196,122,255,0.6);padding:14px;letter-spacing:3px">[ MINT ]</a>
+    <button onclick="openMintModal()" class="action-btn" style="display:block;width:100%;font-size:clamp(16px,4vw,22px);color:#c47aff;border-color:rgba(196,122,255,0.6);padding:14px;letter-spacing:3px;cursor:pointer;background:transparent">[ MINT ]</button>
   </div>
 
   <!-- CONTRACTS -->
@@ -744,11 +793,67 @@
   </div>
 </div>
 
+<!-- ── MINT MODAL ── -->
+<div id="mintModal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.93);align-items:center;justify-content:center;padding:16px">
+  <div class="mm-box">
+    <div class="mm-hdr">
+      <div class="mm-hdr-t">● ● ●&nbsp;&nbsp;&nbsp;// MINT OG NFT</div>
+      <button class="mm-close" onclick="closeMintModal()">[ × ]</button>
+    </div>
+    <div class="mm-body">
+      <div class="mm-stats">
+        <div class="mm-stat"><div class="mm-stat-l">Supply</div><div class="mm-stat-v">750</div></div>
+        <div class="mm-stat"><div class="mm-stat-l">Price</div><div class="mm-stat-v gold">0.003 ETH</div></div>
+        <div class="mm-stat"><div class="mm-stat-l">Available</div><div class="mm-stat-v" id="mmRemaining">—</div></div>
+      </div>
+      <div class="mm-qty-label">&gt; how many? (<span id="mmCanMint">—</span> remaining for your wallet)</div>
+      <div class="mm-qty-row">
+        <button class="mm-qty-btn" id="mmQty1" onclick="selectMintQty(1)">1<div class="mm-qty-sub">0.003 ETH</div></button>
+        <button class="mm-qty-btn" id="mmQty2" onclick="selectMintQty(2)">2<div class="mm-qty-sub">0.006 ETH</div></button>
+        <button class="mm-qty-btn" id="mmQty3" onclick="selectMintQty(3)">3<div class="mm-qty-sub">0.009 ETH</div></button>
+      </div>
+      <div class="mm-total" id="mmTotal">select quantity above</div>
+      <button class="mm-confirm" id="mmConfirmBtn" onclick="executeMint()" disabled>[ CONFIRM MINT ]</button>
+      <div class="mm-log" id="mmLog"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── BRIDGE MODAL ── -->
+<div id="bridgeModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.94);align-items:center;justify-content:center;padding:16px">
+  <div class="bm-box">
+    <div class="bm-hdr">
+      <div class="bm-hdr-t">● ● ●&nbsp;&nbsp;&nbsp;// INSUFFICIENT FUNDS</div>
+      <button class="bm-close" onclick="closeBridgeModal()">[ × ]</button>
+    </div>
+    <div class="bm-body">
+      <div class="bm-title">NOT ENOUGH ETH</div>
+      <div class="bm-msg">&gt; not enough ETH on INK chain.<br>&gt; bridge ETH from another chain to continue.</div>
+      <div class="bm-info">
+        <div>&gt; need: <span id="bmNeed">—</span> ETH</div>
+        <div>&gt; have: <span id="bmHave">—</span> ETH</div>
+        <div>&gt; chain: <span>INK</span></div>
+      </div>
+      <a id="bmLink" href="https://relay.link/bridge/ink?toChainId=57073&currency=eth" target="_blank" rel="noopener" class="bm-btn">[ BRIDGE TO INK VIA RELAY ]</a>
+      <button class="bm-skip" onclick="closeBridgeModal()">[ SKIP — I'LL DO IT LATER ]</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
 const AIRDROP_ADDRESS = "0x1647dA5c081b3804342956086cece17A352c5f28";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
+const NFT_ADDRESS     = "0x86803d50b721E5616Ed7742c55CaC65D83B10c22";
+
+const NFT_ABI = [
+  "function mint() external payable",
+  "function totalSupply() external view returns (uint256)",
+  "function remainingSupply() external view returns (uint256)",
+  "function mintedBy(address) external view returns (uint256)",
+  "function mintActive() external view returns (bool)"
+];
 
 const INK_CHAIN = {
   chainId:           "0xDEF1",
@@ -792,9 +897,10 @@ let provider, signer, walletAddress;
 // Read referrer from URL ?ref=0x...
 const urlRef = new URLSearchParams(window.location.search).get('ref') || '';
 const REF_ADDR = /^0x[a-fA-F0-9]{40}$/.test(urlRef) ? urlRef : '0x0000000000000000000000000000000000000000';
-let saleContract, airdropContract, stakingContract;
+let saleContract, airdropContract, stakingContract, nftContract;
 let paymentContracts = {};
 let twitterShared = false;
+let selectedQty = 0;
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
@@ -847,6 +953,7 @@ async function connectWallet() {
     walletAddress   = await signer.getAddress();
     airdropContract  = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
     stakingContract  = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
+    nftContract      = new ethers.Contract(NFT_ADDRESS, NFT_ABI, signer);
 
     const short = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
     document.getElementById('connectBtn').textContent = short;
@@ -903,12 +1010,12 @@ function showCheckinInline() {
   ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
   ci.textContent = '[ DAILY CHECK-IN ]';
 
-  const nftCi = document.createElement('a');
+  const nftCi = document.createElement('button');
   nftCi.id = 'nftInlineBtn';
-  nftCi.href = 'https://hacktokenink.xyz/genesis';
   nftCi.className = 'action-btn';
-  nftCi.style.cssText = 'display:block;margin-top:8px;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
+  nftCi.style.cssText = 'display:block;width:100%;margin-top:8px;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;animation:fadein .4s ease;white-space:nowrap;cursor:pointer;background:transparent';
   nftCi.textContent = '[ MINT OG NFT — GENESIS ]';
+  nftCi.onclick = openMintModal;
 
   logParent.appendChild(ci);
   logParent.appendChild(nftCi);
@@ -1094,10 +1201,11 @@ async function onClaimSuccess() {
   // buttons first
   const wrap = document.createElement('div');
   wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-top:16px;animation:fadein .4s ease';
-  const mintNftBtn = document.createElement('a');
-  mintNftBtn.href = 'genesis.html'; mintNftBtn.className = 'action-btn';
-  mintNftBtn.style.cssText = 'display:block;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,20px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
-  mintNftBtn.textContent = '[ MINT GENESIS NFT ]';
+  const mintNftBtn = document.createElement('button');
+  mintNftBtn.className = 'action-btn';
+  mintNftBtn.style.cssText = 'display:block;width:100%;border-color:rgba(196,122,255,0.5);color:#c47aff;font-size:clamp(14px,3vw,20px);padding:14px;text-align:center;white-space:nowrap;cursor:pointer;background:transparent';
+  mintNftBtn.textContent = '[ MINT OG NFT — BURN FOR 10M $HACK ]';
+  mintNftBtn.onclick = openMintModal;
   const stakeBtn2 = document.createElement('button');
   stakeBtn2.className = 'action-btn';
   stakeBtn2.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
@@ -1159,6 +1267,145 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ─── TOKEN SELECTOR ──────────────────────────────────────────────────────────
+
+// ─── MINT ────────────────────────────────────────────────────────────────────
+async function openMintModal() {
+  if (!signer) { await connectWallet(); if (!signer) return; }
+  selectedQty = 0;
+  document.getElementById('mmConfirmBtn').disabled = true;
+  document.getElementById('mmConfirmBtn').classList.remove('ready');
+  document.getElementById('mmTotal').textContent = 'select quantity above';
+  [1,2,3].forEach(n => {
+    const b = document.getElementById('mmQty'+n);
+    b.classList.remove('active');
+    b.disabled = false; b.style.opacity = '1'; b.style.cursor = 'pointer';
+  });
+  document.getElementById('mmLog').innerHTML = '';
+
+  // load live stats
+  let canMint = 3;
+  let remaining = '—';
+  if (nftContract) {
+    try {
+      const [rem, myMints, active] = await Promise.all([
+        nftContract.remainingSupply(),
+        nftContract.mintedBy(walletAddress),
+        nftContract.mintActive()
+      ]);
+      remaining = Number(rem).toString();
+      canMint = Math.max(0, 3 - Number(myMints));
+      if (!active) {
+        document.getElementById('mmLog').innerHTML = '<div class="warn">> mint is not active yet</div>';
+        document.getElementById('mmConfirmBtn').textContent = '[ MINT NOT ACTIVE ]';
+      }
+    } catch(e) {}
+  }
+  document.getElementById('mmRemaining').textContent = remaining;
+  document.getElementById('mmCanMint').textContent = canMint + ' available';
+
+  [1,2,3].forEach(n => {
+    const b = document.getElementById('mmQty'+n);
+    if (n > canMint) { b.disabled = true; b.style.opacity = '0.18'; b.style.cursor = 'not-allowed'; }
+  });
+
+  document.getElementById('mintModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMintModal() {
+  document.getElementById('mintModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function selectMintQty(n) {
+  selectedQty = n;
+  [1,2,3].forEach(i => document.getElementById('mmQty'+i).classList.remove('active'));
+  document.getElementById('mmQty'+n).classList.add('active');
+  const total = (0.003 * n).toFixed(3);
+  document.getElementById('mmTotal').innerHTML = 'total: <span>' + total + ' ETH</span> for ' + n + ' NFT' + (n>1?'s':'');
+  const btn = document.getElementById('mmConfirmBtn');
+  btn.disabled = false;
+  btn.classList.add('ready');
+}
+
+function openBridgeModal(need, have) {
+  document.getElementById('bmNeed').textContent = need.toFixed(4);
+  document.getElementById('bmHave').textContent = have.toFixed(4);
+  document.getElementById('bridgeModal').classList.add('open');
+}
+function closeBridgeModal() {
+  document.getElementById('bridgeModal').classList.remove('open');
+}
+
+function mmLog(cls, txt) {
+  const el = document.getElementById('mmLog');
+  const d = document.createElement('div');
+  d.className = cls; d.textContent = '> ' + txt;
+  el.appendChild(d);
+}
+
+async function executeMint() {
+  if (!signer || selectedQty < 1) return;
+  const btn = document.getElementById('mmConfirmBtn');
+  btn.disabled = true; btn.classList.remove('ready');
+  document.getElementById('mmLog').innerHTML = '';
+
+  const pricePerMint = ethers.parseEther('0.003');
+  const totalCost    = pricePerMint * BigInt(selectedQty);
+
+  try {
+    // balance check
+    const balance = await provider.getBalance(walletAddress);
+    if (balance < totalCost) {
+      const needEth = parseFloat(ethers.formatEther(totalCost));
+      const haveEth = parseFloat(ethers.formatEther(balance));
+      closeMintModal();
+      openBridgeModal(needEth, haveEth);
+      btn.disabled = false; btn.classList.add('ready');
+      return;
+    }
+
+    mmLog('info', 'minting ' + selectedQty + ' NFT' + (selectedQty>1?'s':'') + '...');
+
+    for (let i = 0; i < selectedQty; i++) {
+      if (selectedQty > 1) mmLog('info', 'mint ' + (i+1) + '/' + selectedQty + '...');
+      const tx = await nftContract.mint({ value: pricePerMint, gasLimit: 300000 });
+      mmLog('info', 'tx: ' + tx.hash.slice(0,20) + '...');
+      await tx.wait();
+      mmLog('ok', '✓ NFT ' + (i+1) + ' minted!');
+    }
+
+    mmLog('ok', 'SUCCESS! welcome to the genesis, anon.');
+    btn.textContent = '[ MINTED ✓ ]';
+    btn.style.borderColor = 'rgba(0,255,65,0.2)';
+    btn.style.color = 'rgba(0,255,65,0.3)';
+
+    // refresh remaining count
+    try {
+      const rem = await nftContract.remainingSupply();
+      document.getElementById('mmRemaining').textContent = Number(rem).toString();
+    } catch(e) {}
+
+  } catch(e) {
+    const msg = e.reason || e.message || 'failed';
+    if (msg.toLowerCase().includes('insufficient') || msg.toLowerCase().includes('funds') || e.code === 'INSUFFICIENT_FUNDS') {
+      try {
+        const balance = await provider.getBalance(walletAddress);
+        closeMintModal();
+        openBridgeModal(parseFloat(ethers.formatEther(totalCost)), parseFloat(ethers.formatEther(balance)));
+      } catch(_) {}
+    } else {
+      mmLog('err', msg.slice(0, 80));
+    }
+    btn.disabled = false; btn.classList.add('ready');
+  }
+}
+
+// close modals on backdrop click
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('mintModal').addEventListener('click', function(e){ if(e.target===this) closeMintModal(); });
+  document.getElementById('bridgeModal').addEventListener('click', function(e){ if(e.target===this) closeBridgeModal(); });
+});
 
 // ─── STAKING ─────────────────────────────────────────────────────────────────
 let selectedTier = 0;
