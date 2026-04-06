@@ -404,47 +404,6 @@
   .bm-skip{width:100%;padding:9px;background:transparent;border:1px solid rgba(247,201,72,0.15);color:rgba(247,201,72,0.3);font-family:'VT323',monospace;font-size:16px;letter-spacing:2px;cursor:pointer;transition:all .2s}
   .bm-skip:hover{border-color:rgba(247,201,72,0.3);color:rgba(247,201,72,0.5)}
 
-  /* ── CHECKIN MODAL ── */
-  #ciModal{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.93);align-items:center;justify-content:center;padding:16px}
-  #ciModal.open{display:flex!important}
-  .ci-box{background:#000;border:1px solid rgba(247,201,72,0.4);max-width:480px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 0 50px rgba(247,201,72,0.06)}
-  .ci-hdr{padding:11px 18px;border-bottom:1px solid rgba(247,201,72,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(247,201,72,0.03);position:sticky;top:0}
-  .ci-hdr-t{font-size:10px;color:rgba(247,201,72,0.5);letter-spacing:3px;text-transform:uppercase}
-  .ci-close{background:transparent;border:1px solid rgba(247,201,72,0.2);color:rgba(247,201,72,0.4);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px;transition:all .2s}
-  .ci-close:hover{border-color:#f7c948;color:#f7c948}
-  .ci-body{padding:20px}
-  .ci-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:18px;border:1px solid rgba(247,201,72,0.1)}
-  .ci-stat{padding:10px 6px;text-align:center;background:rgba(247,201,72,0.02)}
-  .ci-stat-l{font-size:8px;color:rgba(247,201,72,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
-  .ci-stat-v{font-family:'VT323',monospace;font-size:22px;color:#f7c948;line-height:1}
-  .ci-stat-v.green{color:#00ff41}
-  .ci-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:18px}
-  .ci-day{border:1px solid rgba(247,201,72,0.1);background:rgba(247,201,72,0.01);padding:8px 3px;text-align:center;position:relative;transition:all .2s}
-  .ci-day.past{border-color:rgba(0,255,65,0.3);background:rgba(0,255,65,0.05)}
-  .ci-day.past::after{content:'✓';position:absolute;top:3px;right:4px;font-size:9px;color:#00ff41}
-  .ci-day.current{border-color:#f7c948;background:rgba(247,201,72,0.07);box-shadow:0 0 10px rgba(247,201,72,0.12)}
-  .ci-day.locked{opacity:.4}
-  .ci-day-num{font-family:'VT323',monospace;font-size:18px;color:rgba(247,201,72,0.6);line-height:1}
-  .ci-day.past .ci-day-num{color:rgba(0,255,65,0.5)}
-  .ci-day.current .ci-day-num{color:#f7c948}
-  .ci-day-lbl{font-size:7px;color:rgba(247,201,72,0.25);letter-spacing:1px;text-transform:uppercase}
-  .ci-day-rew{font-family:'VT323',monospace;font-size:12px;color:rgba(247,201,72,0.4);margin-top:2px}
-  .ci-day.past .ci-day-rew{color:rgba(0,255,65,0.4)}
-  .ci-day.current .ci-day-rew{color:#f7c948}
-  .ci-next{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border:1px solid rgba(247,201,72,0.12);background:rgba(247,201,72,0.02);margin-bottom:14px}
-  .ci-next-l{font-size:9px;color:rgba(247,201,72,0.35);letter-spacing:2px;text-transform:uppercase}
-  .ci-next-v{font-family:'VT323',monospace;font-size:26px;color:#f7c948}
-  .ci-timer{font-size:10px;color:rgba(247,201,72,0.4);letter-spacing:2px;text-align:right}
-  .ci-timer.ready{color:#00ff41}
-  .ci-fee{font-size:10px;color:rgba(247,201,72,0.3);text-align:center;margin-bottom:12px;letter-spacing:1px}
-  .ci-fee span{color:rgba(247,201,72,0.55)}
-  .ci-btn{width:100%;padding:14px;background:transparent;border:2px solid rgba(247,201,72,0.2);color:rgba(247,201,72,0.25);font-family:'VT323',monospace;font-size:22px;letter-spacing:4px;cursor:not-allowed;transition:all .3s;position:relative;overflow:hidden}
-  .ci-btn.ready{border-color:#f7c948;color:#f7c948;cursor:pointer;animation:ci-pulse 2s ease-in-out infinite}
-  .ci-btn.ready:hover{background:rgba(247,201,72,0.07);box-shadow:0 0 24px rgba(247,201,72,0.2);text-shadow:0 0 10px #f7c948;animation:none}
-  @keyframes ci-pulse{0%,100%{box-shadow:0 0 10px rgba(247,201,72,0.1)}50%{box-shadow:0 0 20px rgba(247,201,72,0.25)}}
-  .ci-log{font-size:10px;line-height:1.8;margin-top:10px;min-height:0}
-  .ci-log .ok{color:#00ff41}.ci-log .err{color:#ff0040}.ci-log .info{color:#00cfff}.ci-log .warn{color:#f7c948}
-
   @media(max-width:640px){
     .container{padding:0 16px 60px}
     nav{margin-bottom:40px}
@@ -881,54 +840,12 @@
   </div>
 </div>
 
-<!-- ── CHECKIN MODAL ── -->
-<div id="ciModal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.93);align-items:center;justify-content:center;padding:16px">
-  <div class="ci-box">
-    <div class="ci-hdr">
-      <div class="ci-hdr-t">● ● ●&nbsp;&nbsp;&nbsp;// DAILY CHECK-IN</div>
-      <button class="ci-close" onclick="closeCiModal()">[ × ]</button>
-    </div>
-    <div class="ci-body">
-      <div class="ci-stats">
-        <div class="ci-stat"><div class="ci-stat-l">Streak</div><div class="ci-stat-v" id="ciStreak">—</div></div>
-        <div class="ci-stat"><div class="ci-stat-l">Today Earned</div><div class="ci-stat-v green" id="ciToday">—</div></div>
-        <div class="ci-stat"><div class="ci-stat-l">Total Earned</div><div class="ci-stat-v" id="ciTotal">—</div></div>
-      </div>
-      <div class="ci-grid" id="ciGrid"></div>
-      <div class="ci-next">
-        <div>
-          <div class="ci-next-l">Next reward</div>
-          <div class="ci-next-v" id="ciNextReward">— $HACK</div>
-        </div>
-        <div style="text-align:right">
-          <div class="ci-next-l">Available in</div>
-          <div class="ci-timer" id="ciTimer">—</div>
-        </div>
-      </div>
-      <div class="ci-fee">&gt; fee: <span>0.00002 ETH</span> per check-in &nbsp;·&nbsp; chain: <span>INK</span></div>
-      <button class="ci-btn" id="ciBtnMain" onclick="executeCiCheckin()" disabled>[ CHECK-IN & CLAIM ]</button>
-      <div class="ci-log" id="ciLog"></div>
-    </div>
-  </div>
-</div>
-
 <script>
 // ─── CONTRACT CONFIG ────────────────────────────────────────────────────────
 const STAKING_ADDRESS  = "0x48aadA935e961849C4c96dF2bC70640358796018";
 const AIRDROP_ADDRESS = "0x1647dA5c081b3804342956086cece17A352c5f28";
 const HACK_ADDRESS    = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const NFT_ADDRESS     = "0x86803d50b721E5616Ed7742c55CaC65D83B10c22";
-const CHECKIN_ADDRESS = "0xd3Cb09767006Ffca00906f7FB0fbB196A6c52dCC";
-
-const CHECKIN_ABI = [
-  "function checkin(address referrer) external payable",
-  "function getUserData(address user) external view returns (uint256 streak, uint256 lastCheckin, uint256 totalCheckins, uint256 totalEarned, uint256 nextReward, uint256 cooldownLeft, bool canCheckin)",
-  "function remainingPool() external view returns (uint256)",
-  "function totalCheckins() external view returns (uint256)"
-];
-
-const CHECKIN_REWARDS = [500,1000,1500,2000,2500,3000,3500,4000,4500,5000,5500,6000,6500,7000];
-const CHECKIN_FEE     = BigInt("20000000000000"); // 0.00002 ETH
 
 const NFT_ABI = [
   "function mint() external payable",
@@ -980,7 +897,7 @@ let provider, signer, walletAddress;
 // Read referrer from URL ?ref=0x...
 const urlRef = new URLSearchParams(window.location.search).get('ref') || '';
 const REF_ADDR = /^0x[a-fA-F0-9]{40}$/.test(urlRef) ? urlRef : '0x0000000000000000000000000000000000000000';
-let saleContract, airdropContract, stakingContract, nftContract, checkinContract;
+let saleContract, airdropContract, stakingContract, nftContract;
 let paymentContracts = {};
 let twitterShared = false;
 let selectedQty = 0;
@@ -1037,7 +954,6 @@ async function connectWallet() {
     airdropContract  = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, signer);
     stakingContract  = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, signer);
     nftContract      = new ethers.Contract(NFT_ADDRESS, NFT_ABI, signer);
-    checkinContract  = new ethers.Contract(CHECKIN_ADDRESS, CHECKIN_ABI, signer);
 
     const short = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
     document.getElementById('connectBtn').textContent = short;
@@ -1087,12 +1003,12 @@ function showCheckinInline() {
   if (document.getElementById('checkinInlineBtn')) return;
   const logParent = document.getElementById('airdropLog').parentNode;
 
-  const ci = document.createElement('button');
+  const ci = document.createElement('a');
   ci.id = 'checkinInlineBtn';
+  ci.href = 'https://hacktokenink.xyz/checkin';
   ci.className = 'action-btn';
-  ci.style.cssText = 'display:block;width:100%;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;animation:fadein .4s ease;white-space:nowrap;cursor:pointer;background:transparent';
+  ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
   ci.textContent = '[ DAILY CHECK-IN ]';
-  ci.onclick = openCiModal;
 
   const nftCi = document.createElement('button');
   nftCi.id = 'nftInlineBtn';
@@ -1295,12 +1211,10 @@ async function onClaimSuccess() {
   stakeBtn2.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
   stakeBtn2.textContent = '[ STAKE YOUR $HACK ]';
   stakeBtn2.onclick = () => switchTab('stake');
-  const checkinBtn2 = document.createElement('button');
-  checkinBtn2.id = 'checkinSuccessBtn';
-  checkinBtn2.className = 'action-btn';
-  checkinBtn2.style.cssText = 'display:block;width:100%;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;white-space:nowrap;cursor:pointer;background:transparent';
+  const checkinBtn2 = document.createElement('a');
+  checkinBtn2.href = 'checkin.html'; checkinBtn2.className = 'action-btn';
+  checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
   checkinBtn2.textContent = '[ DAILY CHECK-IN ]';
-  checkinBtn2.onclick = openCiModal;
   wrap.appendChild(mintNftBtn); wrap.appendChild(stakeBtn2); wrap.appendChild(checkinBtn2);
   showCheckinBtn();
   btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
@@ -1491,167 +1405,6 @@ async function executeMint() {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('mintModal').addEventListener('click', function(e){ if(e.target===this) closeMintModal(); });
   document.getElementById('bridgeModal').addEventListener('click', function(e){ if(e.target===this) closeBridgeModal(); });
-});
-
-// ─── CHECKIN MODAL ───────────────────────────────────────────────────────────
-let ciTimerInterval = null;
-
-async function openCiModal() {
-  if (!signer) { await connectWallet(); if (!signer) return; }
-  document.getElementById('ciModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  document.getElementById('ciLog').innerHTML = '';
-  renderCiGrid(0);
-  document.getElementById('ciStreak').textContent  = '—';
-  document.getElementById('ciToday').textContent   = '—';
-  document.getElementById('ciTotal').textContent   = '—';
-  document.getElementById('ciNextReward').textContent = '— $HACK';
-  document.getElementById('ciTimer').textContent   = '...';
-  await loadCiData();
-}
-
-function closeCiModal() {
-  document.getElementById('ciModal').classList.remove('open');
-  document.body.style.overflow = '';
-  if (ciTimerInterval) { clearInterval(ciTimerInterval); ciTimerInterval = null; }
-}
-
-function renderCiGrid(streak) {
-  const grid = document.getElementById('ciGrid');
-  grid.innerHTML = '';
-  for (let i = 1; i <= 14; i++) {
-    const d = document.createElement('div');
-    d.className = 'ci-day ' + (i < streak ? 'past' : i === streak ? 'current' : 'locked');
-    d.innerHTML = '<div class="ci-day-num">' + i + '</div>'
-      + '<div class="ci-day-lbl">DAY</div>'
-      + '<div class="ci-day-rew">' + (CHECKIN_REWARDS[i-1]/1000).toFixed(1) + 'K</div>';
-    grid.appendChild(d);
-  }
-}
-
-async function loadCiData() {
-  if (!checkinContract || !walletAddress) return;
-  try {
-    const d = await checkinContract.getUserData(walletAddress);
-    const streak     = Number(d.streak);
-    const cooldown   = Number(d.cooldownLeft);
-    const can        = d.canCheckin;
-    const nextReward = Number(ethers.formatEther(d.nextReward));
-    const totalEarned = Number(ethers.formatEther(d.totalEarned));
-
-    document.getElementById('ciStreak').textContent    = streak + ' / 14';
-    document.getElementById('ciToday').textContent     = streak > 0 ? CHECKIN_REWARDS[Math.min(streak-1,13)].toLocaleString() : '0';
-    document.getElementById('ciTotal').textContent     = Math.round(totalEarned).toLocaleString();
-    document.getElementById('ciNextReward').textContent = nextReward.toLocaleString(undefined,{maximumFractionDigits:0}) + ' $HACK';
-    renderCiGrid(streak);
-
-    const btn = document.getElementById('ciBtnMain');
-    if (ciTimerInterval) { clearInterval(ciTimerInterval); ciTimerInterval = null; }
-
-    if (can) {
-      btn.disabled = false;
-      btn.classList.add('ready');
-      btn.textContent = '[ CHECK-IN & CLAIM ]';
-      document.getElementById('ciTimer').textContent = 'NOW';
-      document.getElementById('ciTimer').classList.add('ready');
-    } else if (cooldown > 0) {
-      btn.disabled = true;
-      btn.classList.remove('ready');
-      btn.textContent = '[ COME BACK TOMORROW ]';
-      document.getElementById('ciTimer').classList.remove('ready');
-      let left = cooldown;
-      const tick = () => {
-        if (left <= 0) { clearInterval(ciTimerInterval); loadCiData(); return; }
-        const h = Math.floor(left/3600);
-        const m = Math.floor((left%3600)/60);
-        const s = left % 60;
-        document.getElementById('ciTimer').textContent =
-          String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-        left--;
-      };
-      tick();
-      ciTimerInterval = setInterval(tick, 1000);
-    } else {
-      btn.disabled = true;
-      btn.classList.remove('ready');
-      btn.textContent = '[ UNAVAILABLE ]';
-      document.getElementById('ciTimer').textContent = '--:--:--';
-    }
-  } catch(e) { console.error('loadCiData:', e); }
-}
-
-function ciLog(cls, txt) {
-  const el = document.getElementById('ciLog');
-  const d = document.createElement('div');
-  d.className = cls; d.textContent = '> ' + txt;
-  el.appendChild(d);
-}
-
-async function executeCiCheckin() {
-  if (!signer || !checkinContract) return;
-  const btn = document.getElementById('ciBtnMain');
-  btn.disabled = true;
-  btn.classList.remove('ready');
-  btn.textContent = '[ PROCESSING... ]';
-  document.getElementById('ciLog').innerHTML = '';
-
-  // Use referrer from URL if present (support ?ref= and ?gm=)
-  const p = new URLSearchParams(window.location.search);
-  const refRaw = p.get('gm') || p.get('ref') || '';
-  const ciRef = /^0x[a-fA-F0-9]{40}$/.test(refRaw) ? refRaw : '0x0000000000000000000000000000000000000000';
-
-  try {
-    // ── balance check — ensure enough for fee + gas ──────────────────────
-    const balance = await provider.getBalance(walletAddress);
-    const minBalance = CHECKIN_FEE + ethers.parseEther('0.000001'); // fee + ~gas
-    if (balance < minBalance) {
-      ciLog('err', 'not enough ETH for fee. need ~0.00002 ETH on INK.');
-      ciLog('warn', 'bridge ETH at relay.link/bridge/ink');
-      btn.disabled = false; btn.classList.add('ready'); btn.textContent = '[ CHECK-IN & CLAIM ]';
-      return;
-    }
-
-    ciLog('info', 'submitting check-in...');
-
-    // ── send with explicit gas to avoid estimation failures ───────────────
-    const tx = await checkinContract.checkin(ciRef, {
-      value: CHECKIN_FEE,
-      gasLimit: 200000
-    });
-    ciLog('info', 'tx: ' + tx.hash.slice(0,22) + '...');
-    await tx.wait();
-
-    // ── reload data and show result ───────────────────────────────────────
-    await loadCiData();
-    const d = await checkinContract.getUserData(walletAddress);
-    const streak = Number(d.streak);
-    const earned = CHECKIN_REWARDS[Math.min(streak-1, 13)];
-    ciLog('ok', 'check-in complete!');
-    ciLog('ok', 'day ' + streak + ' streak — +' + earned.toLocaleString() + ' $HACK!');
-    if (streak >= 14) ciLog('ok', '[ MAX STREAK ] 14 days — legendary anon.');
-    btn.textContent = '[ CHECKED IN ✓ ]';
-
-  } catch(e) {
-    const msg = e.reason || e.message || 'failed';
-    // friendly error messages
-    if (msg.includes('airdrop') || msg.includes('Claim') || msg.includes('claim first')) {
-      ciLog('err', 'claim the free airdrop first to unlock check-in');
-    } else if (msg.includes('cooldown') || msg.includes('already') || msg.includes('24h')) {
-      ciLog('warn', 'already checked in today — come back tomorrow');
-      btn.textContent = '[ COME BACK TOMORROW ]';
-    } else if (msg.includes('insufficient') || msg.includes('funds') || e.code === 'INSUFFICIENT_FUNDS') {
-      ciLog('err', 'not enough ETH for fee. bridge at relay.link/bridge/ink');
-      btn.disabled = false; btn.classList.add('ready'); btn.textContent = '[ CHECK-IN & CLAIM ]';
-    } else {
-      ciLog('err', msg.slice(0, 90));
-      btn.disabled = false; btn.classList.add('ready'); btn.textContent = '[ CHECK-IN & CLAIM ]';
-    }
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const ciM = document.getElementById('ciModal');
-  if (ciM) ciM.addEventListener('click', function(e){ if(e.target===this) closeCiModal(); });
 });
 
 // ─── STAKING ─────────────────────────────────────────────────────────────────
