@@ -803,8 +803,18 @@ async function claimReward() {
 
     logClaim('info', 'Preparing transaction...');
 
-    // Call contract
+    // Call contract with auto gas estimation
     const feeWei = ethers.parseEther('0.00002');
+
+    try {
+      // Estimate gas first to catch errors early
+      const gasEstimate = await gameContract.claimGameReward.estimateGas(score, { value: feeWei });
+      logClaim('info', 'Gas estimated: ' + gasEstimate.toString());
+    } catch (gasError) {
+      console.error('Gas estimation failed:', gasError);
+      throw new Error('Contract call will fail. Check if contract has tokens to mint.');
+    }
+
     logClaim('info', 'Confirm transaction in wallet...');
 
     const tx = await gameContract.claimGameReward(score, { value: feeWei });
