@@ -17,7 +17,7 @@
       "destination": "/game.html"
     }
 	{
-      "source": "/leaderboar",
+      "source": "/leaderboard",
       "destination": "/leaderboard.html"
     }
   ]
