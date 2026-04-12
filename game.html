@@ -202,7 +202,14 @@ body {
         <span>⏱ 3 minutes • Collect as many points as possible!</span>
       </div>
     </div>
-    <button class="start-btn" onclick="startGame()">START GAME</button>
+
+    <button class="start-btn" id="connectStartBtn" onclick="connectWalletToStart()">CONNECT WALLET</button>
+    <button class="start-btn" id="startGameBtn" onclick="startGame()" style="display: none;">START GAME</button>
+
+    <div id="walletInfo" style="display: none; margin-top: 16px; font-size: 13px; color: rgba(0,255,65,0.6); text-align: center;">
+      Connected: <span id="walletAddress"></span>
+    </div>
+
     <a href="leaderboard.html" class="start-btn" style="display: inline-block; margin-top: 16px; text-decoration: none; border-color: rgba(0,207,255,0.4); color: #00cfff;">VIEW LEADERBOARD</a>
   </div>
 
@@ -910,6 +917,35 @@ async function connectWallet() {
   } catch (error) {
     console.error('Wallet connection error:', error);
     throw error;
+  }
+}
+
+async function connectWalletToStart() {
+  const connectBtn = document.getElementById('connectStartBtn');
+  const startBtn = document.getElementById('startGameBtn');
+  const walletInfo = document.getElementById('walletInfo');
+  const walletAddressEl = document.getElementById('walletAddress');
+
+  try {
+    connectBtn.disabled = true;
+    connectBtn.textContent = 'CONNECTING...';
+
+    await connectWallet();
+
+    // Show shortened wallet address
+    const shortAddress = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
+    walletAddressEl.textContent = shortAddress;
+
+    // Hide connect button, show start button and wallet info
+    connectBtn.style.display = 'none';
+    startBtn.style.display = 'inline-block';
+    walletInfo.style.display = 'block';
+
+  } catch (error) {
+    console.error('Connection failed:', error);
+    connectBtn.disabled = false;
+    connectBtn.textContent = 'CONNECT WALLET';
+    alert('Failed to connect wallet. Please try again.');
   }
 }
 
