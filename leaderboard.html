@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$HACK Virus Hunter - Leaderboard</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #00ff41;
+  font-family: 'Share Tech Mono', monospace;
+  overflow-x: hidden;
+  user-select: none;
+  min-height: 100vh;
+}
+
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.container {
+  position: relative;
+  z-index: 10;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.title {
+  font-family: 'VT323', monospace;
+  font-size: clamp(36px, 8vw, 64px);
+  color: #00ff41;
+  text-shadow: 0 0 20px rgba(0,255,65,0.5);
+  margin-bottom: 12px;
+  letter-spacing: 4px;
+}
+
+.subtitle {
+  font-size: clamp(11px, 2.5vw, 14px);
+  color: rgba(0,255,65,0.5);
+  letter-spacing: 2px;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-bottom: 32px;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid rgba(0,255,65,0.3);
+  color: rgba(0,255,65,0.6);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  border-color: #00ff41;
+  color: #00ff41;
+  box-shadow: 0 0 20px rgba(0,255,65,0.2);
+}
+
+.leaderboard {
+  background: rgba(0,255,65,0.02);
+  border: 1px solid rgba(0,255,65,0.2);
+  overflow: hidden;
+}
+
+.lb-header {
+  display: grid;
+  grid-template-columns: 80px 1fr 140px;
+  gap: 16px;
+  padding: 16px 20px;
+  background: rgba(0,255,65,0.08);
+  border-bottom: 1px solid rgba(0,255,65,0.3);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: rgba(0,255,65,0.7);
+  font-weight: 600;
+}
+
+.lb-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 140px;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0,255,65,0.1);
+  font-size: 14px;
+  transition: all 0.2s;
+  align-items: center;
+}
+
+.lb-row:hover {
+  background: rgba(0,255,65,0.04);
+}
+
+.lb-row:last-child {
+  border-bottom: none;
+}
+
+.rank {
+  font-family: 'VT323', monospace;
+  font-size: 24px;
+  color: rgba(0,255,65,0.5);
+}
+
+.lb-row:nth-child(1) .rank {
+  color: #f7c948;
+  text-shadow: 0 0 10px rgba(247,201,72,0.6);
+}
+
+.lb-row:nth-child(2) .rank {
+  color: #c0c0c0;
+  text-shadow: 0 0 10px rgba(192,192,192,0.6);
+}
+
+.lb-row:nth-child(3) .rank {
+  color: #cd7f32;
+  text-shadow: 0 0 10px rgba(205,127,50,0.6);
+}
+
+.wallet {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: rgba(0,255,65,0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.score {
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  color: #00ff41;
+  text-align: right;
+  text-shadow: 0 0 8px rgba(0,255,65,0.4);
+}
+
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 14px;
+  color: rgba(0,255,65,0.5);
+}
+
+.loading::after {
+  content: '...';
+  animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+.error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 14px;
+  color: #ff0040;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 14px;
+  color: rgba(0,255,65,0.4);
+}
+
+@media (max-width: 640px) {
+  .lb-header, .lb-row {
+    grid-template-columns: 60px 1fr 100px;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .rank {
+    font-size: 20px;
+  }
+
+  .wallet {
+    font-size: 11px;
+  }
+
+  .score {
+    font-size: 22px;
+  }
+
+  .lb-header {
+    font-size: 10px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="title">LEADERBOARD</div>
+    <div class="subtitle">&gt; TOP 50 VIRUS HUNTERS</div>
+  </div>
+
+  <a href="game-canvas.html" class="back-btn">[ ← BACK TO GAME ]</a>
+
+  <div class="leaderboard">
+    <div class="lb-header">
+      <div>RANK</div>
+      <div>WALLET</div>
+      <div style="text-align: right;">SCORE</div>
+    </div>
+
+    <div id="leaderboardList">
+      <div class="loading">&gt; loading leaderboard</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+<script>
+const GAME_CONTRACT_ADDRESS = '0x079B6631e024F84Cf43446467c2aC108D84B44eC';
+const RPC_URL = 'https://rpc-gel.inkonchain.com';
+const BLOCKS_TO_SCAN = 50000; // Scan last ~50k blocks
+
+const CONTRACT_ABI = [
+  "event GameRewardClaimed(address indexed player, uint256 score, uint256 timestamp)"
+];
+
+async function loadLeaderboard() {
+  const listEl = document.getElementById('leaderboardList');
+  listEl.innerHTML = '<div class="loading">&gt; loading from blockchain</div>';
+
+  try {
+    const provider = new ethers.JsonRpcProvider(RPC_URL);
+    const contract = new ethers.Contract(GAME_CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+
+    // Get current block
+    const currentBlock = await provider.getBlockNumber();
+    const fromBlock = Math.max(0, currentBlock - BLOCKS_TO_SCAN);
+
+    console.log(`Scanning blocks ${fromBlock} to ${currentBlock}...`);
+
+    // Get all GameRewardClaimed events
+    const filter = contract.filters.GameRewardClaimed();
+    const events = await contract.queryFilter(filter, fromBlock, currentBlock);
+
+    console.log(`Found ${events.length} claims`);
+
+    if (events.length === 0) {
+      listEl.innerHTML = '<div class="empty">&gt; no players yet. be the first!</div>';
+      return;
+    }
+
+    // Process events: track best score per wallet
+    const players = {};
+
+    events.forEach(event => {
+      const wallet = event.args.player.toLowerCase();
+      const score = Number(event.args.score);
+
+      if (!players[wallet]) {
+        players[wallet] = {
+          wallet: wallet,
+          bestScore: score,
+          totalClaimed: score,
+          claimCount: 1
+        };
+      } else {
+        players[wallet].bestScore = Math.max(players[wallet].bestScore, score);
+        players[wallet].totalClaimed += score;
+        players[wallet].claimCount++;
+      }
+    });
+
+    // Convert to array and sort by best score
+    const leaderboard = Object.values(players)
+      .sort((a, b) => b.bestScore - a.bestScore)
+      .slice(0, 50); // Top 50
+
+    if (leaderboard.length === 0) {
+      listEl.innerHTML = '<div class="empty">&gt; no players yet. be the first!</div>';
+      return;
+    }
+
+    // Render leaderboard
+    listEl.innerHTML = '';
+
+    leaderboard.forEach((player, index) => {
+      const row = document.createElement('div');
+      row.className = 'lb-row';
+
+      const shortWallet = player.wallet.slice(0, 6) + '...' + player.wallet.slice(-4);
+
+      row.innerHTML = `
+        <div class="rank">#${index + 1}</div>
+        <div class="wallet">${shortWallet}</div>
+        <div class="score">${player.bestScore.toLocaleString()}</div>
+      `;
+
+      listEl.appendChild(row);
+    });
+
+  } catch (error) {
+    console.error('Failed to load leaderboard:', error);
+    listEl.innerHTML = '<div class="error">&gt; error loading leaderboard. check console.</div>';
+  }
+}
+
+// Load on page load
+loadLeaderboard();
+
+// Refresh every 60 seconds (blockchain data doesn't change that fast)
+setInterval(loadLeaderboard, 60000);
+</script>
+
+</body>
+</html>
