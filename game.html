@@ -11,14 +11,14 @@
 <meta property="og:url" content="https://hacktokenink.xyz/game">
 <meta property="og:title" content="$HACK Virus Hunter — Play & Earn on INK Chain">
 <meta property="og:description" content="Click viruses, avoid bombs, earn $HACK tokens. 15 free games every 24h. Claim tokens after each game.">
-<meta property="og:image" content="https://hacktokenink.xyz/og-image.png">
+<meta property="og:image" content="https://hacktokenink.xyz/game-image.png">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@HACKtokenINK">
 <meta name="twitter:title" content="$HACK Virus Hunter — Play & Earn">
 <meta name="twitter:description" content="Click viruses, avoid bombs, earn $HACK tokens. 15 free games every 24h on INK Chain.">
-<meta name="twitter:image" content="https://hacktokenink.xyz/og-image.png">
+<meta name="twitter:image" content="https://hacktokenink.xyz/game-image.png">
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
 <style>
@@ -214,11 +214,11 @@ body {
     <div class="title">VIRUS HUNTER</div>
     <div class="subtitle">Click viruses to earn $HACK. Avoid bombs or lose everything!</div>
     <div class="instructions">
-      <div><div class="virus-icon"></div><span>Click viruses = +100 points</span></div>
+      <div><div class="virus-icon"></div><span>Click viruses = +100 tokens</span></div>
       <div><div class="bomb-icon"></div><span>Click bomb = RESET TO 0</span></div>
-      <div><div style="width: 24px; height: 24px; background: radial-gradient(circle, #00cfff, #0099cc); border-radius: 50%; box-shadow: 0 0 10px rgba(0,207,255,0.6); flex-shrink: 0;"></div><span>Click shield = +1000 points (rare!)</span></div>
+      <div><div style="width: 24px; height: 24px; background: radial-gradient(circle, #00cfff, #0099cc); border-radius: 50%; box-shadow: 0 0 10px rgba(0,207,255,0.6); flex-shrink: 0;"></div><span>Click shield = +1000 tokens (rare!)</span></div>
       <div style="margin-top: 16px; border-top: 1px solid rgba(0,255,65,0.2); padding-top: 16px;">
-        <span>⏱ 3 minutes • Collect as many points as possible!</span>
+        <span>⏱ 3 minutes • Collect as many tokens as possible!</span>
       </div>
     </div>
 
@@ -278,6 +278,7 @@ let lastTime = 0;
 // Game limits
 let gamesRemaining = 15;
 let timerStart = null;
+let isFirstGame = true; // Track if this is first game
 
 // Contract config (will be replaced with actual addresses)
 const GAME_CONTRACT_ADDRESS = '0xeCF07B3688cf6d83cb3811701BC0Ed9a41f7A5cD';
@@ -296,14 +297,16 @@ function loadGameLimits() {
     const data = JSON.parse(saved);
     timerStart = data.timerStart;
     gamesRemaining = data.gamesRemaining;
+    isFirstGame = data.isFirstGame !== undefined ? data.isFirstGame : true;
 
     // Check if 24h passed
     const now = Date.now();
     const elapsed = now - timerStart;
     if (elapsed >= 24 * 60 * 60 * 1000) {
-      // Reset after 24h
+      // Reset after 24h - reset games AND first game flag
       gamesRemaining = 15;
       timerStart = null;
+      isFirstGame = true; // Reset first game flag for new day
       saveGameLimits();
     }
   }
@@ -313,7 +316,8 @@ function loadGameLimits() {
 function saveGameLimits() {
   localStorage.setItem('hackGameLimits', JSON.stringify({
     timerStart: timerStart,
-    gamesRemaining: gamesRemaining
+    gamesRemaining: gamesRemaining,
+    isFirstGame: isFirstGame
   }));
 }
 
@@ -780,7 +784,26 @@ function endGame() {
   const claimBtn = document.getElementById('claimBtn');
   const skipBtn = document.getElementById('skipBtn');
 
-  if (score <= 0) {
+  // Check if first game and score > 0
+  if (isFirstGame && score > 0) {
+    // Hide claim/skip buttons initially
+    claimBtn.style.display = 'none';
+    skipBtn.style.display = 'none';
+
+    // Show Twitter share button
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'restart-btn';
+    shareBtn.id = 'twitterShareBtn';
+    shareBtn.textContent = 'SHARE ON X TO UNLOCK CLAIM';
+    shareBtn.style.background = 'rgba(29,155,240,0.08)';
+    shareBtn.style.borderColor = '#1d9bf0';
+    shareBtn.style.color = '#1d9bf0';
+    shareBtn.style.marginBottom = '20px';
+    shareBtn.onclick = shareOnTwitter;
+
+    const btnContainer = document.querySelector('#endScreen > div:nth-child(4)');
+    btnContainer.appendChild(shareBtn);
+  } else if (score <= 0) {
     claimBtn.style.display = 'none';
     skipBtn.textContent = 'PLAY AGAIN';
     skipBtn.style.borderColor = 'rgba(0,255,65,0.4)';
@@ -794,6 +817,32 @@ function endGame() {
 
   updateGamesDisplay();
   document.getElementById('endScreen').style.display = 'flex';
+}
+
+function shareOnTwitter() {
+  const gameUrl = 'https://hacktokenink.xyz/game';
+  const tweetText = `Just scored ${score} tokens in $HACK Virus Hunter! 🎮\n\nClick viruses, avoid bombs, earn $HACK on INK Chain.\n\n15 free games every 24h. Play now 👇`;
+
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(gameUrl)}`;
+  window.open(twitterUrl, '_blank');
+
+  // After sharing, show claim buttons
+  setTimeout(() => {
+    const shareBtn = document.getElementById('twitterShareBtn');
+    if (shareBtn) shareBtn.remove();
+
+    const claimBtn = document.getElementById('claimBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    claimBtn.style.display = 'inline-block';
+    skipBtn.style.display = 'inline-block';
+    skipBtn.textContent = 'SKIP';
+
+    // Mark first game as done
+    isFirstGame = false;
+    saveGameLimits();
+
+    logClaim('success', 'Thanks for sharing! Now you can claim your tokens.');
+  }, 2000);
 }
 
 // ─── CLAIM REWARD ────────────────────────────────────────────────────────────
