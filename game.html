@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>$HACK Virus Hunter — Play & Earn on INK Chain</title>
 <meta name="description" content="Click viruses, avoid bombs, earn $HACK tokens. 15 free games every 24h. Claim tokens after each game on INK Chain.">
+<meta name="keywords" content="HACK, $HACK, virus hunter, play to earn, INK chain, crypto game, blockchain game, earn tokens, free game">
+<meta name="author" content="$HACK">
+<meta name="robots" content="index, follow">
+<link rel="canonical" content="https://hacktokenink.xyz/game">
 
 <!-- Open Graph / Facebook / Telegram -->
 <meta property="og:type" content="website">
@@ -268,11 +272,12 @@ let gameActive = false;
 let objects = [];
 let effects = [];
 let lastSpawn = 0;
-let baseSpawnRate = 1200; // Slower start (was 800)
-let bombChance = 0.12; // Fewer bombs at start (was 0.15)
-let shieldChance = 0.04; // Slightly more shields (was 0.03)
-let objectLifetime = 2000; // More time to click (was 1500)
-let shieldLifetime = 1500; // Shields stay longer (was 1000)
+let gameStartTime = 0;
+let baseSpawnRate = 800; // Start faster
+let bombChance = 0.12;
+let shieldChance = 0.04;
+let objectLifetime = 2000;
+let shieldLifetime = 1500;
 let lastTime = 0;
 
 // Game limits
@@ -490,10 +495,11 @@ function startGame() {
   objects = [];
   effects = [];
   lastSpawn = 0;
-  baseSpawnRate = 1200;
+  gameStartTime = performance.now();
+  baseSpawnRate = 900; // Комфортный старт
   bombChance = 0.12;
   shieldChance = 0.04;
-  objectLifetime = 2000;
+  objectLifetime = 2200; // Больше времени на клик
   shieldLifetime = 1500;
   updateScore();
   updateTimer();
@@ -503,11 +509,11 @@ function startGame() {
     timeLeft--;
     updateTimer();
 
-    // Increase difficulty every 30 seconds (was 20)
+    // Плавное ускорение каждые 30 секунд
     if (timeLeft % 30 === 0 && timeLeft > 0) {
-      baseSpawnRate = Math.max(500, baseSpawnRate - 100); // Slower increase
-      bombChance = Math.min(0.25, bombChance + 0.02); // Fewer bombs added
-      objectLifetime = Math.max(1200, objectLifetime - 100); // More time remains
+      baseSpawnRate = Math.max(500, baseSpawnRate - 70); // Плавнее ускорение
+      bombChance = Math.min(0.18, bombChance + 0.012); // Меньше бомб
+      objectLifetime = Math.max(1400, objectLifetime - 100); // Достаточно времени
     }
 
     if (timeLeft <= 0) {
