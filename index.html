@@ -497,7 +497,10 @@
         <div>&gt; one claim per wallet. on-chain. instant.</div>
       </div>
 
-      <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()">[ CONNECT WALLET ]</button>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="action-btn airdrop-btn" id="airdropBtn" onclick="handleAirdrop()" style="flex:1;min-width:200px">[ CONNECT WALLET ]</button>
+        <a href="game-canvas.html" class="action-btn" style="flex:1;min-width:200px;display:inline-block;text-decoration:none;text-align:center;border-color:rgba(0,207,255,0.5);color:#00cfff;font-size:clamp(14px,3vw,19px);padding:clamp(10px,2vw,13px)">[ PLAY GAME ]</a>
+      </div>
       <div class="log" id="airdropLog"></div>
     </div>
   </div>
