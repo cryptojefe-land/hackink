@@ -224,6 +224,7 @@ body {
     <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;">
       <button class="restart-btn" id="claimBtn" onclick="claimReward()" style="background: rgba(0,255,65,0.08); border-color: #00ff41; color: #00ff41;">CLAIM TOKENS</button>
       <button class="restart-btn" id="skipBtn" onclick="skipReward()" style="border-color: rgba(255,0,64,0.4); color: rgba(255,0,64,0.6);">SKIP</button>
+      <button class="restart-btn" onclick="goHome()" style="border-color: rgba(0,207,255,0.4); color: #00cfff;">HOME</button>
     </div>
 
     <div style="font-size: 13px; color: rgba(0,255,65,0.5); text-align: center; margin-bottom: 16px;">
@@ -970,6 +971,16 @@ function restartGame() {
   document.getElementById('endScreen').style.display = 'none';
   document.getElementById('claimLog').innerHTML = '';
   startGame();
+}
+
+function goHome() {
+  document.getElementById('endScreen').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'flex';
+  document.getElementById('claimLog').innerHTML = '';
+  score = 0;
+  timeLeft = 180;
+  updateScore();
+  updateTimer();
 }
 
 </script>
