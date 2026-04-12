@@ -86,53 +86,55 @@ body {
 
 .title {
   font-family: 'VT323', monospace;
-  font-size: 72px;
+  font-size: clamp(32px, 10vw, 72px);
   color: #00ff41;
   text-shadow: 0 0 20px rgba(0,255,65,0.8);
-  margin-bottom: 20px;
-  letter-spacing: 4px;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: clamp(12px, 3vw, 16px);
   color: rgba(0,255,65,0.6);
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   text-align: center;
-  max-width: 500px;
-  line-height: 1.6;
+  max-width: 90%;
+  line-height: 1.4;
+  padding: 0 16px;
 }
 
 .instructions {
   background: rgba(0,255,65,0.05);
   border: 1px solid rgba(0,255,65,0.3);
-  padding: 24px;
-  margin-bottom: 40px;
-  max-width: 400px;
+  padding: 16px;
+  margin-bottom: 20px;
+  max-width: 90%;
+  width: 320px;
 }
 
 .instructions div {
-  font-size: 14px;
-  margin-bottom: 12px;
+  font-size: clamp(11px, 2.5vw, 14px);
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .virus-icon {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   background: radial-gradient(circle, #00ff41, #00aa2b);
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(0,255,65,0.6);
+  box-shadow: 0 0 8px rgba(0,255,65,0.6);
   flex-shrink: 0;
 }
 
 .bomb-icon {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   background: radial-gradient(circle, #ff0040, #aa0020);
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255,0,64,0.6);
+  box-shadow: 0 0 8px rgba(255,0,64,0.6);
   flex-shrink: 0;
 }
 
@@ -141,10 +143,10 @@ body {
   border: 2px solid #00ff41;
   color: #00ff41;
   font-family: 'Share Tech Mono', monospace;
-  font-size: 18px;
-  padding: 16px 48px;
+  font-size: clamp(12px, 3vw, 16px);
+  padding: 12px 32px;
   cursor: pointer;
-  letter-spacing: 4px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   transition: all 0.3s;
   box-shadow: 0 0 20px rgba(0,255,65,0.3);
@@ -158,14 +160,14 @@ body {
 
 .final-score {
   font-family: 'VT323', monospace;
-  font-size: 64px;
+  font-size: clamp(36px, 12vw, 64px);
   color: #00ff41;
   text-shadow: 0 0 20px rgba(0,255,65,0.8);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .result-text {
-  font-size: 18px;
+  font-size: clamp(13px, 3.5vw, 18px);
   color: rgba(0,255,65,0.7);
   margin-bottom: 40px;
 }
