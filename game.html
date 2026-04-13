@@ -262,9 +262,9 @@ body {
     <div class="final-score" id="finalScore">0 $HACK</div>
     <div class="result-text" id="resultText"></div>
 
+    <button class="restart-btn" id="claimBtn" onclick="claimReward()" style="background: rgba(0,255,65,0.08); border-color: #00ff41; color: #00ff41; margin-bottom: 16px; width: 100%; max-width: 400px;">CLAIM TOKENS</button>
+
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; width: 100%; max-width: 400px;">
-      <button class="restart-btn" id="claimBtn" onclick="claimReward()" style="background: rgba(0,255,65,0.08); border-color: #00ff41; color: #00ff41;">CLAIM</button>
-      <button class="restart-btn" id="skipBtn" onclick="skipReward()" style="border-color: rgba(255,0,64,0.4); color: rgba(255,0,64,0.6);">SKIP</button>
       <button class="restart-btn" onclick="goHome()" style="border-color: rgba(0,207,255,0.4); color: #00cfff;">HOME</button>
       <button class="restart-btn" onclick="restartGame()" style="border-color: rgba(0,255,65,0.4); color: rgba(0,255,65,0.6);">PLAY AGAIN</button>
     </div>
@@ -863,13 +863,11 @@ function endGame() {
 
   // Hide CLAIM button if score is 0
   const claimBtn = document.getElementById('claimBtn');
-  const skipBtn = document.getElementById('skipBtn');
 
   // Check if first game and score > 0
   if (isFirstGame && score > 0) {
-    // Hide claim/skip buttons initially
+    // Hide claim button initially
     claimBtn.style.display = 'none';
-    skipBtn.style.display = 'none';
 
     // Show Twitter share button
     const shareBtn = document.createElement('button');
@@ -879,17 +877,17 @@ function endGame() {
     shareBtn.style.background = 'rgba(29,155,240,0.08)';
     shareBtn.style.borderColor = '#1d9bf0';
     shareBtn.style.color = '#1d9bf0';
-    shareBtn.style.gridColumn = '1 / -1';
+    shareBtn.style.marginBottom = '16px';
+    shareBtn.style.width = '100%';
+    shareBtn.style.maxWidth = '400px';
     shareBtn.onclick = shareOnTwitter;
 
-    const btnContainer = document.querySelector('#endScreen > div:nth-child(4)');
-    btnContainer.insertBefore(shareBtn, btnContainer.firstChild);
+    const btnContainer = document.querySelector('#endScreen > button');
+    btnContainer.parentNode.insertBefore(shareBtn, btnContainer);
   } else if (score <= 0) {
     claimBtn.style.display = 'none';
-    skipBtn.style.display = 'none';
   } else {
-    claimBtn.style.display = 'inline-block';
-    skipBtn.style.display = 'inline-block';
+    claimBtn.style.display = 'block';
   }
 
   updateGamesDisplay();
@@ -909,10 +907,13 @@ function shareOnTwitter() {
     const shareBtn = document.getElementById('twitterShareBtn');
     if (shareBtn) shareBtn.remove();
 
+  // After sharing, show claim button
+  setTimeout(() => {
+    const shareBtn = document.getElementById('twitterShareBtn');
+    if (shareBtn) shareBtn.remove();
+
     const claimBtn = document.getElementById('claimBtn');
-    const skipBtn = document.getElementById('skipBtn');
-    claimBtn.style.display = 'inline-block';
-    skipBtn.style.display = 'inline-block';
+    claimBtn.style.display = 'block';
 
     // Mark first game as done
     isFirstGame = false;
@@ -928,9 +929,7 @@ async function claimReward() {
   }
 
   const claimBtn = document.getElementById('claimBtn');
-  const skipBtn = document.getElementById('skipBtn');
   claimBtn.disabled = true;
-  skipBtn.disabled = true;
 
   try {
     // Connect wallet if not connected
@@ -939,7 +938,6 @@ async function claimReward() {
       if (!walletAddress) {
         showSuccessModal('Wallet connection failed', 'error');
         claimBtn.disabled = false;
-        skipBtn.disabled = false;
         return;
       }
     }
@@ -967,9 +965,8 @@ async function claimReward() {
       message += `\n\nReferrer earned ${refBonus} $HACK bonus!`;
     }
 
-    // Hide claim/skip buttons after successful claim
+    // Hide claim button after successful claim
     claimBtn.style.display = 'none';
-    skipBtn.style.display = 'none';
 
     // Decrease games remaining
     if (timerStart === null) {
@@ -993,7 +990,6 @@ async function claimReward() {
     const msg = error.reason || error.message || 'Transaction failed';
     showSuccessModal(msg.slice(0, 100), 'error');
     claimBtn.disabled = false;
-    skipBtn.disabled = false;
   }
 }
 
