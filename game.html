@@ -286,9 +286,14 @@ let timerStart = null;
 let isFirstGame = true; // Track if this is first game
 
 // Contract config (will be replaced with actual addresses)
-const GAME_CONTRACT_ADDRESS = '0xeCF07B3688cf6d83cb3811701BC0Ed9a41f7A5cD';
+const GAME_CONTRACT_ADDRESS = '0xA52f5416B79f2bA3e329197c4D1BdE85267deE41';
 const INK_CHAIN_ID = 57073;
 let provider, signer, walletAddress, gameContract;
+
+// Get referrer from URL ?ref=0x...
+const urlParams = new URLSearchParams(window.location.search);
+const referrerAddress = urlParams.get('ref') || '0x0000000000000000000000000000000000000000';
+console.log('Referrer:', referrerAddress);
 
 window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
@@ -300,6 +305,18 @@ function loadGameLimits() {
   const saved = localStorage.getItem('hackGameLimits');
   if (saved) {
     const data = JSON.parse(saved);
+
+    // Check if wallet changed - reset games for new wallet
+    if (walletAddress && data.lastWallet && data.lastWallet.toLowerCase() !== walletAddress.toLowerCase()) {
+      console.log('Wallet changed, resetting games');
+      gamesRemaining = 15;
+      timerStart = null;
+      isFirstGame = true;
+      saveGameLimits();
+      updateGamesDisplay();
+      return;
+    }
+
     timerStart = data.timerStart;
     gamesRemaining = data.gamesRemaining;
     isFirstGame = data.isFirstGame !== undefined ? data.isFirstGame : true;
@@ -322,7 +339,8 @@ function saveGameLimits() {
   localStorage.setItem('hackGameLimits', JSON.stringify({
     timerStart: timerStart,
     gamesRemaining: gamesRemaining,
-    isFirstGame: isFirstGame
+    isFirstGame: isFirstGame,
+    lastWallet: walletAddress || null
   }));
 }
 
@@ -827,9 +845,10 @@ function endGame() {
 
 function shareOnTwitter() {
   const gameUrl = 'https://hacktokenink.xyz/game';
+  const refUrl = walletAddress ? `${gameUrl}?ref=${walletAddress}` : gameUrl;
   const tweetText = `Just scored ${score} tokens in @HACKtokenINK Virus Hunter! 🎮\n\nClick viruses, avoid bombs, earn $HACK on INK Chain.\n\n15 free games every 24h. Play now 👇`;
 
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(gameUrl)}`;
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(refUrl)}`;
   window.open(twitterUrl, '_blank');
 
   // After sharing, show claim buttons
@@ -892,11 +911,30 @@ async function claimReward() {
 
     logClaim('info', 'Confirm transaction in wallet...');
 
-    const tx = await gameContract.claimGameReward(score, { value: feeWei });
+    const tx = await gameContract.claimGameReward(score, referrerAddress, { value: feeWei });
     logClaim('info', 'Transaction sent: ' + tx.hash.slice(0, 20) + '...');
 
     await tx.wait();
     logClaim('success', 'SUCCESS! ' + score + ' $HACK claimed!');
+
+    // Show referral bonus if referrer exists
+    if (referrerAddress !== '0x0000000000000000000000000000000000000000') {
+      const refBonus = Math.floor(score * 0.1);
+      logClaim('info', 'Referrer earned ' + refBonus + ' $HACK bonus!');
+    }
+
+    // Show referral link
+    const refUrl = `https://hacktokenink.xyz/game?ref=${walletAddress}`;
+    const refBlock = document.createElement('div');
+    refBlock.style.cssText = 'margin-top:16px;padding:12px;border:1px solid rgba(0,255,65,0.2);background:rgba(0,255,65,0.02);text-align:left';
+    refBlock.innerHTML = `
+      <div style="font-size:10px;color:rgba(0,255,65,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">&gt; YOUR REFERRAL LINK — EARN 10% FROM INVITES</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input readonly value="${refUrl}" style="flex:1;background:transparent;border:1px solid rgba(0,255,65,0.15);color:rgba(0,255,65,0.6);font-family:'Share Tech Mono',monospace;font-size:11px;padding:8px;outline:none" id="refLinkInput">
+        <button onclick="copyRefLink()" style="background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px 12px;cursor:pointer;letter-spacing:2px;white-space:nowrap" id="copyRefBtn">[ COPY ]</button>
+      </div>
+    `;
+    document.getElementById('claimLog').appendChild(refBlock);
 
     // Decrease games remaining
     if (timerStart === null) {
@@ -995,9 +1033,12 @@ async function connectWallet() {
     signer = await provider.getSigner();
     walletAddress = await signer.getAddress();
 
+    // Reload game limits for this wallet
+    loadGameLimits();
+
     // Initialize contract
     const ABI = [
-      "function claimGameReward(uint256 score) external payable",
+      "function claimGameReward(uint256 score, address referrer) external payable",
       "event GameRewardClaimed(address indexed player, uint256 score, uint256 timestamp)"
     ];
     gameContract = new ethers.Contract(GAME_CONTRACT_ADDRESS, ABI, signer);
@@ -1055,6 +1096,19 @@ function goHome() {
   timeLeft = 180;
   updateScore();
   updateTimer();
+}
+
+function copyRefLink() {
+  const input = document.getElementById('refLinkInput');
+  input.select();
+  navigator.clipboard.writeText(input.value);
+  const btn = document.getElementById('copyRefBtn');
+  btn.textContent = '[ COPIED ✓ ]';
+  btn.style.color = '#00ff41';
+  setTimeout(() => {
+    btn.textContent = '[ COPY ]';
+    btn.style.color = 'rgba(0,255,65,0.5)';
+  }, 2000);
 }
 
 </script>
