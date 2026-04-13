@@ -262,10 +262,11 @@ body {
     <div class="final-score" id="finalScore">0 $HACK</div>
     <div class="result-text" id="resultText"></div>
 
-    <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;">
-      <button class="restart-btn" id="claimBtn" onclick="claimReward()" style="background: rgba(0,255,65,0.08); border-color: #00ff41; color: #00ff41;">CLAIM TOKENS</button>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; width: 100%; max-width: 400px;">
+      <button class="restart-btn" id="claimBtn" onclick="claimReward()" style="background: rgba(0,255,65,0.08); border-color: #00ff41; color: #00ff41;">CLAIM</button>
       <button class="restart-btn" id="skipBtn" onclick="skipReward()" style="border-color: rgba(255,0,64,0.4); color: rgba(255,0,64,0.6);">SKIP</button>
       <button class="restart-btn" onclick="goHome()" style="border-color: rgba(0,207,255,0.4); color: #00cfff;">HOME</button>
+      <button class="restart-btn" onclick="restartGame()" style="border-color: rgba(0,255,65,0.4); color: rgba(0,255,65,0.6);">PLAY AGAIN</button>
     </div>
 
     <div style="font-size: 13px; color: rgba(0,255,65,0.5); text-align: center; margin-bottom: 16px;">
@@ -273,7 +274,22 @@ body {
       <div id="claimFee" style="margin-top: 8px; color: rgba(0,255,65,0.4);">Claim fee: 0.00002 ETH</div>
     </div>
 
-    <div id="claimLog" style="font-size: 12px; color: rgba(0,255,65,0.5); text-align: center; min-height: 40px; line-height: 1.6;"></div>
+    <div id="referralBlock" style="display: none; margin-top: 12px; padding: 10px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); text-align: left; max-width: 90%; width: 100%;">
+      <div style="font-size: 9px; color: rgba(0,255,65,0.4); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;">&gt; REFERRAL LINK — EARN 10%</div>
+      <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+        <input readonly id="refLinkInput" style="flex: 1; min-width: 0; background: transparent; border: 1px solid rgba(0,255,65,0.15); color: rgba(0,255,65,0.6); font-family: 'Share Tech Mono', monospace; font-size: 10px; padding: 6px; outline: none;">
+        <button onclick="copyRefLink()" style="background: transparent; border: 1px solid rgba(0,255,65,0.3); color: rgba(0,255,65,0.5); font-family: 'Share Tech Mono', monospace; font-size: 9px; padding: 6px 10px; cursor: pointer; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0;" id="copyRefBtn">[ COPY ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: rgba(0,255,65,0.05); border: 2px solid rgba(0,255,65,0.3); padding: 32px 24px; max-width: 90%; width: 400px; text-align: center; font-family: 'Share Tech Mono', monospace;">
+      <div style="font-family: 'VT323', monospace; font-size: 48px; color: #00ff41; text-shadow: 0 0 20px rgba(0,255,65,0.8); margin-bottom: 16px;">SUCCESS!</div>
+      <div id="modalMessage" style="font-size: 14px; color: rgba(0,255,65,0.7); line-height: 1.6; margin-bottom: 24px;"></div>
+      <button onclick="closeSuccessModal()" style="background: rgba(0,255,65,0.08); border: 1px solid #00ff41; color: #00ff41; font-family: 'Share Tech Mono', monospace; font-size: 12px; padding: 12px 32px; cursor: pointer; letter-spacing: 2px;">[ OK ]</button>
+    </div>
   </div>
 </div>
 
@@ -863,21 +879,17 @@ function endGame() {
     shareBtn.style.background = 'rgba(29,155,240,0.08)';
     shareBtn.style.borderColor = '#1d9bf0';
     shareBtn.style.color = '#1d9bf0';
-    shareBtn.style.marginBottom = '20px';
+    shareBtn.style.gridColumn = '1 / -1';
     shareBtn.onclick = shareOnTwitter;
 
     const btnContainer = document.querySelector('#endScreen > div:nth-child(4)');
-    btnContainer.appendChild(shareBtn);
+    btnContainer.insertBefore(shareBtn, btnContainer.firstChild);
   } else if (score <= 0) {
     claimBtn.style.display = 'none';
-    skipBtn.textContent = 'PLAY AGAIN';
-    skipBtn.style.borderColor = 'rgba(0,255,65,0.4)';
-    skipBtn.style.color = 'rgba(0,255,65,0.6)';
+    skipBtn.style.display = 'none';
   } else {
     claimBtn.style.display = 'inline-block';
-    skipBtn.textContent = 'SKIP';
-    skipBtn.style.borderColor = 'rgba(255,0,64,0.4)';
-    skipBtn.style.color = 'rgba(255,0,64,0.6)';
+    skipBtn.style.display = 'inline-block';
   }
 
   updateGamesDisplay();
@@ -901,20 +913,17 @@ function shareOnTwitter() {
     const skipBtn = document.getElementById('skipBtn');
     claimBtn.style.display = 'inline-block';
     skipBtn.style.display = 'inline-block';
-    skipBtn.textContent = 'SKIP';
 
     // Mark first game as done
     isFirstGame = false;
     saveGameLimits();
-
-    logClaim('success', 'Thanks for sharing! Now you can claim your tokens.');
   }, 2000);
 }
 
 // ─── CLAIM REWARD ────────────────────────────────────────────────────────────
 async function claimReward() {
   if (gamesRemaining <= 0) {
-    logClaim('error', 'No games remaining. Wait for reset.');
+    showSuccessModal('No games remaining. Wait for reset.', 'error');
     return;
   }
 
@@ -926,17 +935,14 @@ async function claimReward() {
   try {
     // Connect wallet if not connected
     if (!walletAddress) {
-      logClaim('info', 'Connecting wallet...');
       await connectWallet();
       if (!walletAddress) {
-        logClaim('error', 'Wallet connection failed');
+        showSuccessModal('Wallet connection failed', 'error');
         claimBtn.disabled = false;
         skipBtn.disabled = false;
         return;
       }
     }
-
-    logClaim('info', 'Preparing transaction...');
 
     // Call contract with auto gas estimation
     const feeWei = ethers.parseEther('0.00002');
@@ -944,38 +950,26 @@ async function claimReward() {
     try {
       // Estimate gas first to catch errors early
       const gasEstimate = await gameContract.claimGameReward.estimateGas(score, referrerAddress, { value: feeWei });
-      logClaim('info', 'Gas estimated: ' + gasEstimate.toString());
     } catch (gasError) {
       console.error('Gas estimation failed:', gasError);
       throw new Error('Contract call will fail. Check if contract has tokens.');
     }
 
-    logClaim('info', 'Confirm transaction in wallet...');
-
     const tx = await gameContract.claimGameReward(score, referrerAddress, { value: feeWei });
-    logClaim('info', 'Transaction sent: ' + tx.hash.slice(0, 20) + '...');
-
     await tx.wait();
-    logClaim('success', 'SUCCESS! ' + score + ' $HACK claimed!');
+
+    // Build success message
+    let message = `${score} $HACK claimed successfully!\n\nTransaction: ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`;
 
     // Show referral bonus if referrer exists
     if (referrerAddress !== '0x0000000000000000000000000000000000000000') {
       const refBonus = Math.floor(score * 0.1);
-      logClaim('info', 'Referrer earned ' + refBonus + ' $HACK bonus!');
+      message += `\n\nReferrer earned ${refBonus} $HACK bonus!`;
     }
 
-    // Show referral link
-    const refUrl = `https://hacktokenink.xyz/game?ref=${walletAddress}`;
-    const refBlock = document.createElement('div');
-    refBlock.style.cssText = 'margin-top:12px;padding:10px;border:1px solid rgba(0,255,65,0.2);background:rgba(0,255,65,0.02);text-align:left;max-width:90%;width:100%';
-    refBlock.innerHTML = `
-      <div style="font-size:9px;color:rgba(0,255,65,0.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">&gt; REFERRAL LINK — EARN 10%</div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-        <input readonly value="${refUrl}" style="flex:1;min-width:0;background:transparent;border:1px solid rgba(0,255,65,0.15);color:rgba(0,255,65,0.6);font-family:'Share Tech Mono',monospace;font-size:10px;padding:6px;outline:none" id="refLinkInput">
-        <button onclick="copyRefLink()" style="background:transparent;border:1px solid rgba(0,255,65,0.3);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 10px;cursor:pointer;letter-spacing:1px;white-space:nowrap;flex-shrink:0" id="copyRefBtn">[ COPY ]</button>
-      </div>
-    `;
-    document.getElementById('claimLog').appendChild(refBlock);
+    // Hide claim/skip buttons after successful claim
+    claimBtn.style.display = 'none';
+    skipBtn.style.display = 'none';
 
     // Decrease games remaining
     if (timerStart === null) {
@@ -985,28 +979,25 @@ async function claimReward() {
     saveGameLimits();
     updateGamesDisplay();
 
-    // Show play again after 2 seconds
-    setTimeout(() => {
-      const playAgainBtn = document.createElement('button');
-      playAgainBtn.className = 'restart-btn';
-      playAgainBtn.textContent = 'PLAY AGAIN';
-      playAgainBtn.onclick = restartGame;
-      playAgainBtn.style.marginTop = '16px';
-      document.getElementById('claimLog').parentNode.appendChild(playAgainBtn);
-    }, 2000);
+    // Prepare referral link
+    const refUrl = `https://hacktokenink.xyz/game?ref=${walletAddress}`;
+    document.getElementById('refLinkInput').value = refUrl;
+
+    // Show modal, then show referral block after modal closes
+    showSuccessModal(message, 'success', () => {
+      document.getElementById('referralBlock').style.display = 'block';
+    });
 
   } catch (error) {
     console.error(error);
     const msg = error.reason || error.message || 'Transaction failed';
-    logClaim('error', msg.slice(0, 80));
+    showSuccessModal(msg.slice(0, 100), 'error');
     claimBtn.disabled = false;
     skipBtn.disabled = false;
   }
 }
 
 function skipReward() {
-  logClaim('warn', 'Reward skipped. ' + score + ' $HACK lost.');
-
   // Decrease games remaining
   if (timerStart === null) {
     timerStart = Date.now();
@@ -1017,21 +1008,45 @@ function skipReward() {
 
   setTimeout(() => {
     restartGame();
-  }, 1500);
+  }, 500);
+}
+
+function showSuccessModal(message, type = 'success', onClose = null) {
+  const modal = document.getElementById('successModal');
+  const modalMessage = document.getElementById('modalMessage');
+
+  modalMessage.textContent = message;
+
+  if (type === 'error') {
+    modalMessage.style.color = '#ff0040';
+  } else {
+    modalMessage.style.color = 'rgba(0,255,65,0.7)';
+  }
+
+  modal.style.display = 'flex';
+
+  // Store callback for when modal closes
+  modal.dataset.onClose = onClose ? 'true' : 'false';
+  if (onClose) {
+    window._modalCloseCallback = onClose;
+  }
+}
+
+function closeSuccessModal() {
+  const modal = document.getElementById('successModal');
+  modal.style.display = 'none';
+
+  // Execute callback if exists
+  if (modal.dataset.onClose === 'true' && window._modalCloseCallback) {
+    window._modalCloseCallback();
+    window._modalCloseCallback = null;
+    modal.dataset.onClose = 'false';
+  }
 }
 
 function logClaim(type, msg) {
-  const log = document.getElementById('claimLog');
-  const colors = {
-    info: 'rgba(0,207,255,0.8)',
-    success: '#00ff41',
-    error: '#ff0040',
-    warn: '#f7c948'
-  };
-  const line = document.createElement('div');
-  line.style.color = colors[type] || 'rgba(0,255,65,0.5)';
-  line.textContent = '> ' + msg;
-  log.appendChild(line);
+  // Deprecated - now using modal
+  console.log(`[${type}] ${msg}`);
 }
 
 // ─── WALLET CONNECTION ───────────────────────────────────────────────────────
@@ -1121,18 +1136,18 @@ async function connectWalletToStart() {
 
 function restartGame() {
   if (gamesRemaining <= 0) {
-    alert('No games remaining. Wait for reset.');
+    showSuccessModal('No games remaining. Wait for reset.', 'error');
     return;
   }
   document.getElementById('endScreen').style.display = 'none';
-  document.getElementById('claimLog').innerHTML = '';
+  document.getElementById('referralBlock').style.display = 'none';
   startGame();
 }
 
 function goHome() {
   document.getElementById('endScreen').style.display = 'none';
   document.getElementById('startScreen').style.display = 'flex';
-  document.getElementById('claimLog').innerHTML = '';
+  document.getElementById('referralBlock').style.display = 'none';
   score = 0;
   timeLeft = 180;
   updateScore();
