@@ -902,11 +902,11 @@ async function claimReward() {
 
     try {
       // Estimate gas first to catch errors early
-      const gasEstimate = await gameContract.claimGameReward.estimateGas(score, { value: feeWei });
+      const gasEstimate = await gameContract.claimGameReward.estimateGas(score, referrerAddress, { value: feeWei });
       logClaim('info', 'Gas estimated: ' + gasEstimate.toString());
     } catch (gasError) {
       console.error('Gas estimation failed:', gasError);
-      throw new Error('Contract call will fail. Check if contract has tokens to mint.');
+      throw new Error('Contract call will fail. Check if contract has tokens.');
     }
 
     logClaim('info', 'Confirm transaction in wallet...');
