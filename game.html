@@ -902,11 +902,6 @@ function shareOnTwitter() {
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(refUrl)}`;
   window.open(twitterUrl, '_blank');
 
-  // After sharing, show claim buttons
-  setTimeout(() => {
-    const shareBtn = document.getElementById('twitterShareBtn');
-    if (shareBtn) shareBtn.remove();
-
   // After sharing, show claim button
   setTimeout(() => {
     const shareBtn = document.getElementById('twitterShareBtn');
