@@ -796,6 +796,11 @@ function drawEffect(effect) {
 
 function startGame() {
   document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameSetupScreen').style.display = 'none';
+
+  // Reset game stats
+  resetGameStats();
+
   score = 0;
   timeLeft = 180;
   gameActive = true;
@@ -803,11 +808,17 @@ function startGame() {
   effects = [];
   lastSpawn = 0;
   gameStartTime = performance.now();
-  baseSpawnRate = 900; // Комфортный старт
-  bombChance = 0.12;
+
+  // Apply difficulty settings
+  const difficulty = difficultySettings[selectedDifficulty];
+  baseSpawnRate = difficulty.spawnRate;
+  bombChance = difficulty.bombChance;
   shieldChance = 0.04;
-  objectLifetime = 2200; // Больше времени на клик
+  objectLifetime = 2200;
   shieldLifetime = 1500;
+
+  console.log('Starting game with difficulty:', selectedDifficulty, difficulty);
+
   updateScore();
   updateTimer();
 
@@ -818,9 +829,9 @@ function startGame() {
 
     // Плавное ускорение каждые 30 секунд
     if (timeLeft % 30 === 0 && timeLeft > 0) {
-      baseSpawnRate = Math.max(500, baseSpawnRate - 70); // Плавнее ускорение
-      bombChance = Math.min(0.18, bombChance + 0.012); // Меньше бомб
-      objectLifetime = Math.max(1400, objectLifetime - 100); // Достаточно времени
+      baseSpawnRate = Math.max(400, baseSpawnRate - 50);
+      bombChance = Math.min(0.25, bombChance + 0.01);
+      objectLifetime = Math.max(1400, objectLifetime - 100);
     }
 
     if (timeLeft <= 0) {
@@ -836,15 +847,23 @@ function spawnObject(currentTime) {
   const rand = Math.random();
   let type = 'virus'; // default
 
-  if (rand < shieldChance) {
+  // Spawn chances
+  const diamondChance = 0.02; // 2% chance for diamond
+  const multiplierChance = 0.03; // 3% chance for multiplier
+
+  if (rand < diamondChance) {
+    type = 'diamond';
+  } else if (rand < diamondChance + multiplierChance) {
+    type = 'multiplier';
+  } else if (rand < diamondChance + multiplierChance + shieldChance) {
     type = 'shield';
-  } else if (rand < shieldChance + bombChance) {
+  } else if (rand < diamondChance + multiplierChance + shieldChance + bombChance) {
     type = 'bomb';
   }
 
-  const size = type === 'shield' ? 35 : 30; // Much smaller
+  const size = (type === 'shield' || type === 'diamond' || type === 'multiplier') ? 35 : 30;
   const padding = 40;
-  const hudHeight = 80; // Space for HUD at top
+  const hudHeight = 80;
   const x = padding + Math.random() * (canvas.width - size - padding * 2);
   const y = hudHeight + padding + Math.random() * (canvas.height - size - padding * 2 - hudHeight);
 
@@ -857,7 +876,7 @@ function spawnObject(currentTime) {
     spawnTime: currentTime,
     alpha: 1,
     scale: 0,
-    lifetime: type === 'shield' ? shieldLifetime : objectLifetime
+    lifetime: (type === 'shield' || type === 'diamond' || type === 'multiplier') ? shieldLifetime : objectLifetime
   });
 }
 
@@ -866,6 +885,9 @@ function gameLoop(currentTime) {
 
   const deltaTime = currentTime - lastTime;
   lastTime = currentTime;
+
+  // Update multiplier display
+  updateMultiplierDisplay();
 
   // Spawn objects
   if (currentTime - lastSpawn > baseSpawnRate) {
@@ -934,6 +956,10 @@ function gameLoop(currentTime) {
       drawBomb(obj.x, obj.y, obj.size, pulse);
     } else if (obj.type === 'shield') {
       drawShield(obj.x, obj.y, obj.size, pulse);
+    } else if (obj.type === 'diamond') {
+      drawDiamond(obj.x, obj.y, obj.size, pulse);
+    } else if (obj.type === 'multiplier') {
+      drawMultiplier(obj.x, obj.y, obj.size, pulse);
     } else {
       drawVirus(obj.x, obj.y, obj.size, pulse);
     }
@@ -976,6 +1002,9 @@ canvas.addEventListener('click', (e) => {
   const clickX = e.clientX - rect.left;
   const clickY = e.clientY - rect.top;
 
+  totalClicks++; // Track total clicks
+  let hitSomething = false;
+
   for (let i = objects.length - 1; i >= 0; i--) {
     const obj = objects[i];
     const centerX = obj.x + obj.size / 2;
@@ -984,9 +1013,11 @@ canvas.addEventListener('click', (e) => {
 
     // Larger hit area - 1.5x the visual size
     if (distance <= (obj.size / 2) * obj.scale * 1.5) {
+      hitSomething = true;
+      successfulClicks++; // Track successful clicks
 
       // Explosion effect with particles
-      const particleCount = obj.type === 'shield' ? 8 : 6;
+      const particleCount = (obj.type === 'shield' || obj.type === 'diamond' || obj.type === 'multiplier') ? 8 : 6;
       for (let j = 0; j < particleCount; j++) {
         const angle = (Math.PI * 2 / particleCount) * j;
         let emoji = '✓';
@@ -998,6 +1029,12 @@ canvas.addEventListener('click', (e) => {
         } else if (obj.type === 'shield') {
           emoji = '✨';
           color = '#00cfff';
+        } else if (obj.type === 'diamond') {
+          emoji = '💎';
+          color = '#f7c948';
+        } else if (obj.type === 'multiplier') {
+          emoji = '⚡';
+          color = '#ff00ff';
         }
 
         effects.push({
@@ -1013,6 +1050,8 @@ canvas.addEventListener('click', (e) => {
       }
 
       if (obj.type === 'bomb') {
+        // Reset combo and score
+        updateCombo(false);
         score = 0;
         updateScore();
         effects.push({
@@ -1026,31 +1065,71 @@ canvas.addEventListener('click', (e) => {
           vy: -30
         });
 
-        // End game immediately when bomb clicked
         obj.clicked = true;
         objects.splice(i, 1);
         setTimeout(() => endGame(), 500);
         return;
+
       } else if (obj.type === 'shield') {
-        score += 1000;
+        shieldsCollected++;
+        updateCombo(true);
+        const points = Math.round(1000 * multiplier);
+        score += points;
         updateScore();
         effects.push({
           x: centerX,
           y: centerY - 20,
-          text: '+1000',
+          text: '+' + points,
           color: '#00cfff',
           alpha: 1,
           createdAt: performance.now(),
           vx: 0,
           vy: -30
         });
-      } else {
-        score += 100;
+
+      } else if (obj.type === 'diamond') {
+        diamondsCollected++;
+        updateCombo(true);
+        const points = Math.round(5000 * multiplier);
+        score += points;
         updateScore();
         effects.push({
           x: centerX,
           y: centerY - 20,
-          text: '+100',
+          text: '+' + points,
+          color: '#f7c948',
+          alpha: 1,
+          createdAt: performance.now(),
+          vx: 0,
+          vy: -30
+        });
+
+      } else if (obj.type === 'multiplier') {
+        updateCombo(true);
+        // Activate 2x multiplier for 15 seconds
+        multiplier = 2;
+        multiplierEndTime = performance.now() + 15000;
+        effects.push({
+          x: centerX,
+          y: centerY - 20,
+          text: '2x ACTIVE!',
+          color: '#ff00ff',
+          alpha: 1,
+          createdAt: performance.now(),
+          vx: 0,
+          vy: -30
+        });
+
+      } else {
+        // Regular virus
+        updateCombo(true);
+        const points = Math.round(100 * multiplier);
+        score += points;
+        updateScore();
+        effects.push({
+          x: centerX,
+          y: centerY - 20,
+          text: '+' + points,
           color: '#00ff41',
           alpha: 1,
           createdAt: performance.now(),
@@ -1063,6 +1142,11 @@ canvas.addEventListener('click', (e) => {
       objects.splice(i, 1);
       break;
     }
+  }
+
+  // Reset combo if missed
+  if (!hitSomething) {
+    updateCombo(false);
   }
 });
 
@@ -1077,21 +1161,36 @@ function updateTimer() {
 function endGame() {
   gameActive = false;
 
-  document.getElementById('finalScore').textContent = score + ' $HACK';
+  // Apply difficulty multiplier to final score
+  const difficulty = difficultySettings[selectedDifficulty];
+  const finalScore = Math.round(score * difficulty.rewardMultiplier);
+
+  document.getElementById('finalScore').textContent = finalScore + ' $HACK';
 
   let resultText = '';
-  if (score >= 1000) {
+  if (finalScore >= 10000) {
     resultText = 'LEGENDARY HACKER! 🔥';
-  } else if (score >= 500) {
+  } else if (finalScore >= 5000) {
     resultText = 'Elite Performance! 💎';
-  } else if (score >= 200) {
+  } else if (finalScore >= 2000) {
     resultText = 'Good Job! ⚡';
-  } else if (score > 0) {
+  } else if (finalScore > 0) {
     resultText = 'Keep Practicing! 💪';
   } else {
     resultText = 'Better luck next time!';
   }
+
+  if (selectedDifficulty !== 'normal') {
+    resultText += ` (${selectedDifficulty.toUpperCase()} x${difficulty.rewardMultiplier})`;
+  }
+
   document.getElementById('resultText').textContent = resultText;
+
+  // Update game stats
+  updateGameStats();
+
+  // Update score variable for claim
+  score = finalScore;
 
   // Hide CLAIM button if score is 0
   const claimBtn = document.getElementById('claimBtn');
