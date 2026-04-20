@@ -1270,17 +1270,8 @@ async function claimReward() {
       }
     }
 
-    // Call contract with auto gas estimation
+    // Call contract
     const feeWei = ethers.parseEther('0.00002');
-
-    try {
-      // Estimate gas first to catch errors early
-      const gasEstimate = await gameContract.claimGameReward.estimateGas(score, referrerAddress, { value: feeWei });
-    } catch (gasError) {
-      console.error('Gas estimation failed:', gasError);
-      throw new Error('Contract call will fail. Check if contract has tokens.');
-    }
-
     const tx = await gameContract.claimGameReward(score, referrerAddress, { value: feeWei });
     await tx.wait();
 
@@ -1757,4 +1748,3 @@ console.log('Selected difficulty:', selectedDifficulty);
 
 </body>
 </html>
-
