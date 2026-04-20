@@ -25,10 +25,7 @@
 <meta name="twitter:image" content="https://hacktokenink.xyz/game-image.png">
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
-<script type="module">
-  import { EthereumProvider } from "https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.11.0/+esm";
-  window.EthereumProvider = EthereumProvider;
-</script>
+<script src="https://unpkg.com/@walletconnect/ethereum-provider@2.11.0/dist/index.umd.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
 
@@ -1102,11 +1099,11 @@ async function connectWallet(method = 'metamask') {
   try {
     if (method === 'walletconnect') {
       // Initialize WalletConnect
-      if (!window.EthereumProvider) {
+      if (!window.WalletConnectProvider) {
         throw new Error('WalletConnect not loaded');
       }
 
-      wcProvider = await window.EthereumProvider.init({
+      wcProvider = await window.WalletConnectProvider.EthereumProvider.init({
         projectId: '19b844ca24e24e151c7ad32e959931e8',
         chains: [57073],
         showQrModal: true,
