@@ -244,7 +244,7 @@ body {
 <script>
 const GAME_CONTRACT_ADDRESS = '0xA52f5416B79f2bA3e329197c4D1BdE85267deE41';
 const RPC_URL = 'https://rpc-gel.inkonchain.com';
-const BLOCKS_TO_SCAN = 302400; // Scan last week (~7 days * 24h * 60m * 30 blocks/min)
+const BLOCKS_TO_SCAN = 100000; // Scan last ~100k blocks (RPC limit)
 
 const CONTRACT_ABI = [
   "event GameRewardClaimed(address indexed player, uint256 score, uint256 timestamp)"
@@ -351,3 +351,4 @@ setInterval(loadLeaderboard, 60000);
 
 </body>
 </html>
+
