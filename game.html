@@ -25,7 +25,6 @@
 <meta name="twitter:image" content="https://hacktokenink.xyz/game-image.png">
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
-<script src="https://unpkg.com/@walletconnect/ethereum-provider@2.11.0/dist/index.umd.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
 
@@ -245,7 +244,7 @@ body {
       <div style="margin-top:8px;font-size:9px;color:rgba(0,255,65,0.3);text-align:center">v1.2.0</div>
     </div>
 
-    <button class="start-btn" id="connectStartBtn" onclick="showWalletModal()">CONNECT WALLET</button>
+    <button class="start-btn" id="connectStartBtn" onclick="connectWalletToStart()">CONNECT WALLET</button>
     <button class="start-btn" id="startGameBtn" onclick="startGame()" style="display: none;">START GAME</button>
 
     <div id="walletInfo" style="display: none; margin-top: 16px; font-size: 13px; color: rgba(0,255,65,0.6); text-align: center;">
@@ -292,27 +291,6 @@ body {
       <button onclick="closeSuccessModal()" style="background: rgba(0,255,65,0.08); border: 1px solid #00ff41; color: #00ff41; font-family: 'Share Tech Mono', monospace; font-size: 12px; padding: 12px 32px; cursor: pointer; letter-spacing: 2px;">[ OK ]</button>
     </div>
   </div>
-
-  <!-- ── WALLET SELECTION MODAL ── -->
-  <div id="walletModal" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.95);align-items:center;justify-content:center;padding:16px">
-    <div style="background:#000;border:2px solid rgba(0,255,65,0.4);max-width:400px;width:100%;box-shadow:0 0 50px rgba(0,255,65,0.1)">
-      <div style="padding:11px 18px;border-bottom:1px solid rgba(0,255,65,0.15);display:flex;align-items:center;justify-content:space-between;background:rgba(0,255,65,0.03)">
-        <div style="font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:3px;text-transform:uppercase;font-family:'Share Tech Mono',monospace">● ● ●&nbsp;&nbsp;&nbsp;// CONNECT WALLET</div>
-        <button onclick="closeWalletModal()" style="background:transparent;border:1px solid rgba(0,255,65,0.2);color:rgba(0,255,65,0.4);font-family:'Share Tech Mono',monospace;font-size:11px;padding:4px 10px;cursor:pointer;letter-spacing:2px;transition:all .2s">[ × ]</button>
-      </div>
-      <div style="padding:22px">
-        <button onclick="connectMetaMask()" style="width:100%;padding:14px;background:transparent;border:2px solid rgba(0,255,65,0.3);color:#00ff41;font-family:'VT323',monospace;font-size:20px;letter-spacing:3px;cursor:pointer;transition:all .3s;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:12px">
-          <span style="font-size:28px">🦊</span>
-          <span>METAMASK</span>
-        </button>
-        <button onclick="connectWalletConnect()" style="width:100%;padding:14px;background:transparent;border:2px solid rgba(0,207,255,0.3);color:#00cfff;font-family:'VT323',monospace;font-size:20px;letter-spacing:3px;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:12px">
-          <span style="font-size:28px">🔗</span>
-          <span>WALLETCONNECT</span>
-        </button>
-        <div id="walletModalLog" style="margin-top:16px;font-size:11px;color:rgba(0,255,65,0.5);min-height:20px;text-align:center;font-family:'Share Tech Mono',monospace"></div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
@@ -345,7 +323,6 @@ let isFirstGame = true; // Track if this is first game
 const GAME_CONTRACT_ADDRESS = '0xA52f5416B79f2bA3e329197c4D1BdE85267deE41';
 const INK_CHAIN_ID = 57073;
 let provider, signer, walletAddress, gameContract;
-let wcProvider = null; // WalletConnect provider
 
 // Get referrer from URL ?ref=0x...
 const urlParams = new URLSearchParams(window.location.search);
@@ -1064,115 +1041,40 @@ function logClaim(type, msg) {
 }
 
 // ─── WALLET CONNECTION ───────────────────────────────────────────────────────
-function showWalletModal() {
-  document.getElementById('walletModal').style.display = 'flex';
-}
-
-function closeWalletModal() {
-  document.getElementById('walletModal').style.display = 'none';
-  document.getElementById('walletModalLog').textContent = '';
-}
-
-async function connectMetaMask() {
-  document.getElementById('walletModalLog').textContent = '> connecting to MetaMask...';
-  try {
-    await connectWallet('metamask');
-    closeWalletModal();
-    await onWalletConnected();
-  } catch(e) {
-    document.getElementById('walletModalLog').innerHTML = '<span style="color:#ff0040">> error: ' + (e.message || 'failed') + '</span>';
+async function connectWallet() {
+  if (!window.ethereum) {
+    alert('MetaMask not found. Please install MetaMask.');
+    return;
   }
-}
 
-async function connectWalletConnect() {
-  document.getElementById('walletModalLog').textContent = '> initializing WalletConnect...';
   try {
-    await connectWallet('walletconnect');
-    closeWalletModal();
-    await onWalletConnected();
-  } catch(e) {
-    document.getElementById('walletModalLog').innerHTML = '<span style="color:#ff0040">> error: ' + (e.message || 'failed') + '</span>';
-  }
-}
-
-async function connectWallet(method = 'metamask') {
-  try {
-    if (method === 'walletconnect') {
-      // Initialize WalletConnect
-      if (!window.WalletConnectProvider) {
-        throw new Error('WalletConnect not loaded');
-      }
-
-      wcProvider = await window.WalletConnectProvider.EthereumProvider.init({
-        projectId: '19b844ca24e24e151c7ad32e959931e8',
-        chains: [57073],
-        showQrModal: true,
-        qrModalOptions: {
-          themeMode: 'dark',
-          themeVariables: {
-            '--wcm-z-index': '10002'
-          }
-        },
-        metadata: {
-          name: '$HACK Virus Hunter',
-          description: 'Play & Earn $HACK tokens on INK Chain',
-          url: 'https://hacktokenink.xyz/game',
-          icons: ['https://hacktokenink.xyz/game-image.png']
-        }
-      });
-
-      await wcProvider.enable();
-      provider = new ethers.BrowserProvider(wcProvider);
-
-      // Listen for disconnect
-      wcProvider.on('disconnect', () => {
-        location.reload();
-      });
-
-      wcProvider.on('accountsChanged', () => {
-        location.reload();
-      });
-
-    } else {
-      // MetaMask
-      if (!window.ethereum) {
-        throw new Error('MetaMask not found');
-      }
-      provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-
-      window.ethereum.on('accountsChanged', () => location.reload());
-      window.ethereum.on('chainChanged', () => location.reload());
-    }
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
 
     const network = await provider.getNetwork();
     if (network.chainId !== BigInt(INK_CHAIN_ID)) {
-      if (method === 'metamask' && window.ethereum) {
-        try {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0xDEF1' }] // 57073 in hex
+        });
+      } catch (e) {
+        if (e.code === 4902) {
           await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0xDEF1' }]
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0xDEF1',
+              chainName: 'Ink',
+              nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+              rpcUrls: ['https://rpc-gel.inkonchain.com'],
+              blockExplorerUrls: ['https://explorer.inkonchain.com']
+            }]
           });
-        } catch (e) {
-          if (e.code === 4902) {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [{
-                chainId: '0xDEF1',
-                chainName: 'Ink',
-                nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-                rpcUrls: ['https://rpc-gel.inkonchain.com'],
-                blockExplorerUrls: ['https://explorer.inkonchain.com']
-              }]
-            });
-          } else {
-            throw e;
-          }
+        } else {
+          throw e;
         }
-        provider = new ethers.BrowserProvider(window.ethereum);
-      } else if (method === 'walletconnect') {
-        throw new Error('Please switch to INK Chain (57073) in your wallet');
       }
+      provider = new ethers.BrowserProvider(window.ethereum);
     }
 
     signer = await provider.getSigner();
@@ -1194,20 +1096,33 @@ async function connectWallet(method = 'metamask') {
   }
 }
 
-async function onWalletConnected() {
+async function connectWalletToStart() {
   const connectBtn = document.getElementById('connectStartBtn');
   const startBtn = document.getElementById('startGameBtn');
   const walletInfo = document.getElementById('walletInfo');
   const walletAddressEl = document.getElementById('walletAddress');
 
-  // Show shortened wallet address
-  const shortAddress = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
-  walletAddressEl.textContent = shortAddress;
+  try {
+    connectBtn.disabled = true;
+    connectBtn.textContent = 'CONNECTING...';
 
-  // Hide connect button, show start button and wallet info
-  connectBtn.style.display = 'none';
-  startBtn.style.display = 'inline-block';
-  walletInfo.style.display = 'block';
+    await connectWallet();
+
+    // Show shortened wallet address
+    const shortAddress = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
+    walletAddressEl.textContent = shortAddress;
+
+    // Hide connect button, show start button and wallet info
+    connectBtn.style.display = 'none';
+    startBtn.style.display = 'inline-block';
+    walletInfo.style.display = 'block';
+
+  } catch (error) {
+    console.error('Connection failed:', error);
+    connectBtn.disabled = false;
+    connectBtn.textContent = 'CONNECT WALLET';
+    alert('Failed to connect wallet. Please try again.');
+  }
 }
 
 function restartGame() {
