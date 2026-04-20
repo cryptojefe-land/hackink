@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$HACK Virus Hunter — Play & Earn on INK Chain</title>
+<meta name="description" content="Click viruses, avoid bombs, earn $HACK tokens. 15 free games every 24h. Claim tokens after each game on INK Chain.">
+<meta name="keywords" content="HACK, $HACK, virus hunter, play to earn, INK chain, crypto game, blockchain game, earn tokens, free game">
+<meta name="author" content="$HACK">
+<meta name="robots" content="index, follow">
+<link rel="canonical" content="https://hacktokenink.xyz/game">
+
+<!-- Open Graph / Facebook / Telegram -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hacktokenink.xyz/game">
+<meta property="og:title" content="$HACK Virus Hunter — Play & Earn on INK Chain">
+<meta property="og:description" content="Click viruses, avoid bombs, earn $HACK tokens. 15 free games every 24h. Claim tokens after each game.">
+<meta property="og:image" content="https://hacktokenink.xyz/game-image.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="https://hacktokenink.xyz/game">
+<meta name="twitter:title" content="$HACK Virus Hunter — Play & Earn">
+<meta name="twitter:description" content="Click viruses, avoid bombs, earn $HACK tokens. 15 free games every 24h on INK Chain.">
+<meta name="twitter:image" content="https://hacktokenink.xyz/game-image.png">
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #00ff41;
+  font-family: 'Share Tech Mono', monospace;
+  overflow: hidden;
+  user-select: none;
+}
+
+.scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hud {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  text-shadow: 0 0 10px rgba(0,255,65,0.8);
+}
+
+.score {
+  color: #00ff41;
+}
+
+.timer {
+  color: #00cfff;
+}
+
+#gameCanvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.start-screen, .end-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.95);
+  z-index: 200;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.title {
+  font-family: 'VT323', monospace;
+  font-size: clamp(32px, 10vw, 72px);
+  color: #00ff41;
+  text-shadow: 0 0 20px rgba(0,255,65,0.8);
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+  text-align: center;
+  width: 100%;
+}
+
+.subtitle {
+  font-size: clamp(12px, 3vw, 16px);
+  color: rgba(0,255,65,0.6);
+  margin-bottom: 20px;
+  text-align: center;
+  max-width: 90%;
+  line-height: 1.4;
+  padding: 0 16px;
+  width: 100%;
+}
+
+.instructions {
+  background: rgba(0,255,65,0.05);
+  border: 1px solid rgba(0,255,65,0.3);
+  padding: 12px;
+  margin-bottom: 16px;
+  max-width: 90%;
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.instructions div {
+  font-size: clamp(10px, 2.2vw, 13px);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.virus-icon {
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle, #00ff41, #00aa2b);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0,255,65,0.6);
+  flex-shrink: 0;
+}
+
+.bomb-icon {
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle, #ff0040, #aa0020);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255,0,64,0.6);
+  flex-shrink: 0;
+}
+
+.start-btn, .restart-btn {
+  background: transparent;
+  border: 2px solid #00ff41;
+  color: #00ff41;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(12px, 3vw, 16px);
+  padding: 12px 32px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  box-shadow: 0 0 20px rgba(0,255,65,0.3);
+}
+
+.start-btn:hover, .restart-btn:hover {
+  background: rgba(0,255,65,0.1);
+  box-shadow: 0 0 30px rgba(0,255,65,0.6);
+  transform: scale(1.05);
+}
+
+.final-score {
+  font-family: 'VT323', monospace;
+  font-size: clamp(36px, 12vw, 64px);
+  color: #00ff41;
+  text-shadow: 0 0 20px rgba(0,255,65,0.8);
+  margin-bottom: 12px;
+}
+
+.result-text {
+  font-size: clamp(13px, 3.5vw, 18px);
+  color: rgba(0,255,65,0.7);
+  margin-bottom: 40px;
+}
+
+.difficulty-btn.active {
+  background: rgba(0,255,65,0.1);
+  box-shadow: 0 0 20px rgba(0,255,65,0.3);
+  transform: scale(1.05);
+}
+
+.powerup-btn.active {
+  background: rgba(0,255,65,0.08);
+  box-shadow: 0 0 15px rgba(0,255,65,0.2);
+  border-width: 2px;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 48px;
+  }
+  .hud {
+    font-size: 24px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+
+<!-- Mobile-only check -->
+<div id="desktopWarning" style="display:none;position:fixed;inset:0;background:#000;z-index:9999;flex-direction:column;justify-content:center;align-items:center;padding:40px;text-align:center">
+  <div style="font-family:'VT323',monospace;font-size:clamp(40px,10vw,80px);color:#00ff41;text-shadow:0 0 20px rgba(0,255,65,0.8);margin-bottom:20px">MOBILE ONLY</div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:clamp(14px,3vw,18px);color:rgba(0,255,65,0.6);line-height:1.8;max-width:600px">
+    > This game requires a touch screen device.<br>
+    > Please open on your mobile phone or tablet.<br><br>
+    > Visit: <span style="color:#00ff41">hacktokenink.xyz/game</span>
+  </div>
+</div>
+
+<div class="game-container" id="gameContainer">
+  <div class="hud">
+    <div class="score">SCORE: <span id="scoreValue">0</span></div>
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+      <div class="timer">TIME: <span id="timerValue">180</span>s</div>
+      <div id="comboDisplay" style="font-family: 'VT323', monospace; font-size: 20px; color: #f7c948; text-shadow: 0 0 10px rgba(247,201,72,0.8); display: none;">
+        COMBO: <span id="comboValue">0</span>x
+      </div>
+      <div id="multiplierDisplay" style="font-family: 'VT323', monospace; font-size: 18px; color: #ff00ff; text-shadow: 0 0 10px rgba(255,0,255,0.8); display: none;">
+        MULTIPLIER: <span id="multiplierValue">2</span>x
+      </div>
+    </div>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <div class="start-screen" id="startScreen">
+    <div class="title">VIRUS HUNTER V2</div>
+    <div class="subtitle">Click viruses to earn $HACK. Avoid bombs or lose everything!</div>
+
+    <div class="instructions">
+      <div><div class="virus-icon"></div><span>Click viruses = +100 tokens</span></div>
+      <div><div class="bomb-icon"></div><span>Click bomb = RESET TO 0</span></div>
+      <div><div style="width: 24px; height: 24px; background: radial-gradient(circle, #00cfff, #0099cc); border-radius: 50%; box-shadow: 0 0 10px rgba(0,207,255,0.6); flex-shrink: 0;"></div><span>Click shield = +1000 tokens</span></div>
+      <div><div style="width: 24px; height: 24px; background: radial-gradient(circle, #f7c948, #d4a028); border-radius: 50%; box-shadow: 0 0 10px rgba(247,201,72,0.6); flex-shrink: 0;"></div><span>Click diamond = +5000 tokens (rare!)</span></div>
+      <div><div style="width: 24px; height: 24px; background: radial-gradient(circle, #ff00ff, #aa00aa); border-radius: 50%; box-shadow: 0 0 10px rgba(255,0,255,0.6); flex-shrink: 0;"></div><span>Click multiplier = 2x score (15s)</span></div>
+      <div style="margin-top: 16px; border-top: 1px solid rgba(0,255,65,0.2); padding-top: 16px;">
+        <span>⏱ 3 minutes • Combo system • Achievements</span>
+      </div>
+      <div style="margin-top:8px;font-size:9px;color:rgba(0,255,65,0.3);text-align:center">v2.0.0 BETA</div>
+    </div>
+
+    <button class="start-btn" id="connectStartBtn" onclick="connectWalletToStart()">CONNECT WALLET</button>
+    <button class="start-btn" id="startGameBtn" onclick="showGameSetup()" style="display: none;">START GAME</button>
+
+    <div id="walletInfo" style="display: none; margin-top: 16px; font-size: 13px; color: rgba(0,255,65,0.6); text-align: center;">
+      Connected: <span id="walletAddress"></span>
+    </div>
+
+    <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; justify-content: center; width: 100%;">
+      <button class="start-btn" onclick="showAchievements()" style="border-color: rgba(247,201,72,0.4); color: #f7c948;">ACHIEVEMENTS</button>
+      <a href="/leaderboard" class="start-btn" style="display: inline-block; text-decoration: none; border-color: rgba(0,207,255,0.4); color: #00cfff; text-align: center;">LEADERBOARD</a>
+      <a href="https://hacktokenink.xyz/" target="_blank" class="start-btn" style="display: inline-block; text-decoration: none; border-color: rgba(247,201,72,0.4); color: #f7c948; text-align: center;">AIRDROP</a>
+    </div>
+  </div>
+
+  <!-- Game Setup Screen (Difficulty, Quests, Power-ups) -->
+  <div class="start-screen" id="gameSetupScreen" style="display: none;">
+    <div class="title">GAME SETUP</div>
+    <div class="subtitle">Configure your game before starting</div>
+
+    <!-- Difficulty Selection -->
+    <div style="margin-bottom: 20px; max-width: 90%; width: 400px;">
+      <div style="font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-align: center;">SELECT DIFFICULTY</div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+        <button class="start-btn difficulty-btn" data-difficulty="easy" style="padding: 10px; font-size: 14px; border-color: rgba(0,255,65,0.3);">
+          <div style="font-family: 'VT323', monospace; font-size: 18px;">EASY</div>
+          <div style="font-size: 9px; color: rgba(0,255,65,0.4);">50% rewards</div>
+        </button>
+        <button class="start-btn difficulty-btn active" data-difficulty="normal" style="padding: 10px; font-size: 14px; border-color: rgba(0,207,255,0.3); color: #00cfff;">
+          <div style="font-family: 'VT323', monospace; font-size: 18px;">NORMAL</div>
+          <div style="font-size: 9px; color: rgba(0,207,255,0.4);">100% rewards</div>
+        </button>
+        <button class="start-btn difficulty-btn" data-difficulty="hard" style="padding: 10px; font-size: 14px; border-color: rgba(247,201,72,0.3); color: #f7c948;">
+          <div style="font-family: 'VT323', monospace; font-size: 18px;">HARD</div>
+          <div style="font-size: 9px; color: rgba(247,201,72,0.4);">150% rewards</div>
+        </button>
+        <button class="start-btn difficulty-btn" data-difficulty="insane" style="padding: 10px; font-size: 14px; border-color: rgba(255,0,64,0.3); color: #ff0040;">
+          <div style="font-family: 'VT323', monospace; font-size: 18px;">INSANE</div>
+          <div style="font-size: 9px; color: rgba(255,0,64,0.4);">200% rewards</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Daily Quests -->
+    <div style="margin-bottom: 20px; max-width: 90%; width: 400px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); padding: 12px;">
+      <div style="font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <span>DAILY QUESTS</span>
+        <span style="font-size: 9px; color: rgba(0,255,65,0.3);">Resets in 11h 49m</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.01);">
+          <span style="font-size: 11px; color: rgba(0,255,65,0.6);">Score 5000+ points</span>
+          <span style="font-size: 11px; color: #00ff41;">+500 $HACK</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.01);">
+          <span style="font-size: 11px; color: rgba(0,255,65,0.6);">Play 3 games</span>
+          <span style="font-size: 11px; color: #00ff41;">+300 $HACK</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.01);">
+          <span style="font-size: 11px; color: rgba(0,255,65,0.6);">Collect 10 shields</span>
+          <span style="font-size: 11px; color: #00ff41;">+1000 $HACK</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Power-ups Shop -->
+    <div style="margin-bottom: 20px; max-width: 90%; width: 400px;">
+      <div style="font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-align: center;">POWER-UPS (Buy before game)</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+        <button class="start-btn powerup-btn" data-powerup="shield" style="padding: 8px; font-size: 11px; border-color: rgba(0,207,255,0.3); color: #00cfff;">
+          <div style="font-size: 20px; margin-bottom: 4px;">🛡️</div>
+          <div style="font-size: 9px;">Shield</div>
+          <div style="font-size: 9px; color: rgba(0,207,255,0.4);">1000 $HACK</div>
+        </button>
+        <button class="start-btn powerup-btn" data-powerup="slowtime" style="padding: 8px; font-size: 11px; border-color: rgba(247,201,72,0.3); color: #f7c948;">
+          <div style="font-size: 20px; margin-bottom: 4px;">⏱️</div>
+          <div style="font-size: 9px;">Slow Time</div>
+          <div style="font-size: 9px; color: rgba(247,201,72,0.4);">2000 $HACK</div>
+        </button>
+        <button class="start-btn powerup-btn" data-powerup="doublescore" style="padding: 8px; font-size: 11px; border-color: rgba(196,122,255,0.3); color: #c47aff;">
+          <div style="font-size: 20px; margin-bottom: 4px;">✨</div>
+          <div style="font-size: 9px;">2x Score</div>
+          <div style="font-size: 9px; color: rgba(196,122,255,0.4);">3000 $HACK</div>
+        </button>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startGameWithSettings()" style="font-size: 18px; padding: 14px 32px;">BEGIN GAME</button>
+    <button class="start-btn" onclick="backToMenu()" style="margin-top: 12px; border-color: rgba(0,255,65,0.3); color: rgba(0,255,65,0.5);">BACK</button>
+  </div>
+
+  <div class="end-screen" id="endScreen" style="display: none;">
+    <div class="title">GAME OVER</div>
+    <div class="final-score" id="finalScore">0 $HACK</div>
+    <div class="result-text" id="resultText"></div>
+
+    <!-- Combo & Stats -->
+    <div style="margin-bottom: 20px; max-width: 90%; width: 400px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); padding: 12px;">
+      <div style="font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-align: center;">GAME STATS</div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+        <div style="text-align: center; padding: 8px; border: 1px solid rgba(0,255,65,0.1);">
+          <div style="font-size: 9px; color: rgba(0,255,65,0.4);">Max Combo</div>
+          <div style="font-family: 'VT323', monospace; font-size: 24px; color: #f7c948;" id="maxComboDisplay">0</div>
+        </div>
+        <div style="text-align: center; padding: 8px; border: 1px solid rgba(0,255,65,0.1);">
+          <div style="font-size: 9px; color: rgba(0,255,65,0.4);">Accuracy</div>
+          <div style="font-family: 'VT323', monospace; font-size: 24px; color: #00cfff;" id="accuracyDisplay">0%</div>
+        </div>
+        <div style="text-align: center; padding: 8px; border: 1px solid rgba(0,255,65,0.1);">
+          <div style="font-size: 9px; color: rgba(0,255,65,0.4);">Shields</div>
+          <div style="font-family: 'VT323', monospace; font-size: 24px; color: #00cfff;" id="shieldsDisplay">0</div>
+        </div>
+        <div style="text-align: center; padding: 8px; border: 1px solid rgba(0,255,65,0.1);">
+          <div style="font-size: 9px; color: rgba(0,255,65,0.4);">Diamonds</div>
+          <div style="font-family: 'VT323', monospace; font-size: 24px; color: #f7c948;" id="diamondsDisplay">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievements Unlocked -->
+    <div id="achievementsUnlocked" style="display: none; margin-bottom: 20px; max-width: 90%; width: 400px; border: 1px solid rgba(247,201,72,0.3); background: rgba(247,201,72,0.05); padding: 12px;">
+      <div style="font-size: 10px; color: #f7c948; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-align: center;">🏆 ACHIEVEMENTS UNLOCKED!</div>
+      <div id="achievementsList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+    </div>
+
+    <button class="restart-btn" id="claimBtn" onclick="claimReward()" style="background: rgba(0,255,65,0.08); border-color: #00ff41; color: #00ff41; margin-bottom: 16px; width: 100%; max-width: 400px;">CLAIM TOKENS</button>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; width: 100%; max-width: 400px;">
+      <button class="restart-btn" onclick="goHome()" style="border-color: rgba(0,207,255,0.4); color: #00cfff;">HOME</button>
+      <button class="restart-btn" onclick="restartGame()" style="border-color: rgba(0,255,65,0.4); color: rgba(0,255,65,0.6);">PLAY AGAIN</button>
+    </div>
+
+    <div style="font-size: 13px; color: rgba(0,255,65,0.5); text-align: center; margin-bottom: 16px;">
+      <div id="gamesRemaining">Games remaining: 15/15</div>
+      <div id="claimFee" style="margin-top: 8px; color: rgba(0,255,65,0.4);">Claim fee: 0.00002 ETH</div>
+    </div>
+
+    <div id="referralBlock" style="display: none; margin-top: 12px; padding: 10px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); text-align: left; max-width: 90%; width: 100%;">
+      <div style="font-size: 9px; color: rgba(0,255,65,0.4); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;">&gt; REFERRAL LINK — EARN 10%</div>
+      <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+        <input readonly id="refLinkInput" style="flex: 1; min-width: 0; background: transparent; border: 1px solid rgba(0,255,65,0.15); color: rgba(0,255,65,0.6); font-family: 'Share Tech Mono', monospace; font-size: 10px; padding: 6px; outline: none;">
+        <button onclick="copyRefLink()" style="background: transparent; border: 1px solid rgba(0,255,65,0.3); color: rgba(0,255,65,0.5); font-family: 'Share Tech Mono', monospace; font-size: 9px; padding: 6px 10px; cursor: pointer; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0;" id="copyRefBtn">[ COPY ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: rgba(0,255,65,0.05); border: 2px solid rgba(0,255,65,0.3); padding: 32px 24px; max-width: 90%; width: 400px; text-align: center; font-family: 'Share Tech Mono', monospace;">
+      <div style="font-family: 'VT323', monospace; font-size: 48px; color: #00ff41; text-shadow: 0 0 20px rgba(0,255,65,0.8); margin-bottom: 16px;">SUCCESS!</div>
+      <div id="modalMessage" style="font-size: 14px; color: rgba(0,255,65,0.7); line-height: 1.6; margin-bottom: 24px;"></div>
+      <button onclick="closeSuccessModal()" style="background: rgba(0,255,65,0.08); border: 1px solid #00ff41; color: #00ff41; font-family: 'Share Tech Mono', monospace; font-size: 12px; padding: 12px 32px; cursor: pointer; letter-spacing: 2px;">[ OK ]</button>
+    </div>
+  </div>
+
+  <!-- Achievements Modal -->
+  <div id="achievementsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; overflow-y: auto; padding: 20px;">
+    <div style="background: rgba(0,0,0,0.95); border: 2px solid rgba(247,201,72,0.4); max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto;">
+      <div style="padding: 16px; border-bottom: 1px solid rgba(247,201,72,0.2); display: flex; justify-content: space-between; align-items: center; background: rgba(247,201,72,0.05);">
+        <div style="font-family: 'VT323', monospace; font-size: 28px; color: #f7c948; text-shadow: 0 0 10px rgba(247,201,72,0.6);">🏆 ACHIEVEMENTS</div>
+        <button onclick="closeAchievements()" style="background: transparent; border: 1px solid rgba(247,201,72,0.3); color: #f7c948; font-family: 'Share Tech Mono', monospace; font-size: 12px; padding: 6px 12px; cursor: pointer;">[ X ]</button>
+      </div>
+      <div style="padding: 20px;">
+        <!-- Beginner Achievements -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">BEGINNER</div>
+          <div class="achievement-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); margin-bottom: 8px;">
+            <div style="font-size: 32px; flex-shrink: 0;">🎯</div>
+            <div style="flex: 1;">
+              <div style="font-size: 13px; color: #00ff41; margin-bottom: 4px;">First Steps</div>
+              <div style="font-size: 10px; color: rgba(0,255,65,0.5);">Score 1,000 points in a single game</div>
+              <div style="font-size: 9px; color: rgba(0,255,65,0.3); margin-top: 4px;">Reward: +500 $HACK</div>
+            </div>
+            <div style="font-size: 20px; color: rgba(0,255,65,0.3);">🔒</div>
+          </div>
+          <div class="achievement-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); margin-bottom: 8px;">
+            <div style="font-size: 32px; flex-shrink: 0;">🎮</div>
+            <div style="flex: 1;">
+              <div style="font-size: 13px; color: #00ff41; margin-bottom: 4px;">Dedicated Player</div>
+              <div style="font-size: 10px; color: rgba(0,255,65,0.5);">Play 10 games</div>
+              <div style="font-size: 9px; color: rgba(0,255,65,0.3); margin-top: 4px;">Reward: +1,000 $HACK</div>
+            </div>
+            <div style="font-size: 20px; color: rgba(0,255,65,0.3);">🔒</div>
+          </div>
+        </div>
+
+        <!-- Intermediate Achievements -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 10px; color: rgba(0,207,255,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">INTERMEDIATE</div>
+          <div class="achievement-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid rgba(0,207,255,0.2); background: rgba(0,207,255,0.02); margin-bottom: 8px;">
+            <div style="font-size: 32px; flex-shrink: 0;">💎</div>
+            <div style="flex: 1;">
+              <div style="font-size: 13px; color: #00cfff; margin-bottom: 4px;">Pro Gamer</div>
+              <div style="font-size: 10px; color: rgba(0,207,255,0.5);">Score 10,000 points in a single game</div>
+              <div style="font-size: 9px; color: rgba(0,207,255,0.3); margin-top: 4px;">Reward: +2,000 $HACK</div>
+            </div>
+            <div style="font-size: 20px; color: rgba(0,207,255,0.3);">🔒</div>
+          </div>
+          <div class="achievement-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid rgba(0,207,255,0.2); background: rgba(0,207,255,0.02); margin-bottom: 8px;">
+            <div style="font-size: 32px; flex-shrink: 0;">🔥</div>
+            <div style="flex: 1;">
+              <div style="font-size: 13px; color: #00cfff; margin-bottom: 4px;">Combo Master</div>
+              <div style="font-size: 10px; color: rgba(0,207,255,0.5);">Reach 50 combo streak</div>
+              <div style="font-size: 9px; color: rgba(0,207,255,0.3); margin-top: 4px;">Reward: +3,000 $HACK</div>
+            </div>
+            <div style="font-size: 20px; color: rgba(0,207,255,0.3);">🔒</div>
+          </div>
+        </div>
+
+        <!-- Expert Achievements -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 10px; color: rgba(247,201,72,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">EXPERT</div>
+          <div class="achievement-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid rgba(247,201,72,0.2); background: rgba(247,201,72,0.02); margin-bottom: 8px;">
+            <div style="font-size: 32px; flex-shrink: 0;">👑</div>
+            <div style="flex: 1;">
+              <div style="font-size: 13px; color: #f7c948; margin-bottom: 4px;">Legend</div>
+              <div style="font-size: 10px; color: rgba(247,201,72,0.5);">Score 50,000 points in a single game</div>
+              <div style="font-size: 9px; color: rgba(247,201,72,0.3); margin-top: 4px;">Reward: +10,000 $HACK + NFT Badge</div>
+            </div>
+            <div style="font-size: 20px; color: rgba(247,201,72,0.3);">🔒</div>
+          </div>
+          <div class="achievement-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid rgba(247,201,72,0.2); background: rgba(247,201,72,0.02); margin-bottom: 8px;">
+            <div style="font-size: 32px; flex-shrink: 0;">🏃</div>
+            <div style="flex: 1;">
+              <div style="font-size: 13px; color: #f7c948; margin-bottom: 4px;">Marathon Runner</div>
+              <div style="font-size: 10px; color: rgba(247,201,72,0.5);">Play 100 games</div>
+              <div style="font-size: 9px; color: rgba(247,201,72,0.3); margin-top: 4px;">Reward: +5,000 $HACK + NFT Badge</div>
+            </div>
+            <div style="font-size: 20px; color: rgba(247,201,72,0.3);">🔒</div>
+          </div>
+        </div>
+
+        <!-- Special Achievements -->
+        <div>
+          <div style="font-size: 10px; color: rgba(255,0,255,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">SPECIAL</div>
+          <div class="achievement-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid rgba(255,0,255,0.2); background: rgba(255,0,255,0.02); margin-bottom: 8px;">
+            <div style="font-size: 32px; flex-shrink: 0;">🛡️</div>
+            <div style="flex: 1;">
+              <div style="font-size: 13px; color: #ff00ff; margin-bottom: 4px;">Bomb Dodger</div>
+              <div style="font-size: 10px; color: rgba(255,0,255,0.5);">Avoid bombs in 5 consecutive games</div>
+              <div style="font-size: 9px; color: rgba(255,0,255,0.3); margin-top: 4px;">Reward: +2,000 $HACK</div>
+            </div>
+            <div style="font-size: 20px; color: rgba(255,0,255,0.3);">🔒</div>
+          </div>
+          <div class="achievement-item" style="display: flex; gap: 12px; padding: 12px; border: 1px solid rgba(255,0,255,0.2); background: rgba(255,0,255,0.02);">
+            <div style="font-size: 32px; flex-shrink: 0;">💰</div>
+            <div style="flex: 1;">
+              <div style="font-size: 13px; color: #ff00ff; margin-bottom: 4px;">Treasure Hunter</div>
+              <div style="font-size: 10px; color: rgba(255,0,255,0.5);">Collect 10 diamonds in total</div>
+              <div style="font-size: 9px; color: rgba(255,0,255,0.3); margin-top: 4px;">Reward: +5,000 $HACK</div>
+            </div>
+            <div style="font-size: 20px; color: rgba(255,0,255,0.3);">🔒</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let score = 0;
+let timeLeft = 180;
+let gameActive = false;
+let objects = [];
+let effects = [];
+let lastSpawn = 0;
+let gameStartTime = 0;
+let baseSpawnRate = 800; // Start faster
+let bombChance = 0.12;
+let shieldChance = 0.04;
+let objectLifetime = 2000;
+let shieldLifetime = 1500;
+let lastTime = 0;
+
+// Game limits
+let gamesRemaining = 15;
+let timerStart = null;
+let isFirstGame = true; // Track if this is first game
+
+// Contract config (will be replaced with actual addresses)
+const GAME_CONTRACT_ADDRESS = '0xA52f5416B79f2bA3e329197c4D1BdE85267deE41';
+const INK_CHAIN_ID = 57073;
+let provider, signer, walletAddress, gameContract;
+
+// Get referrer from URL ?ref=0x...
+const urlParams = new URLSearchParams(window.location.search);
+const referrerAddress = urlParams.get('ref') || '0x0000000000000000000000000000000000000000';
+console.log('Referrer:', referrerAddress);
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// ─── GAME LIMITS (localStorage) ──────────────────────────────────────────────
+function loadGameLimits() {
+  const saved = localStorage.getItem('hackGameLimits');
+  if (saved) {
+    const data = JSON.parse(saved);
+
+    // Check if wallet changed - reset games for new wallet
+    if (walletAddress && data.lastWallet && data.lastWallet.toLowerCase() !== walletAddress.toLowerCase()) {
+      console.log('Wallet changed, resetting games');
+      gamesRemaining = 15;
+      timerStart = null;
+      isFirstGame = true;
+      saveGameLimits();
+      updateGamesDisplay();
+      return;
+    }
+
+    timerStart = data.timerStart;
+    gamesRemaining = data.gamesRemaining;
+    isFirstGame = data.isFirstGame !== undefined ? data.isFirstGame : true;
+
+    // Check if 24h passed
+    const now = Date.now();
+    const elapsed = now - timerStart;
+    if (elapsed >= 24 * 60 * 60 * 1000) {
+      // Reset after 24h - reset games AND first game flag
+      gamesRemaining = 15;
+      timerStart = null;
+      isFirstGame = true; // Reset first game flag for new day
+      saveGameLimits();
+    }
+  }
+  updateGamesDisplay();
+}
+
+function saveGameLimits() {
+  localStorage.setItem('hackGameLimits', JSON.stringify({
+    timerStart: timerStart,
+    gamesRemaining: gamesRemaining,
+    isFirstGame: isFirstGame,
+    lastWallet: walletAddress || null
+  }));
+}
+
+function updateGamesDisplay() {
+  const el = document.getElementById('gamesRemaining');
+  if (el) {
+    el.textContent = `Games remaining: ${gamesRemaining}/15`;
+    if (gamesRemaining === 0 && timerStart) {
+      const now = Date.now();
+      const elapsed = now - timerStart;
+      const remaining = 24 * 60 * 60 * 1000 - elapsed;
+      const hours = Math.floor(remaining / (60 * 60 * 1000));
+      const mins = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+      el.textContent = `No games left. Reset in ${hours}h ${mins}m`;
+    }
+  }
+}
+
+// Load on page load
+loadGameLimits();
+
+// Check if mobile device
+function isMobileDevice() {
+  // Check for touch support
+  const hasTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+  // Check user agent
+  const mobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  // Check screen size (mobile/tablet typically < 1024px width)
+  const smallScreen = window.innerWidth < 1024;
+
+  return hasTouch || mobileUA || smallScreen;
+}
+
+// Block desktop users
+if (!isMobileDevice()) {
+  document.getElementById('desktopWarning').style.display = 'flex';
+  document.getElementById('gameContainer').style.display = 'none';
+} else {
+  document.getElementById('desktopWarning').style.display = 'none';
+  document.getElementById('gameContainer').style.display = 'block';
+}
+
+function drawVirus(x, y, size, pulse) {
+  const centerX = x + size / 2;
+  const centerY = y + size / 2;
+  const radius = size * 0.4 * (1 + pulse * 0.1);
+
+  // Reduced glow - no flashing
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = '#00ff41';
+
+  // Main body
+  ctx.fillStyle = '#00ff41';
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#00aa2b';
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius * 0.8, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Spikes with rotation
+  ctx.strokeStyle = '#00ff41';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 8; i++) {
+    const angle = (Math.PI * 2 / 8) * i + pulse * 0.3;
+    const startX = centerX + Math.cos(angle) * radius;
+    const startY = centerY + Math.sin(angle) * radius;
+    const endX = centerX + Math.cos(angle) * (radius + 8);
+    const endY = centerY + Math.sin(angle) * (radius + 8);
+
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
+
+    ctx.fillStyle = '#00ff41';
+    ctx.beginPath();
+    ctx.arc(endX, endY, 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.shadowBlur = 0;
+}
+
+function drawBomb(x, y, size, pulse) {
+  const centerX = x + size / 2;
+  const centerY = y + size / 2 + 5;
+  const radius = size * 0.45 * (1 + pulse * 0.1);
+
+  // Reduced glow
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = '#ff0040';
+
+  // Main body
+  ctx.fillStyle = '#ff0040';
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#aa0020';
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius * 0.82, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Fuse
+  ctx.strokeStyle = '#666';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY - radius);
+  ctx.lineTo(centerX, centerY - radius - 12);
+  ctx.stroke();
+
+  // Simple spark
+  ctx.strokeStyle = '#ffaa00';
+  ctx.lineWidth = 2;
+  const sparkY = centerY - radius - 12;
+  ctx.beginPath();
+  ctx.moveTo(centerX, sparkY);
+  ctx.lineTo(centerX - 3, sparkY - 3);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(centerX, sparkY);
+  ctx.lineTo(centerX + 3, sparkY - 3);
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+}
+
+function drawShield(x, y, size, pulse) {
+  const centerX = x + size / 2;
+  const centerY = y + size / 2;
+  const radius = size * 0.4;
+
+  // Reduced glow
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = '#00cfff';
+
+  // Shield shape
+  ctx.fillStyle = '#00cfff';
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY - radius);
+  ctx.quadraticCurveTo(centerX + radius * 0.8, centerY - radius * 0.5, centerX + radius * 0.6, centerY);
+  ctx.quadraticCurveTo(centerX + radius * 0.8, centerY + radius * 0.7, centerX, centerY + radius * 1.2);
+  ctx.quadraticCurveTo(centerX - radius * 0.8, centerY + radius * 0.7, centerX - radius * 0.6, centerY);
+  ctx.quadraticCurveTo(centerX - radius * 0.8, centerY - radius * 0.5, centerX, centerY - radius);
+  ctx.fill();
+
+  // Inner shield
+  ctx.fillStyle = '#0099cc';
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY - radius * 0.7);
+  ctx.quadraticCurveTo(centerX + radius * 0.5, centerY - radius * 0.3, centerX + radius * 0.4, centerY);
+  ctx.quadraticCurveTo(centerX + radius * 0.5, centerY + radius * 0.5, centerX, centerY + radius * 0.9);
+  ctx.quadraticCurveTo(centerX - radius * 0.5, centerY + radius * 0.5, centerX - radius * 0.4, centerY);
+  ctx.quadraticCurveTo(centerX - radius * 0.5, centerY - radius * 0.3, centerX, centerY - radius * 0.7);
+  ctx.fill();
+
+  // Cross in center
+  ctx.strokeStyle = '#00cfff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(centerX - radius * 0.3, centerY);
+  ctx.lineTo(centerX + radius * 0.3, centerY);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY - radius * 0.3);
+  ctx.lineTo(centerX, centerY + radius * 0.3);
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+}
+
+function drawEffect(effect) {
+  ctx.font = '32px VT323';
+  ctx.fillStyle = effect.color;
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = effect.color;
+  ctx.textAlign = 'center';
+  ctx.fillText(effect.text, effect.x, effect.y);
+  ctx.shadowBlur = 0;
+}
+
+function startGame() {
+  document.getElementById('startScreen').style.display = 'none';
+  score = 0;
+  timeLeft = 180;
+  gameActive = true;
+  objects = [];
+  effects = [];
+  lastSpawn = 0;
+  gameStartTime = performance.now();
+  baseSpawnRate = 900; // Комфортный старт
+  bombChance = 0.12;
+  shieldChance = 0.04;
+  objectLifetime = 2200; // Больше времени на клик
+  shieldLifetime = 1500;
+  updateScore();
+  updateTimer();
+
+  setInterval(() => {
+    if (!gameActive) return;
+    timeLeft--;
+    updateTimer();
+
+    // Плавное ускорение каждые 30 секунд
+    if (timeLeft % 30 === 0 && timeLeft > 0) {
+      baseSpawnRate = Math.max(500, baseSpawnRate - 70); // Плавнее ускорение
+      bombChance = Math.min(0.18, bombChance + 0.012); // Меньше бомб
+      objectLifetime = Math.max(1400, objectLifetime - 100); // Достаточно времени
+    }
+
+    if (timeLeft <= 0) {
+      endGame();
+    }
+  }, 1000);
+
+  lastTime = performance.now();
+  gameLoop(lastTime);
+}
+
+function spawnObject(currentTime) {
+  const rand = Math.random();
+  let type = 'virus'; // default
+
+  if (rand < shieldChance) {
+    type = 'shield';
+  } else if (rand < shieldChance + bombChance) {
+    type = 'bomb';
+  }
+
+  const size = type === 'shield' ? 35 : 30; // Much smaller
+  const padding = 40;
+  const hudHeight = 80; // Space for HUD at top
+  const x = padding + Math.random() * (canvas.width - size - padding * 2);
+  const y = hudHeight + padding + Math.random() * (canvas.height - size - padding * 2 - hudHeight);
+
+  objects.push({
+    x: x,
+    y: y,
+    size: size,
+    type: type,
+    clicked: false,
+    spawnTime: currentTime,
+    alpha: 1,
+    scale: 0,
+    lifetime: type === 'shield' ? shieldLifetime : objectLifetime
+  });
+}
+
+function gameLoop(currentTime) {
+  if (!gameActive) return;
+
+  const deltaTime = currentTime - lastTime;
+  lastTime = currentTime;
+
+  // Spawn objects
+  if (currentTime - lastSpawn > baseSpawnRate) {
+    spawnObject(currentTime);
+    lastSpawn = currentTime;
+  }
+
+  // Clear canvas
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Update and draw objects
+  for (let i = objects.length - 1; i >= 0; i--) {
+    const obj = objects[i];
+    const age = currentTime - obj.spawnTime;
+
+    // Spawn animation (first 200ms)
+    if (age < 200) {
+      obj.scale = age / 200;
+    } else {
+      obj.scale = 1;
+    }
+
+    // Remove if lifetime expired
+    if (age > obj.lifetime) {
+      if (obj.type === 'virus' && !obj.clicked) {
+        score = Math.max(0, score - 100);
+        updateScore();
+        effects.push({
+          x: obj.x + obj.size / 2,
+          y: obj.y + obj.size / 2,
+          text: '-100',
+          color: '#ff6600',
+          alpha: 1,
+          createdAt: currentTime,
+          vx: 0,
+          vy: -30
+        });
+
+        // End game if score reaches 0
+        if (score <= 0) {
+          score = 0;
+          endGame();
+          return;
+        }
+      }
+      objects.splice(i, 1);
+      continue;
+    }
+
+    // Fade out in last 300ms
+    if (age > obj.lifetime - 300) {
+      obj.alpha = 1 - ((age - (obj.lifetime - 300)) / 300);
+    }
+
+    // Pulse animation
+    const pulse = Math.sin(age / 200);
+
+    ctx.save();
+    ctx.globalAlpha = obj.alpha;
+    ctx.translate(obj.x + obj.size / 2, obj.y + obj.size / 2);
+    ctx.scale(obj.scale, obj.scale);
+    ctx.translate(-obj.x - obj.size / 2, -obj.y - obj.size / 2);
+
+    if (obj.type === 'bomb') {
+      drawBomb(obj.x, obj.y, obj.size, pulse);
+    } else if (obj.type === 'shield') {
+      drawShield(obj.x, obj.y, obj.size, pulse);
+    } else {
+      drawVirus(obj.x, obj.y, obj.size, pulse);
+    }
+
+    ctx.restore();
+  }
+
+  // Update and draw effects
+  for (let i = effects.length - 1; i >= 0; i--) {
+    const effect = effects[i];
+    const age = currentTime - effect.createdAt;
+
+    if (age > 1000) {
+      effects.splice(i, 1);
+      continue;
+    }
+
+    // Move effect
+    if (effect.vx !== undefined) {
+      effect.x += (effect.vx * deltaTime) / 1000;
+      effect.y += (effect.vy * deltaTime) / 1000;
+    } else {
+      effect.y -= (50 * deltaTime) / 1000;
+    }
+
+    effect.alpha = 1 - (age / 1000);
+
+    ctx.globalAlpha = effect.alpha;
+    drawEffect(effect);
+    ctx.globalAlpha = 1;
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+canvas.addEventListener('click', (e) => {
+  if (!gameActive) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const clickY = e.clientY - rect.top;
+
+  for (let i = objects.length - 1; i >= 0; i--) {
+    const obj = objects[i];
+    const centerX = obj.x + obj.size / 2;
+    const centerY = obj.y + obj.size / 2;
+    const distance = Math.sqrt((clickX - centerX) ** 2 + (clickY - centerY) ** 2);
+
+    // Larger hit area - 1.5x the visual size
+    if (distance <= (obj.size / 2) * obj.scale * 1.5) {
+
+      // Explosion effect with particles
+      const particleCount = obj.type === 'shield' ? 8 : 6;
+      for (let j = 0; j < particleCount; j++) {
+        const angle = (Math.PI * 2 / particleCount) * j;
+        let emoji = '✓';
+        let color = '#00ff41';
+
+        if (obj.type === 'bomb') {
+          emoji = '💥';
+          color = '#ff0040';
+        } else if (obj.type === 'shield') {
+          emoji = '✨';
+          color = '#00cfff';
+        }
+
+        effects.push({
+          x: centerX + Math.cos(angle) * 15,
+          y: centerY + Math.sin(angle) * 15,
+          text: emoji,
+          color: color,
+          alpha: 1,
+          createdAt: performance.now(),
+          vx: Math.cos(angle) * 40,
+          vy: Math.sin(angle) * 40
+        });
+      }
+
+      if (obj.type === 'bomb') {
+        score = 0;
+        updateScore();
+        effects.push({
+          x: centerX,
+          y: centerY - 20,
+          text: 'RESET!',
+          color: '#ff0040',
+          alpha: 1,
+          createdAt: performance.now(),
+          vx: 0,
+          vy: -30
+        });
+
+        // End game immediately when bomb clicked
+        obj.clicked = true;
+        objects.splice(i, 1);
+        setTimeout(() => endGame(), 500);
+        return;
+      } else if (obj.type === 'shield') {
+        score += 1000;
+        updateScore();
+        effects.push({
+          x: centerX,
+          y: centerY - 20,
+          text: '+1000',
+          color: '#00cfff',
+          alpha: 1,
+          createdAt: performance.now(),
+          vx: 0,
+          vy: -30
+        });
+      } else {
+        score += 100;
+        updateScore();
+        effects.push({
+          x: centerX,
+          y: centerY - 20,
+          text: '+100',
+          color: '#00ff41',
+          alpha: 1,
+          createdAt: performance.now(),
+          vx: 0,
+          vy: -30
+        });
+      }
+
+      obj.clicked = true;
+      objects.splice(i, 1);
+      break;
+    }
+  }
+});
+
+function updateScore() {
+  document.getElementById('scoreValue').textContent = score;
+}
+
+function updateTimer() {
+  document.getElementById('timerValue').textContent = timeLeft;
+}
+
+function endGame() {
+  gameActive = false;
+
+  document.getElementById('finalScore').textContent = score + ' $HACK';
+
+  let resultText = '';
+  if (score >= 1000) {
+    resultText = 'LEGENDARY HACKER! 🔥';
+  } else if (score >= 500) {
+    resultText = 'Elite Performance! 💎';
+  } else if (score >= 200) {
+    resultText = 'Good Job! ⚡';
+  } else if (score > 0) {
+    resultText = 'Keep Practicing! 💪';
+  } else {
+    resultText = 'Better luck next time!';
+  }
+  document.getElementById('resultText').textContent = resultText;
+
+  // Hide CLAIM button if score is 0
+  const claimBtn = document.getElementById('claimBtn');
+
+  // Check if first game and score > 0
+  if (isFirstGame && score > 0) {
+    // Hide claim button initially
+    claimBtn.style.display = 'none';
+
+    // Show Twitter share button
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'restart-btn';
+    shareBtn.id = 'twitterShareBtn';
+    shareBtn.textContent = 'SHARE ON X TO UNLOCK CLAIM';
+    shareBtn.style.background = 'rgba(29,155,240,0.08)';
+    shareBtn.style.borderColor = '#1d9bf0';
+    shareBtn.style.color = '#1d9bf0';
+    shareBtn.style.marginBottom = '16px';
+    shareBtn.style.width = '100%';
+    shareBtn.style.maxWidth = '400px';
+    shareBtn.onclick = shareOnTwitter;
+
+    const btnContainer = document.querySelector('#endScreen > button');
+    btnContainer.parentNode.insertBefore(shareBtn, btnContainer);
+  } else if (score <= 0) {
+    claimBtn.style.display = 'none';
+  } else {
+    claimBtn.style.display = 'block';
+  }
+
+  updateGamesDisplay();
+  document.getElementById('endScreen').style.display = 'flex';
+}
+
+function shareOnTwitter() {
+  const gameUrl = 'https://hacktokenink.xyz/game';
+  const refUrl = walletAddress ? `${gameUrl}?ref=${walletAddress}` : gameUrl;
+  const tweetText = `Just scored ${score} tokens in @HACKtokenINK Virus Hunter! 🎮\n\nClick viruses, avoid bombs, earn $HACK on INK Chain.\n\n15 free games every 24h. Play now 👇`;
+
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(refUrl)}`;
+  window.open(twitterUrl, '_blank');
+
+  // After sharing, show claim button
+  setTimeout(() => {
+    const shareBtn = document.getElementById('twitterShareBtn');
+    if (shareBtn) shareBtn.remove();
+
+    const claimBtn = document.getElementById('claimBtn');
+    claimBtn.style.display = 'block';
+
+    // Mark first game as done
+    isFirstGame = false;
+    saveGameLimits();
+  }, 2000);
+}
+
+// ─── CLAIM REWARD ────────────────────────────────────────────────────────────
+async function claimReward() {
+  if (gamesRemaining <= 0) {
+    showSuccessModal('No games remaining. Wait for reset.', 'error');
+    return;
+  }
+
+  const claimBtn = document.getElementById('claimBtn');
+  claimBtn.disabled = true;
+
+  try {
+    // Connect wallet if not connected
+    if (!walletAddress) {
+      await connectWallet();
+      if (!walletAddress) {
+        showSuccessModal('Wallet connection failed', 'error');
+        claimBtn.disabled = false;
+        return;
+      }
+    }
+
+    // Call contract with auto gas estimation
+    const feeWei = ethers.parseEther('0.00002');
+
+    try {
+      // Estimate gas first to catch errors early
+      const gasEstimate = await gameContract.claimGameReward.estimateGas(score, referrerAddress, { value: feeWei });
+    } catch (gasError) {
+      console.error('Gas estimation failed:', gasError);
+      throw new Error('Contract call will fail. Check if contract has tokens.');
+    }
+
+    const tx = await gameContract.claimGameReward(score, referrerAddress, { value: feeWei });
+    await tx.wait();
+
+    // Build success message
+    let message = `${score} $HACK claimed successfully!\n\nTransaction: ${tx.hash.slice(0, 10)}...${tx.hash.slice(-8)}`;
+
+    // Show referral bonus if referrer exists
+    if (referrerAddress !== '0x0000000000000000000000000000000000000000') {
+      const refBonus = Math.floor(score * 0.1);
+      message += `\n\nReferrer earned ${refBonus} $HACK bonus!`;
+    }
+
+    // Hide claim button after successful claim
+    claimBtn.style.display = 'none';
+
+    // Decrease games remaining
+    if (timerStart === null) {
+      timerStart = Date.now();
+    }
+    gamesRemaining--;
+    saveGameLimits();
+    updateGamesDisplay();
+
+    // Prepare referral link
+    const refUrl = `https://hacktokenink.xyz/game?ref=${walletAddress}`;
+    document.getElementById('refLinkInput').value = refUrl;
+
+    // Show modal, then show referral block after modal closes
+    showSuccessModal(message, 'success', () => {
+      document.getElementById('referralBlock').style.display = 'block';
+    });
+
+  } catch (error) {
+    console.error(error);
+    const msg = error.reason || error.message || 'Transaction failed';
+    showSuccessModal(msg.slice(0, 100), 'error');
+    claimBtn.disabled = false;
+  }
+}
+
+function skipReward() {
+  // Decrease games remaining
+  if (timerStart === null) {
+    timerStart = Date.now();
+  }
+  gamesRemaining--;
+  saveGameLimits();
+  updateGamesDisplay();
+
+  setTimeout(() => {
+    restartGame();
+  }, 500);
+}
+
+function showSuccessModal(message, type = 'success', onClose = null) {
+  const modal = document.getElementById('successModal');
+  const modalMessage = document.getElementById('modalMessage');
+
+  modalMessage.textContent = message;
+
+  if (type === 'error') {
+    modalMessage.style.color = '#ff0040';
+  } else {
+    modalMessage.style.color = 'rgba(0,255,65,0.7)';
+  }
+
+  modal.style.display = 'flex';
+
+  // Store callback for when modal closes
+  modal.dataset.onClose = onClose ? 'true' : 'false';
+  if (onClose) {
+    window._modalCloseCallback = onClose;
+  }
+}
+
+function closeSuccessModal() {
+  const modal = document.getElementById('successModal');
+  modal.style.display = 'none';
+
+  // Execute callback if exists
+  if (modal.dataset.onClose === 'true' && window._modalCloseCallback) {
+    window._modalCloseCallback();
+    window._modalCloseCallback = null;
+    modal.dataset.onClose = 'false';
+  }
+}
+
+function logClaim(type, msg) {
+  // Deprecated - now using modal
+  console.log(`[${type}] ${msg}`);
+}
+
+// ─── WALLET CONNECTION ───────────────────────────────────────────────────────
+async function connectWallet() {
+  if (!window.ethereum) {
+    alert('MetaMask not found. Please install MetaMask.');
+    return;
+  }
+
+  try {
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+
+    const network = await provider.getNetwork();
+    if (network.chainId !== BigInt(INK_CHAIN_ID)) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0xDEF1' }] // 57073 in hex
+        });
+      } catch (e) {
+        if (e.code === 4902) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0xDEF1',
+              chainName: 'Ink',
+              nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+              rpcUrls: ['https://rpc-gel.inkonchain.com'],
+              blockExplorerUrls: ['https://explorer.inkonchain.com']
+            }]
+          });
+        } else {
+          throw e;
+        }
+      }
+      provider = new ethers.BrowserProvider(window.ethereum);
+    }
+
+    signer = await provider.getSigner();
+    walletAddress = await signer.getAddress();
+
+    // Reload game limits for this wallet
+    loadGameLimits();
+
+    // Initialize contract
+    const ABI = [
+      "function claimGameReward(uint256 score, address referrer) external payable",
+      "event GameRewardClaimed(address indexed player, uint256 score, uint256 timestamp)"
+    ];
+    gameContract = new ethers.Contract(GAME_CONTRACT_ADDRESS, ABI, signer);
+
+  } catch (error) {
+    console.error('Wallet connection error:', error);
+    throw error;
+  }
+}
+
+async function connectWalletToStart() {
+  const connectBtn = document.getElementById('connectStartBtn');
+  const startBtn = document.getElementById('startGameBtn');
+  const walletInfo = document.getElementById('walletInfo');
+  const walletAddressEl = document.getElementById('walletAddress');
+
+  try {
+    connectBtn.disabled = true;
+    connectBtn.textContent = 'CONNECTING...';
+
+    await connectWallet();
+
+    // Show shortened wallet address
+    const shortAddress = walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
+    walletAddressEl.textContent = shortAddress;
+
+    // Hide connect button, show start button and wallet info
+    connectBtn.style.display = 'none';
+    startBtn.style.display = 'inline-block';
+    walletInfo.style.display = 'block';
+
+  } catch (error) {
+    console.error('Connection failed:', error);
+    connectBtn.disabled = false;
+    connectBtn.textContent = 'CONNECT WALLET';
+    alert('Failed to connect wallet. Please try again.');
+  }
+}
+
+function restartGame() {
+  if (gamesRemaining <= 0) {
+    showSuccessModal('No games remaining. Wait for reset.', 'error');
+    return;
+  }
+  document.getElementById('endScreen').style.display = 'none';
+  document.getElementById('referralBlock').style.display = 'none';
+  startGame();
+}
+
+function goHome() {
+  document.getElementById('endScreen').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'flex';
+  document.getElementById('referralBlock').style.display = 'none';
+  score = 0;
+  timeLeft = 180;
+  updateScore();
+  updateTimer();
+}
+
+function copyRefLink() {
+  const input = document.getElementById('refLinkInput');
+  input.select();
+  navigator.clipboard.writeText(input.value);
+  const btn = document.getElementById('copyRefBtn');
+  btn.textContent = '[ COPIED ✓ ]';
+  btn.style.color = '#00ff41';
+  setTimeout(() => {
+    btn.textContent = '[ COPY ]';
+    btn.style.color = 'rgba(0,255,65,0.5)';
+  }, 2000);
+}
+
+// ─── NEW FEATURES V2 ─────────────────────────────────────────────────────────
+
+// Game state for new features
+let combo = 0;
+let maxCombo = 0;
+let multiplier = 1;
+let multiplierEndTime = 0;
+let totalClicks = 0;
+let successfulClicks = 0;
+let shieldsCollected = 0;
+let diamondsCollected = 0;
+let selectedDifficulty = 'normal';
+let selectedPowerups = [];
+
+// Difficulty settings
+const difficultySettings = {
+  easy: { spawnRate: 1000, bombChance: 0.08, rewardMultiplier: 0.5 },
+  normal: { spawnRate: 800, bombChance: 0.12, rewardMultiplier: 1.0 },
+  hard: { spawnRate: 600, bombChance: 0.16, rewardMultiplier: 1.5 },
+  insane: { spawnRate: 400, bombChance: 0.20, rewardMultiplier: 2.0 }
+};
+
+// Show game setup screen
+function showGameSetup() {
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameSetupScreen').style.display = 'flex';
+}
+
+// Back to main menu
+function backToMenu() {
+  document.getElementById('gameSetupScreen').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'flex';
+}
+
+// Start game with selected settings
+function startGameWithSettings() {
+  document.getElementById('gameSetupScreen').style.display = 'none';
+  startGame();
+}
+
+// Difficulty selection
+document.addEventListener('DOMContentLoaded', () => {
+  const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+  difficultyBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      difficultyBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedDifficulty = btn.dataset.difficulty;
+      console.log('Selected difficulty:', selectedDifficulty);
+    });
+  });
+
+  // Power-ups selection
+  const powerupBtns = document.querySelectorAll('.powerup-btn');
+  powerupBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const powerup = btn.dataset.powerup;
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+        selectedPowerups = selectedPowerups.filter(p => p !== powerup);
+      } else {
+        btn.classList.add('active');
+        selectedPowerups.push(powerup);
+      }
+      console.log('Selected powerups:', selectedPowerups);
+    });
+  });
+});
+
+// Show/Hide Achievements Modal
+function showAchievements() {
+  document.getElementById('achievementsModal').style.display = 'flex';
+}
+
+function closeAchievements() {
+  document.getElementById('achievementsModal').style.display = 'none';
+}
+
+// Update combo display
+function updateCombo(increment = true) {
+  if (increment) {
+    combo++;
+    if (combo > maxCombo) maxCombo = combo;
+
+    // Show combo display
+    const comboDisplay = document.getElementById('comboDisplay');
+    comboDisplay.style.display = 'block';
+    document.getElementById('comboValue').textContent = combo;
+
+    // Combo multiplier bonus
+    if (combo >= 20) {
+      multiplier = 3;
+    } else if (combo >= 10) {
+      multiplier = 2;
+    } else if (combo >= 5) {
+      multiplier = 1.5;
+    }
+  } else {
+    // Reset combo
+    combo = 0;
+    multiplier = 1;
+    document.getElementById('comboDisplay').style.display = 'none';
+  }
+}
+
+// Update multiplier display
+function updateMultiplierDisplay() {
+  const now = performance.now();
+  if (multiplierEndTime > now) {
+    document.getElementById('multiplierDisplay').style.display = 'block';
+    document.getElementById('multiplierValue').textContent = multiplier;
+  } else {
+    document.getElementById('multiplierDisplay').style.display = 'none';
+    if (multiplierEndTime > 0) {
+      multiplier = 1;
+      multiplierEndTime = 0;
+    }
+  }
+}
+
+// Draw new object types
+function drawDiamond(x, y, size, pulse) {
+  const centerX = x + size / 2;
+  const centerY = y + size / 2;
+  const radius = size * 0.4;
+
+  ctx.shadowBlur = 12;
+  ctx.shadowColor = '#f7c948';
+
+  // Diamond shape
+  ctx.fillStyle = '#f7c948';
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY - radius);
+  ctx.lineTo(centerX + radius * 0.6, centerY);
+  ctx.lineTo(centerX, centerY + radius);
+  ctx.lineTo(centerX - radius * 0.6, centerY);
+  ctx.closePath();
+  ctx.fill();
+
+  // Inner shine
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.moveTo(centerX, centerY - radius * 0.5);
+  ctx.lineTo(centerX + radius * 0.3, centerY);
+  ctx.lineTo(centerX, centerY + radius * 0.5);
+  ctx.lineTo(centerX - radius * 0.3, centerY);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.shadowBlur = 0;
+}
+
+function drawMultiplier(x, y, size, pulse) {
+  const centerX = x + size / 2;
+  const centerY = y + size / 2;
+  const radius = size * 0.4;
+
+  ctx.shadowBlur = 12;
+  ctx.shadowColor = '#ff00ff';
+
+  // Main circle
+  ctx.fillStyle = '#ff00ff';
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Inner circle
+  ctx.fillStyle = '#aa00aa';
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius * 0.7, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 2x text
+  ctx.fillStyle = '#fff';
+  ctx.font = '14px VT323';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('2x', centerX, centerY);
+
+  ctx.shadowBlur = 0;
+}
+
+// Update game stats on end screen
+function updateGameStats() {
+  document.getElementById('maxComboDisplay').textContent = maxCombo;
+  const accuracy = totalClicks > 0 ? Math.round((successfulClicks / totalClicks) * 100) : 0;
+  document.getElementById('accuracyDisplay').textContent = accuracy + '%';
+  document.getElementById('shieldsDisplay').textContent = shieldsCollected;
+  document.getElementById('diamondsDisplay').textContent = diamondsCollected;
+
+  // Check for achievements
+  checkAchievements();
+}
+
+// Check and display achievements
+function checkAchievements() {
+  const achievements = [];
+
+  if (score >= 1000 && score < 10000) {
+    achievements.push({ icon: '🎯', name: 'First Steps', reward: '+500 $HACK' });
+  }
+  if (score >= 10000 && score < 50000) {
+    achievements.push({ icon: '💎', name: 'Pro Gamer', reward: '+2,000 $HACK' });
+  }
+  if (score >= 50000) {
+    achievements.push({ icon: '👑', name: 'Legend', reward: '+10,000 $HACK + NFT' });
+  }
+  if (maxCombo >= 50) {
+    achievements.push({ icon: '🔥', name: 'Combo Master', reward: '+3,000 $HACK' });
+  }
+  if (diamondsCollected >= 5) {
+    achievements.push({ icon: '💰', name: 'Treasure Hunter', reward: '+5,000 $HACK' });
+  }
+
+  if (achievements.length > 0) {
+    const achievementsBlock = document.getElementById('achievementsUnlocked');
+    const achievementsList = document.getElementById('achievementsList');
+    achievementsList.innerHTML = '';
+
+    achievements.forEach(ach => {
+      const item = document.createElement('div');
+      item.style.cssText = 'display: flex; gap: 10px; padding: 8px; border: 1px solid rgba(247,201,72,0.2); background: rgba(247,201,72,0.02); align-items: center;';
+      item.innerHTML = `
+        <div style="font-size: 24px;">${ach.icon}</div>
+        <div style="flex: 1;">
+          <div style="font-size: 12px; color: #f7c948;">${ach.name}</div>
+          <div style="font-size: 9px; color: rgba(247,201,72,0.5);">${ach.reward}</div>
+        </div>
+      `;
+      achievementsList.appendChild(item);
+    });
+
+    achievementsBlock.style.display = 'block';
+  }
+}
+
+// Reset game stats for new game
+function resetGameStats() {
+  combo = 0;
+  maxCombo = 0;
+  multiplier = 1;
+  multiplierEndTime = 0;
+  totalClicks = 0;
+  successfulClicks = 0;
+  shieldsCollected = 0;
+  diamondsCollected = 0;
+  document.getElementById('comboDisplay').style.display = 'none';
+  document.getElementById('multiplierDisplay').style.display = 'none';
+}
+
+// Note: Integration with existing game loop would require:
+// 1. Adding diamond and multiplier object types to spawnObject()
+// 2. Adding drawDiamond() and drawMultiplier() calls in gameLoop()
+// 3. Updating click handler to track combo and stats
+// 4. Calling updateGameStats() in endGame()
+// 5. Calling resetGameStats() in startGame()
+// 6. Applying difficulty settings from selectedDifficulty
+// 7. Adding sound effects with Web Audio API or Howler.js
+
+console.log('Game V2 features loaded - UI mockup ready');
+console.log('Selected difficulty:', selectedDifficulty);
+
+</script>
+
+</body>
+</html>
