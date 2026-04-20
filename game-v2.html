@@ -98,11 +98,14 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   background: rgba(0,0,0,0.95);
-  padding: 20px;
+  padding: 20px 20px 40px 20px;
   z-index: 100;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .end-screen {
@@ -125,31 +128,31 @@ body {
 
 .title {
   font-family: 'VT323', monospace;
-  font-size: clamp(32px, 10vw, 72px);
+  font-size: clamp(28px, 8vw, 48px);
   color: #00ff41;
   text-shadow: 0 0 20px rgba(0,255,65,0.8);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   letter-spacing: 2px;
   text-align: center;
   width: 100%;
 }
 
 .subtitle {
-  font-size: clamp(12px, 3vw, 16px);
+  font-size: clamp(10px, 2.5vw, 12px);
   color: rgba(0,255,65,0.6);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   text-align: center;
   max-width: 90%;
-  line-height: 1.4;
-  padding: 0 16px;
+  line-height: 1.3;
+  padding: 0 12px;
   width: 100%;
 }
 
 .instructions {
   background: rgba(0,255,65,0.05);
   border: 1px solid rgba(0,255,65,0.3);
-  padding: 12px;
-  margin-bottom: 16px;
+  padding: 8px;
+  margin-bottom: 12px;
   max-width: 90%;
   width: 300px;
   margin-left: auto;
@@ -157,16 +160,16 @@ body {
 }
 
 .instructions div {
-  font-size: clamp(10px, 2.2vw, 13px);
-  margin-bottom: 6px;
+  font-size: clamp(9px, 2vw, 11px);
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .virus-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   background: radial-gradient(circle, #00ff41, #00aa2b);
   border-radius: 50%;
   box-shadow: 0 0 8px rgba(0,255,65,0.6);
@@ -174,8 +177,8 @@ body {
 }
 
 .bomb-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   background: radial-gradient(circle, #ff0040, #aa0020);
   border-radius: 50%;
   box-shadow: 0 0 8px rgba(255,0,64,0.6);
@@ -187,8 +190,8 @@ body {
   border: 2px solid #00ff41;
   color: #00ff41;
   font-family: 'Share Tech Mono', monospace;
-  font-size: clamp(12px, 3vw, 16px);
-  padding: 12px 32px;
+  font-size: clamp(11px, 2.5vw, 14px);
+  padding: 10px 24px;
   cursor: pointer;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -204,16 +207,16 @@ body {
 
 .final-score {
   font-family: 'VT323', monospace;
-  font-size: clamp(36px, 12vw, 64px);
+  font-size: clamp(32px, 10vw, 52px);
   color: #00ff41;
   text-shadow: 0 0 20px rgba(0,255,65,0.8);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .result-text {
-  font-size: clamp(13px, 3.5vw, 18px);
+  font-size: clamp(11px, 3vw, 14px);
   color: rgba(0,255,65,0.7);
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .difficulty-btn.active {
@@ -273,105 +276,104 @@ body {
     <div class="subtitle">Click viruses to earn $HACK. Avoid bombs or lose everything!</div>
 
     <div class="instructions">
-      <div><div class="virus-icon"></div><span>Click viruses = +100 tokens</span></div>
-      <div><div class="bomb-icon"></div><span>Click bomb = RESET TO 0</span></div>
-      <div><div style="width: 24px; height: 24px; background: radial-gradient(circle, #00cfff, #0099cc); border-radius: 50%; box-shadow: 0 0 10px rgba(0,207,255,0.6); flex-shrink: 0;"></div><span>Click shield = +1000 tokens</span></div>
-      <div><div style="width: 24px; height: 24px; background: radial-gradient(circle, #f7c948, #d4a028); border-radius: 50%; box-shadow: 0 0 10px rgba(247,201,72,0.6); flex-shrink: 0;"></div><span>Click diamond = +5000 tokens (rare!)</span></div>
-      <div><div style="width: 24px; height: 24px; background: radial-gradient(circle, #ff00ff, #aa00aa); border-radius: 50%; box-shadow: 0 0 10px rgba(255,0,255,0.6); flex-shrink: 0;"></div><span>Click multiplier = 2x score (15s)</span></div>
-      <div style="margin-top: 16px; border-top: 1px solid rgba(0,255,65,0.2); padding-top: 16px;">
-        <span>⏱ 3 minutes • Combo system • Achievements</span>
+      <div><div class="virus-icon"></div><span>Virus = +50</span></div>
+      <div><div class="bomb-icon"></div><span>Bomb = RESET</span></div>
+      <div><div style="width: 14px; height: 14px; background: radial-gradient(circle, #00cfff, #0099cc); border-radius: 50%; box-shadow: 0 0 8px rgba(0,207,255,0.6); flex-shrink: 0;"></div><span>Shield = +200</span></div>
+      <div><div style="width: 14px; height: 14px; background: radial-gradient(circle, #f7c948, #d4a028); border-radius: 50%; box-shadow: 0 0 8px rgba(247,201,72,0.6); flex-shrink: 0;"></div><span>Diamond = +500</span></div>
+      <div><div style="width: 14px; height: 14px; background: radial-gradient(circle, #ff00ff, #aa00aa); border-radius: 50%; box-shadow: 0 0 8px rgba(255,0,255,0.6); flex-shrink: 0;"></div><span>Multiplier = 2x (15s)</span></div>
+      <div style="margin-top: 8px; border-top: 1px solid rgba(0,255,65,0.2); padding-top: 8px; font-size: 9px;">
+        <span>⏱ 3min • Combo • Achievements</span>
       </div>
-      <div style="margin-top:8px;font-size:9px;color:rgba(0,255,65,0.3);text-align:center">v2.0.0 BETA</div>
     </div>
 
     <button class="start-btn" id="connectStartBtn" onclick="connectWalletToStart()">CONNECT WALLET</button>
     <button class="start-btn" id="startGameBtn" onclick="showGameSetup()" style="display: none;">START GAME</button>
 
-    <div id="walletInfo" style="display: none; margin-top: 16px; font-size: 13px; color: rgba(0,255,65,0.6); text-align: center;">
-      Connected: <span id="walletAddress"></span>
+    <div id="walletInfo" style="display: none; margin-top: 8px; font-size: 11px; color: rgba(0,255,65,0.6); text-align: center;">
+      <span id="walletAddress"></span>
     </div>
 
-    <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; justify-content: center; width: 100%;">
-      <button class="start-btn" onclick="showAchievements()" style="border-color: rgba(247,201,72,0.4); color: #f7c948;">ACHIEVEMENTS</button>
-      <a href="/leaderboard" class="start-btn" style="display: inline-block; text-decoration: none; border-color: rgba(0,207,255,0.4); color: #00cfff; text-align: center;">LEADERBOARD</a>
-      <a href="https://hacktokenink.xyz/" target="_blank" class="start-btn" style="display: inline-block; text-decoration: none; border-color: rgba(247,201,72,0.4); color: #f7c948; text-align: center;">AIRDROP</a>
+    <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 90%;">
+      <button class="start-btn" onclick="showAchievements()" style="border-color: rgba(247,201,72,0.4); color: #f7c948; font-size: 10px; padding: 8px 16px;">ACHIEVEMENTS</button>
+      <a href="/leaderboard" class="start-btn" style="display: inline-block; text-decoration: none; border-color: rgba(0,207,255,0.4); color: #00cfff; text-align: center; font-size: 10px; padding: 8px 16px;">LEADERBOARD</a>
+      <a href="https://hacktokenink.xyz/" target="_blank" class="start-btn" style="display: inline-block; text-decoration: none; border-color: rgba(247,201,72,0.4); color: #f7c948; text-align: center; font-size: 10px; padding: 8px 16px;">AIRDROP</a>
     </div>
   </div>
 
   <!-- Game Setup Screen (Difficulty, Quests, Power-ups) -->
   <div class="start-screen" id="gameSetupScreen" style="display: none;">
     <div class="title">GAME SETUP</div>
-    <div class="subtitle">Configure your game before starting</div>
+    <div class="subtitle">Configure your game</div>
 
     <!-- Difficulty Selection -->
-    <div style="margin-bottom: 20px; max-width: 90%; width: 400px;">
-      <div style="font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-align: center;">SELECT DIFFICULTY</div>
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-        <button class="start-btn difficulty-btn" data-difficulty="easy" style="padding: 10px; font-size: 14px; border-color: rgba(0,255,65,0.3);">
-          <div style="font-family: 'VT323', monospace; font-size: 18px;">EASY</div>
-          <div style="font-size: 9px; color: rgba(0,255,65,0.4);">50% rewards</div>
+    <div style="margin-bottom: 12px; max-width: 90%; width: 350px;">
+      <div style="font-size: 9px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; text-align: center;">SELECT DIFFICULTY</div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+        <button class="start-btn difficulty-btn" data-difficulty="easy" style="padding: 8px; font-size: 12px; border-color: rgba(0,255,65,0.3);">
+          <div style="font-family: 'VT323', monospace; font-size: 16px;">EASY</div>
+          <div style="font-size: 8px; color: rgba(0,255,65,0.4);">50% rewards</div>
         </button>
-        <button class="start-btn difficulty-btn active" data-difficulty="normal" style="padding: 10px; font-size: 14px; border-color: rgba(0,207,255,0.3); color: #00cfff;">
-          <div style="font-family: 'VT323', monospace; font-size: 18px;">NORMAL</div>
-          <div style="font-size: 9px; color: rgba(0,207,255,0.4);">100% rewards</div>
+        <button class="start-btn difficulty-btn active" data-difficulty="normal" style="padding: 8px; font-size: 12px; border-color: rgba(0,207,255,0.3); color: #00cfff;">
+          <div style="font-family: 'VT323', monospace; font-size: 16px;">NORMAL</div>
+          <div style="font-size: 8px; color: rgba(0,207,255,0.4);">100% rewards</div>
         </button>
-        <button class="start-btn difficulty-btn" data-difficulty="hard" style="padding: 10px; font-size: 14px; border-color: rgba(247,201,72,0.3); color: #f7c948;">
-          <div style="font-family: 'VT323', monospace; font-size: 18px;">HARD</div>
-          <div style="font-size: 9px; color: rgba(247,201,72,0.4);">150% rewards</div>
+        <button class="start-btn difficulty-btn" data-difficulty="hard" style="padding: 8px; font-size: 12px; border-color: rgba(247,201,72,0.3); color: #f7c948;">
+          <div style="font-family: 'VT323', monospace; font-size: 16px;">HARD</div>
+          <div style="font-size: 8px; color: rgba(247,201,72,0.4);">150% rewards</div>
         </button>
-        <button class="start-btn difficulty-btn" data-difficulty="insane" style="padding: 10px; font-size: 14px; border-color: rgba(255,0,64,0.3); color: #ff0040;">
-          <div style="font-family: 'VT323', monospace; font-size: 18px;">INSANE</div>
-          <div style="font-size: 9px; color: rgba(255,0,64,0.4);">200% rewards</div>
+        <button class="start-btn difficulty-btn" data-difficulty="insane" style="padding: 8px; font-size: 12px; border-color: rgba(255,0,64,0.3); color: #ff0040;">
+          <div style="font-family: 'VT323', monospace; font-size: 16px;">INSANE</div>
+          <div style="font-size: 8px; color: rgba(255,0,64,0.4);">200% rewards</div>
         </button>
       </div>
     </div>
 
     <!-- Daily Quests -->
-    <div style="margin-bottom: 20px; max-width: 90%; width: 400px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); padding: 12px;">
-      <div style="font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+    <div style="margin-bottom: 12px; max-width: 90%; width: 350px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); padding: 8px;">
+      <div style="font-size: 9px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
         <span>DAILY QUESTS</span>
-        <span style="font-size: 9px; color: rgba(0,255,65,0.3);">Resets in 11h 49m</span>
+        <span style="font-size: 8px; color: rgba(0,255,65,0.3);">Resets in 11h</span>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 6px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.01);">
-          <span style="font-size: 11px; color: rgba(0,255,65,0.6);">Score 5000+ points</span>
-          <span style="font-size: 11px; color: #00ff41;">+500 $HACK</span>
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.01);">
+          <span style="font-size: 9px; color: rgba(0,255,65,0.6);">Score 5000+</span>
+          <span style="font-size: 9px; color: #00ff41;">+500</span>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.01);">
-          <span style="font-size: 11px; color: rgba(0,255,65,0.6);">Play 3 games</span>
-          <span style="font-size: 11px; color: #00ff41;">+300 $HACK</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.01);">
+          <span style="font-size: 9px; color: rgba(0,255,65,0.6);">Play 3 games</span>
+          <span style="font-size: 9px; color: #00ff41;">+300</span>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.01);">
-          <span style="font-size: 11px; color: rgba(0,255,65,0.6);">Collect 10 shields</span>
-          <span style="font-size: 11px; color: #00ff41;">+1000 $HACK</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px; border: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.01);">
+          <span style="font-size: 9px; color: rgba(0,255,65,0.6);">Collect 10 shields</span>
+          <span style="font-size: 9px; color: #00ff41;">+1000</span>
         </div>
       </div>
     </div>
 
     <!-- Power-ups Shop -->
-    <div style="margin-bottom: 20px; max-width: 90%; width: 400px;">
-      <div style="font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-align: center;">POWER-UPS (Buy before game)</div>
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-        <button class="start-btn powerup-btn" data-powerup="shield" style="padding: 8px; font-size: 11px; border-color: rgba(0,207,255,0.3); color: #00cfff;">
-          <div style="font-size: 20px; margin-bottom: 4px;">🛡️</div>
-          <div style="font-size: 9px;">Shield</div>
-          <div style="font-size: 9px; color: rgba(0,207,255,0.4);">1000 $HACK</div>
+    <div style="margin-bottom: 12px; max-width: 90%; width: 350px;">
+      <div style="font-size: 9px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; text-align: center;">POWER-UPS</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+        <button class="start-btn powerup-btn" data-powerup="shield" style="padding: 6px; font-size: 10px; border-color: rgba(0,207,255,0.3); color: #00cfff;">
+          <div style="font-size: 18px; margin-bottom: 2px;">🛡️</div>
+          <div style="font-size: 8px;">Shield</div>
+          <div style="font-size: 8px; color: rgba(0,207,255,0.4);">1000</div>
         </button>
-        <button class="start-btn powerup-btn" data-powerup="slowtime" style="padding: 8px; font-size: 11px; border-color: rgba(247,201,72,0.3); color: #f7c948;">
-          <div style="font-size: 20px; margin-bottom: 4px;">⏱️</div>
-          <div style="font-size: 9px;">Slow Time</div>
-          <div style="font-size: 9px; color: rgba(247,201,72,0.4);">2000 $HACK</div>
+        <button class="start-btn powerup-btn" data-powerup="slowtime" style="padding: 6px; font-size: 10px; border-color: rgba(247,201,72,0.3); color: #f7c948;">
+          <div style="font-size: 18px; margin-bottom: 2px;">⏱️</div>
+          <div style="font-size: 8px;">Slow Time</div>
+          <div style="font-size: 8px; color: rgba(247,201,72,0.4);">2000</div>
         </button>
-        <button class="start-btn powerup-btn" data-powerup="doublescore" style="padding: 8px; font-size: 11px; border-color: rgba(196,122,255,0.3); color: #c47aff;">
-          <div style="font-size: 20px; margin-bottom: 4px;">✨</div>
-          <div style="font-size: 9px;">2x Score</div>
-          <div style="font-size: 9px; color: rgba(196,122,255,0.4);">3000 $HACK</div>
+        <button class="start-btn powerup-btn" data-powerup="doublescore" style="padding: 6px; font-size: 10px; border-color: rgba(196,122,255,0.3); color: #c47aff;">
+          <div style="font-size: 18px; margin-bottom: 2px;">✨</div>
+          <div style="font-size: 8px;">2x Score</div>
+          <div style="font-size: 8px; color: rgba(196,122,255,0.4);">3000</div>
         </button>
       </div>
     </div>
 
-    <button class="start-btn" onclick="startGameWithSettings()" style="font-size: 18px; padding: 14px 32px;">BEGIN GAME</button>
-    <button class="start-btn" onclick="backToMenu()" style="margin-top: 12px; border-color: rgba(0,255,65,0.3); color: rgba(0,255,65,0.5);">BACK</button>
+    <button class="start-btn" onclick="startGameWithSettings()" style="font-size: 14px; padding: 10px 24px;">BEGIN GAME</button>
+    <button class="start-btn" onclick="backToMenu()" style="margin-top: 8px; border-color: rgba(0,255,65,0.3); color: rgba(0,255,65,0.5); font-size: 11px; padding: 8px 20px;">BACK</button>
   </div>
 
   <div class="end-screen" id="endScreen" style="display: none;">
@@ -380,20 +382,20 @@ body {
     <div class="result-text" id="resultText"></div>
 
     <!-- Combo & Stats -->
-    <div style="margin-bottom: 20px; max-width: 90%; width: 400px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); padding: 12px;">
-      <div style="font-size: 10px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; text-align: center;">GAME STATS</div>
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-        <div style="text-align: center; padding: 8px; border: 1px solid rgba(0,255,65,0.1);">
-          <div style="font-size: 9px; color: rgba(0,255,65,0.4);">Max Combo</div>
-          <div style="font-family: 'VT323', monospace; font-size: 24px; color: #f7c948;" id="maxComboDisplay">0</div>
+    <div style="margin-bottom: 12px; max-width: 90%; width: 350px; border: 1px solid rgba(0,255,65,0.2); background: rgba(0,255,65,0.02); padding: 8px;">
+      <div style="font-size: 9px; color: rgba(0,255,65,0.5); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; text-align: center;">GAME STATS</div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+        <div style="text-align: center; padding: 6px; border: 1px solid rgba(0,255,65,0.1);">
+          <div style="font-size: 8px; color: rgba(0,255,65,0.4);">Max Combo</div>
+          <div style="font-family: 'VT323', monospace; font-size: 20px; color: #f7c948;" id="maxComboDisplay">0</div>
         </div>
-        <div style="text-align: center; padding: 8px; border: 1px solid rgba(0,255,65,0.1);">
-          <div style="font-size: 9px; color: rgba(0,255,65,0.4);">Accuracy</div>
-          <div style="font-family: 'VT323', monospace; font-size: 24px; color: #00cfff;" id="accuracyDisplay">0%</div>
+        <div style="text-align: center; padding: 6px; border: 1px solid rgba(0,255,65,0.1);">
+          <div style="font-size: 8px; color: rgba(0,255,65,0.4);">Accuracy</div>
+          <div style="font-family: 'VT323', monospace; font-size: 20px; color: #00cfff;" id="accuracyDisplay">0%</div>
         </div>
-        <div style="text-align: center; padding: 8px; border: 1px solid rgba(0,255,65,0.1);">
-          <div style="font-size: 9px; color: rgba(0,255,65,0.4);">Shields</div>
-          <div style="font-family: 'VT323', monospace; font-size: 24px; color: #00cfff;" id="shieldsDisplay">0</div>
+        <div style="text-align: center; padding: 6px; border: 1px solid rgba(0,255,65,0.1);">
+          <div style="font-size: 8px; color: rgba(0,255,65,0.4);">Shields</div>
+          <div style="font-family: 'VT323', monospace; font-size: 20px; color: #00cfff;" id="shieldsDisplay">0</div>
         </div>
         <div style="text-align: center; padding: 8px; border: 1px solid rgba(0,255,65,0.1);">
           <div style="font-size: 9px; color: rgba(0,255,65,0.4);">Diamonds</div>
