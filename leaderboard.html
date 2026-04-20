@@ -244,7 +244,7 @@ body {
 <script>
 const GAME_CONTRACT_ADDRESS = '0xA52f5416B79f2bA3e329197c4D1BdE85267deE41';
 const RPC_URL = 'https://rpc-gel.inkonchain.com';
-const BLOCKS_TO_SCAN = 100000; // Scan last ~100k blocks
+const BLOCKS_TO_SCAN = 302400; // Scan last week (~7 days * 24h * 60m * 30 blocks/min)
 
 const CONTRACT_ABI = [
   "event GameRewardClaimed(address indexed player, uint256 score, uint256 timestamp)"
@@ -275,11 +275,19 @@ async function loadLeaderboard() {
       return;
     }
 
-    // Process events: track best score per wallet
+    // Process events: track best score per wallet (only last 7 days)
     const players = {};
+    const oneWeekAgo = Math.floor(Date.now() / 1000) - (7 * 24 * 60 * 60);
 
     console.log('Processing events...');
     events.forEach(event => {
+      const timestamp = Number(event.args.timestamp);
+
+      // Skip events older than 7 days
+      if (timestamp < oneWeekAgo) {
+        return;
+      }
+
       const wallet = event.args.player.toLowerCase();
       const score = Number(event.args.score);
       console.log(`Event: ${wallet} - ${score} tokens`);
