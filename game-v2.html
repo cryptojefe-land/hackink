@@ -95,15 +95,17 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   background: rgba(0,0,0,0.95);
   z-index: 200;
   overflow-y: auto;
-  padding: 20px;
+  overflow-x: hidden;
+  padding: 20px 20px 40px 20px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .title {
@@ -1073,7 +1075,7 @@ canvas.addEventListener('click', (e) => {
       } else if (obj.type === 'shield') {
         shieldsCollected++;
         updateCombo(true);
-        const points = Math.round(1000 * multiplier);
+        const points = Math.round(200 * multiplier);
         score += points;
         updateScore();
         effects.push({
@@ -1090,7 +1092,7 @@ canvas.addEventListener('click', (e) => {
       } else if (obj.type === 'diamond') {
         diamondsCollected++;
         updateCombo(true);
-        const points = Math.round(5000 * multiplier);
+        const points = Math.round(500 * multiplier);
         score += points;
         updateScore();
         effects.push({
@@ -1123,7 +1125,7 @@ canvas.addEventListener('click', (e) => {
       } else {
         // Regular virus
         updateCombo(true);
-        const points = Math.round(100 * multiplier);
+        const points = Math.round(50 * multiplier);
         score += points;
         updateScore();
         effects.push({
@@ -1687,20 +1689,20 @@ function updateGameStats() {
 function checkAchievements() {
   const achievements = [];
 
-  if (score >= 1000 && score < 10000) {
-    achievements.push({ icon: '🎯', name: 'First Steps', reward: '+500 $HACK' });
+  if (score >= 1000 && score < 5000) {
+    achievements.push({ icon: '🎯', name: 'First Steps', reward: '+100 $HACK' });
   }
-  if (score >= 10000 && score < 50000) {
-    achievements.push({ icon: '💎', name: 'Pro Gamer', reward: '+2,000 $HACK' });
+  if (score >= 5000 && score < 15000) {
+    achievements.push({ icon: '💎', name: 'Pro Gamer', reward: '+300 $HACK' });
   }
-  if (score >= 50000) {
-    achievements.push({ icon: '👑', name: 'Legend', reward: '+10,000 $HACK + NFT' });
+  if (score >= 15000) {
+    achievements.push({ icon: '👑', name: 'Legend', reward: '+1,000 $HACK + NFT' });
   }
   if (maxCombo >= 50) {
-    achievements.push({ icon: '🔥', name: 'Combo Master', reward: '+3,000 $HACK' });
+    achievements.push({ icon: '🔥', name: 'Combo Master', reward: '+500 $HACK' });
   }
   if (diamondsCollected >= 5) {
-    achievements.push({ icon: '💰', name: 'Treasure Hunter', reward: '+5,000 $HACK' });
+    achievements.push({ icon: '💰', name: 'Treasure Hunter', reward: '+400 $HACK' });
   }
 
   if (achievements.length > 0) {
@@ -1755,3 +1757,4 @@ console.log('Selected difficulty:', selectedDifficulty);
 
 </body>
 </html>
+
