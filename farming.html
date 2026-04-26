@@ -390,6 +390,11 @@ connectBtn.addEventListener('click', async () => {
   }
 });
 
+// Get storage key for current wallet
+function getStorageKey() {
+  return `hackTasksCompleted_${userAddress}`;
+}
+
 // Check OG NFT tasks
 async function checkOGTasks() {
   if (!nftContract || !userAddress) return;
@@ -401,7 +406,7 @@ async function checkOGTasks() {
     log('info', `NFT Balance: ${nftCount}`);
 
     // Remove completed OG tasks if NFT balance doesn't meet requirements
-    const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+    const completed = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
     let updated = false;
 
     if (nftCount < 1 && completed.includes('og-1')) {
@@ -418,7 +423,7 @@ async function checkOGTasks() {
     }
 
     if (updated) {
-      localStorage.setItem('hackTasksCompleted', JSON.stringify(completed));
+      localStorage.setItem(getStorageKey(), JSON.stringify(completed));
     }
 
     // Reset all OG tasks to PENDING first
@@ -576,7 +581,7 @@ async function executeCheckin() {
 
 // Mark task as eligible for claim
 function markTaskEligible(taskId) {
-  const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+  const completed = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
   if (completed.includes(taskId)) return;
 
   const taskEl = document.querySelector(`[data-task="${taskId}"]`);
@@ -598,14 +603,14 @@ function markTaskEligible(taskId) {
 
 // Claim task reward
 function claimTask(taskId) {
-  const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+  const completed = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
   if (completed.includes(taskId)) return;
 
   const taskEl = document.querySelector(`[data-task="${taskId}"]`);
   if (!taskEl) return;
 
   completed.push(taskId);
-  localStorage.setItem('hackTasksCompleted', JSON.stringify(completed));
+  localStorage.setItem(getStorageKey(), JSON.stringify(completed));
 
   taskEl.classList.remove('eligible');
   taskEl.classList.add('completed');
@@ -656,7 +661,7 @@ function log(type, msg) {
 
 // Load task progress from localStorage
 function loadTaskProgress() {
-  const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+  const completed = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
   let totalEarned = 0;
 
   completed.forEach(taskId => {
