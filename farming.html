@@ -135,6 +135,19 @@
   <!-- DAILY TASKS -->
   <div class="sec-header"><div class="sec-tag">// DAILY TASKS</div></div>
   <div class="task-list" id="dailyTasks">
+    <div class="task-item" data-task="daily-0">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Share Referral Link</div>
+        <div class="task-desc">Share your referral link and earn 25% from friends</div>
+        <button class="task-btn" id="shareRefBtn">SHARE</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+1,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
     <div class="task-item" data-task="daily-1">
       <div class="task-status">PENDING</div>
       <div class="task-content">
@@ -209,7 +222,7 @@
       <div class="task-content">
         <div class="task-title">Join Telegram</div>
         <div class="task-desc">Join the official $HACK Telegram group</div>
-        <button class="task-btn" onclick="setTimeout(() => markTaskEligible('social-3'), 2000)">JOIN TG</button>
+        <button class="task-btn" onclick="window.open('https://t.me/HACKtokenINK','_blank'); setTimeout(() => markTaskEligible('social-3'), 2000)">JOIN TG</button>
       </div>
       <div class="task-reward">
         <div class="task-reward-val">+1,000</div>
@@ -324,12 +337,45 @@
     </div>
   </div>
 
+  <!-- REFERRAL SECTION -->
+  <div class="card" style="margin-top: 20px;">
+    <div class="sec-header"><div class="sec-tag">// REFERRAL PROGRAM</div></div>
+
+    <div style="color: rgba(0,255,65,0.5); font-size: 11px; line-height: 1.8; margin-bottom: 16px;">
+      <div>&gt; Earn 25% of all rewards your friends claim</div>
+      <div>&gt; Share your link and grow your passive income</div>
+    </div>
+
+    <div style="background: rgba(0,255,65,0.02); border: 1px solid rgba(0,255,65,0.15); padding: 12px; margin-bottom: 16px;">
+      <div style="font-size: 9px; color: rgba(0,255,65,0.4); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;">YOUR REFERRAL LINK</div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <input type="text" id="refLinkInput" readonly style="flex: 1; background: rgba(0,255,65,0.05); border: 1px solid rgba(0,255,65,0.2); color: #00ff41; font-family: 'Share Tech Mono', monospace; font-size: 11px; padding: 8px; outline: none;" value="Connect wallet first">
+        <button id="copyRefBtn" style="background: transparent; border: 1px solid rgba(0,255,65,0.3); color: rgba(0,255,65,0.6); font-family: 'Share Tech Mono', monospace; font-size: 10px; padding: 8px 16px; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap;">COPY</button>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; border: 1px solid rgba(0,255,65,0.15);">
+      <div style="padding: 12px; border-right: 1px solid rgba(0,255,65,0.15); background: rgba(0,255,65,0.02);">
+        <div style="font-size: 9px; color: rgba(0,255,65,0.4); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;">REFERRALS</div>
+        <div style="font-family: 'VT323', monospace; font-size: 28px; color: #00ff41; text-shadow: 0 0 10px rgba(0,255,65,0.5);" id="refCount">0</div>
+      </div>
+      <div style="padding: 12px; background: rgba(0,255,65,0.02);">
+        <div style="font-size: 9px; color: rgba(0,255,65,0.4); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;">EARNED</div>
+        <div style="font-family: 'VT323', monospace; font-size: 28px; color: #f7c948; text-shadow: 0 0 10px rgba(247,201,72,0.5);" id="refEarned">0</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
 // Wallet connection
-let provider, signer, userAddress, nftContract, hackContract, stakingContract, checkinContract, airdropContract;
+let provider, signer, userAddress, nftContract, hackContract, stakingContract, checkinContract, airdropContract, farmingContract;
 const connectBtn = document.getElementById('connectBtn');
+
+// Get referrer from URL
+const urlParams = new URLSearchParams(window.location.search);
+const refAddress = urlParams.get('ref') || '';
 
 // NFT Contract config
 const NFT_ADDRESS = "0x86803d50b721E5616Ed7742c55CaC65D83B10c22";
@@ -337,6 +383,7 @@ const HACK_ADDRESS = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const STAKING_ADDRESS = "0x48aadA935e961849C4c96dF2bC70640358796018";
 const CHECKIN_ADDRESS = "0xd3Cb09767006Ffca00906f7FB0fbB196A6c52dCC";
 const AIRDROP_ADDRESS = "0x1647dA5c081b3804342956086cece17A352c5f28";
+const FARMING_ADDRESS = "0xB22B64bCd2079903dC54B8d1EA0c31D436B62Ed6";
 const NFT_ABI = [
   "function balanceOf(address) external view returns (uint256)"
 ];
@@ -353,6 +400,14 @@ const CHECKIN_ABI = [
 ];
 const AIRDROP_ABI = [
   "function claimed(address) external view returns (bool)"
+];
+const FARMING_ABI = [
+  "function claimTask(string calldata taskId) external payable",
+  "function isTaskClaimed(address user, string calldata taskId) external view returns (bool)",
+  "function claimFee() external view returns (uint256)",
+  "function setReferrer(address referrer) external",
+  "function referrers(address user) external view returns (address)",
+  "function getReferralStats(address user) external view returns (uint256 count, uint256 earned)"
 ];
 
 connectBtn.addEventListener('click', async () => {
@@ -372,6 +427,7 @@ connectBtn.addEventListener('click', async () => {
     stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
     checkinContract = new ethers.Contract(CHECKIN_ADDRESS, CHECKIN_ABI, signer);
     airdropContract = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, provider);
+    farmingContract = new ethers.Contract(FARMING_ADDRESS, FARMING_ABI, signer);
 
     connectBtn.textContent = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
     connectBtn.classList.add('connected');
@@ -385,13 +441,18 @@ connectBtn.addEventListener('click', async () => {
 
     // Check balances first, then load progress
     resetDailyTasks();
+    await checkReferrer();
+    await loadReferralStats();
     await checkAirdrop();
     await checkOGTasks();
     await checkHackBalance();
     await checkStaking();
     await checkCheckin();
 
-    loadTaskProgress();
+    await loadTaskProgress();
+
+    // Setup referral link
+    setupReferralLink();
   } catch (err) {
     log('err', 'Connection failed: ' + err.message);
   }
@@ -400,6 +461,69 @@ connectBtn.addEventListener('click', async () => {
 // Get storage key for current wallet
 function getStorageKey() {
   return `hackTasksCompleted_${userAddress}`;
+}
+
+// Check and set referrer
+async function checkReferrer() {
+  if (!farmingContract || !userAddress) return;
+
+  try {
+    const currentReferrer = await farmingContract.referrers(userAddress);
+
+    // If no referrer set and we have one in URL
+    if (currentReferrer === '0x0000000000000000000000000000000000000000' && refAddress && /^0x[a-fA-F0-9]{40}$/.test(refAddress)) {
+      log('info', 'Setting referrer...');
+      const tx = await farmingContract.setReferrer(refAddress);
+      await tx.wait();
+      log('ok', 'Referrer set successfully!');
+    } else if (currentReferrer !== '0x0000000000000000000000000000000000000000') {
+      log('info', `Referrer: ${currentReferrer.slice(0,6)}...${currentReferrer.slice(-4)}`);
+    }
+  } catch (err) {
+    log('err', 'Failed to set referrer: ' + err.message);
+  }
+}
+
+// Load referral stats
+async function loadReferralStats() {
+  if (!farmingContract || !userAddress) return;
+
+  try {
+    const stats = await farmingContract.getReferralStats(userAddress);
+    const count = Number(stats.count);
+    const earned = Number(ethers.formatEther(stats.earned));
+
+    document.getElementById('refCount').textContent = count;
+    document.getElementById('refEarned').textContent = earned.toLocaleString(undefined, {maximumFractionDigits: 0});
+  } catch (err) {
+    console.error('Failed to load referral stats:', err);
+  }
+}
+
+// Setup referral link
+function setupReferralLink() {
+  if (!userAddress) return;
+
+  const refLink = `${window.location.origin}/farming?ref=${userAddress}`;
+  document.getElementById('refLinkInput').value = refLink;
+
+  document.getElementById('copyRefBtn').onclick = function() {
+    navigator.clipboard.writeText(refLink);
+    this.textContent = 'COPIED!';
+    setTimeout(() => {
+      this.textContent = 'COPY';
+    }, 2000);
+  };
+
+  // Setup share ref button
+  const shareRefBtn = document.getElementById('shareRefBtn');
+  if (shareRefBtn) {
+    shareRefBtn.onclick = function() {
+      const tweet = `Join me on $HACK Farming and earn rewards! 🖥️\n\n✅ Daily tasks\n✅ Social rewards\n✅ On-chain verification\n\nStart farming here 👉 ${refLink}\n\n#HACK #INK #Farming`;
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
+      setTimeout(() => markTaskEligible('daily-0'), 2000);
+    };
+  }
 }
 
 // Get today's date string
@@ -691,35 +815,69 @@ function markTaskEligible(taskId) {
 }
 
 // Claim task reward
-function claimTask(taskId) {
-  const completed = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
-  if (completed.includes(taskId)) return;
+async function claimTask(taskId) {
+  if (!farmingContract || !userAddress) return;
 
   const taskEl = document.querySelector(`[data-task="${taskId}"]`);
   if (!taskEl) return;
 
-  completed.push(taskId);
-  localStorage.setItem(getStorageKey(), JSON.stringify(completed));
-
-  // Mark completion date only for daily task (Share on Twitter)
-  if (taskId === 'social-4') {
-    markCompletedToday(taskId);
-  }
-
-  taskEl.classList.remove('eligible');
-  taskEl.classList.add('completed');
-  taskEl.querySelector('.task-status').textContent = 'DONE';
   const btn = taskEl.querySelector('.task-btn');
-  btn.textContent = '✓ CLAIMED';
-  btn.classList.remove('claim-ready');
-  btn.classList.add('done');
+  const originalText = btn.textContent;
   btn.disabled = true;
-  btn.onclick = null;
+  btn.textContent = 'CLAIMING...';
 
-  const reward = parseInt(taskEl.querySelector('.task-reward-val').textContent.replace(/[^0-9]/g, ''));
-  log('ok', `Task claimed! +${reward.toLocaleString()} $HACK`);
+  try {
+    // Check if already claimed on-chain
+    const alreadyClaimed = await farmingContract.isTaskClaimed(userAddress, taskId);
+    if (alreadyClaimed) {
+      log('err', 'Task already claimed on-chain');
+      btn.disabled = false;
+      btn.textContent = originalText;
+      return;
+    }
 
-  loadTaskProgress();
+    log('info', `Claiming task ${taskId}...`);
+
+    // Call contract with 0.00002 ETH fee
+    const tx = await farmingContract.claimTask(taskId, {
+      value: BigInt("20000000000000") // 0.00002 ETH
+    });
+
+    log('info', `TX: ${tx.hash.slice(0,20)}...`);
+    await tx.wait();
+    log('ok', 'Task claimed on-chain!');
+
+    // Save to localStorage
+    const completed = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+    if (!completed.includes(taskId)) {
+      completed.push(taskId);
+      localStorage.setItem(getStorageKey(), JSON.stringify(completed));
+    }
+
+    // Mark completion date only for daily task (Share on Twitter)
+    if (taskId === 'social-4') {
+      markCompletedToday(taskId);
+    }
+
+    taskEl.classList.remove('eligible');
+    taskEl.classList.add('completed');
+    taskEl.querySelector('.task-status').textContent = 'DONE';
+    btn.textContent = '✓ CLAIMED';
+    btn.classList.remove('claim-ready');
+    btn.classList.add('done');
+    btn.disabled = true;
+    btn.onclick = null;
+
+    const reward = parseInt(taskEl.querySelector('.task-reward-val').textContent.replace(/[^0-9]/g, ''));
+    log('ok', `Task claimed! +${reward.toLocaleString()} $HACK`);
+
+    loadTaskProgress();
+  } catch (err) {
+    const msg = err.reason || err.message || 'failed';
+    log('err', 'Claim failed: ' + msg);
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
 }
 
 // Auto-complete task
@@ -754,9 +912,28 @@ function log(type, msg) {
 }
 
 // Load task progress from localStorage
-function loadTaskProgress() {
+async function loadTaskProgress() {
   const completed = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
   let totalEarned = 0;
+
+  // Check on-chain claims if contract is available
+  if (farmingContract && userAddress) {
+    for (const taskId of completed) {
+      try {
+        const claimed = await farmingContract.isTaskClaimed(userAddress, taskId);
+        if (!claimed) {
+          // Remove from localStorage if not claimed on-chain
+          const index = completed.indexOf(taskId);
+          if (index > -1) {
+            completed.splice(index, 1);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to check task:', taskId, err);
+      }
+    }
+    localStorage.setItem(getStorageKey(), JSON.stringify(completed));
+  }
 
   completed.forEach(taskId => {
     const taskEl = document.querySelector(`[data-task="${taskId}"]`);
