@@ -378,11 +378,13 @@ connectBtn.addEventListener('click', async () => {
       btn.classList.add('visible');
     });
 
-    loadTaskProgress();
+    // Check balances first, then load progress
     await checkOGTasks();
     await checkHackBalance();
     await checkStaking();
     await checkCheckin();
+
+    loadTaskProgress();
   } catch (err) {
     log('err', 'Connection failed: ' + err.message);
   }
@@ -444,7 +446,7 @@ async function checkOGTasks() {
       return;
     }
 
-    // Mark tasks as eligible for claim
+    // Mark tasks as eligible for claim ONLY if balance meets requirement
     if (nftCount >= 1) {
       markTaskEligible('og-1');
     }
