@@ -168,15 +168,15 @@
   <!-- DAILY TASKS -->
   <div class="sec-header"><div class="sec-tag">// DAILY TASKS</div></div>
   <div class="task-list" id="dailyTasks">
-    <div class="task-item" data-task="daily-0">
+    <div class="task-item" data-task="daily-2">
       <div class="task-status">PENDING</div>
       <div class="task-content">
-        <div class="task-title">Share Referral Link</div>
-        <div class="task-desc">Share your referral link and earn 25% from friends</div>
-        <button class="task-btn" id="shareRefBtn">SHARE</button>
+        <div class="task-title">Daily Check-in</div>
+        <div class="task-desc">Claim your daily check-in reward</div>
+        <button class="task-btn" id="checkinTaskBtn">CLAIM AIRDROP FIRST</button>
       </div>
       <div class="task-reward">
-        <div class="task-reward-val">+1,000</div>
+        <div class="task-reward-val">VARIES</div>
         <div class="task-reward-label">$HACK</div>
       </div>
     </div>
@@ -194,19 +194,6 @@
       </div>
     </div>
 
-    <div class="task-item" data-task="daily-2">
-      <div class="task-status">PENDING</div>
-      <div class="task-content">
-        <div class="task-title">Daily Check-in</div>
-        <div class="task-desc">Claim your daily check-in reward</div>
-        <button class="task-btn" id="checkinTaskBtn">CLAIM AIRDROP FIRST</button>
-      </div>
-      <div class="task-reward">
-        <div class="task-reward-val">AIRDROP</div>
-        <div class="task-reward-label">REQUIRED</div>
-      </div>
-    </div>
-
     <div class="task-item" data-task="daily-3">
       <div class="task-status">PENDING</div>
       <div class="task-content">
@@ -216,6 +203,19 @@
       </div>
       <div class="task-reward">
         <div class="task-reward-val">+3,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="daily-0">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Share Referral Link</div>
+        <div class="task-desc">Share your referral link and earn 25% from friends</div>
+        <button class="task-btn" id="shareRefBtn">SHARE</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+1,000</div>
         <div class="task-reward-label">$HACK</div>
       </div>
     </div>
@@ -1013,8 +1013,11 @@ async function loadTaskProgress() {
       btn.classList.add('done');
       btn.disabled = true;
 
-      const reward = parseInt(taskEl.querySelector('.task-reward-val').textContent.replace(/[^0-9]/g, ''));
-      totalEarned += reward;
+      const rewardVal = taskEl.querySelector('.task-reward-val').textContent;
+      const reward = parseInt(rewardVal.replace(/[^0-9]/g, ''));
+      if (!isNaN(reward)) {
+        totalEarned += reward;
+      }
     }
   });
 
