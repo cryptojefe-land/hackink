@@ -790,7 +790,30 @@ async function checkCheckin() {
     }
 
     if (totalCheckins > 0) {
-      markTaskEligible('daily-2');
+      // Check if already claimed on-chain
+      const alreadyClaimed = await farmingContract.isTaskClaimed(userAddress, 'daily-2');
+      if (alreadyClaimed) {
+        // Mark as completed in localStorage and UI
+        const completed = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+        if (!completed.includes('daily-2')) {
+          completed.push('daily-2');
+          localStorage.setItem(getStorageKey(), JSON.stringify(completed));
+        }
+        const taskEl = document.querySelector('[data-task="daily-2"]');
+        if (taskEl) {
+          taskEl.classList.remove('eligible');
+          taskEl.classList.add('completed');
+          taskEl.querySelector('.task-status').textContent = 'DONE';
+          checkinBtn.textContent = '✓ CLAIMED';
+          checkinBtn.classList.remove('claim-ready');
+          checkinBtn.classList.add('done');
+          checkinBtn.disabled = true;
+          checkinBtn.onclick = null;
+        }
+        loadTaskProgress();
+      } else {
+        markTaskEligible('daily-2');
+      }
     }
   } catch (err) {
     log('err', 'Failed to check checkin: ' + err.message);
