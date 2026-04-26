@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$HACK — Farming Tasks</title>
+<meta name="description" content="Complete tasks and earn $HACK tokens. Daily missions, social tasks, and on-chain activities on INK Chain.">
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Rajdhani:wght@600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#000;color:#00ff41;font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden}
+  .scanlines{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:100}
+  .grid-bg{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,255,65,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,65,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:0 20px 80px}
+
+  /* NAV */
+  nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid rgba(0,255,65,0.2);margin-bottom:40px;gap:12px;flex-wrap:wrap}
+  .nav-logo{font-family:'VT323',monospace;font-size:26px;color:#00ff41;text-decoration:none;text-shadow:0 0 15px rgba(0,255,65,0.5);letter-spacing:3px}
+  .nav-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .nav-link{font-size:10px;color:rgba(0,255,65,0.5);letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:color .2s}
+  .nav-link:hover{color:#00ff41}
+  .dot{width:6px;height:6px;border-radius:50%;background:#00ff41;animation:blink 1.2s infinite;box-shadow:0 0 6px rgba(0,255,65,0.8)}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .connect-btn{background:transparent;border:1px solid rgba(0,255,65,0.4);color:rgba(0,255,65,0.7);font-family:'Share Tech Mono',monospace;font-size:10px;padding:7px 14px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+  .connect-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 12px rgba(0,255,65,0.2)}
+  .connect-btn.connected{border-color:rgba(0,255,65,0.3);color:rgba(0,255,65,0.5)}
+
+  /* HERO */
+  .hero{text-align:center;margin-bottom:32px}
+  .hero-title{font-family:'VT323',monospace;font-size:clamp(52px,12vw,100px);color:#00ff41;letter-spacing:clamp(2px,2vw,8px);line-height:1;text-shadow:0 0 20px rgba(0,255,65,0.5),0 0 60px rgba(0,255,65,0.15);animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{text-shadow:0 0 20px rgba(0,255,65,0.5),0 0 60px rgba(0,255,65,0.15)}50%{text-shadow:0 0 30px rgba(0,255,65,0.9),0 0 80px rgba(0,255,65,0.3)}}
+  .hero-sub{font-size:clamp(9px,2.5vw,13px);color:rgba(0,255,65,0.5);letter-spacing:clamp(1px,1.5vw,6px);text-transform:uppercase;margin-top:8px}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:32px;border:1px solid rgba(0,255,65,0.15)}
+  .st{padding:clamp(12px,3vw,18px) clamp(8px,2vw,12px);border-right:1px solid rgba(0,255,65,0.15);text-align:center;background:rgba(0,255,65,0.02);position:relative;overflow:hidden}
+  .st:last-child{border-right:none}
+  .st::before{content:'';position:absolute;top:0;left:-200%;width:200%;height:2px;background:linear-gradient(90deg,transparent,#00ff41,transparent);animation:sweep 4s linear infinite}
+  .st:nth-child(2)::before{animation-delay:1.3s;background:linear-gradient(90deg,transparent,#f7c948,transparent)}
+  .st:nth-child(3)::before{animation-delay:2.6s;background:linear-gradient(90deg,transparent,#00cfff,transparent)}
+  @keyframes sweep{0%{left:-200%}100%{left:100%}}
+  .st-label{font-size:clamp(7px,1.5vw,9px);color:rgba(0,255,65,0.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+  .st-val{font-family:'VT323',monospace;font-size:clamp(24px,5vw,36px);line-height:1}
+  .green{color:#00ff41;text-shadow:0 0 10px rgba(0,255,65,0.6)}
+  .gold{color:#f7c948;text-shadow:0 0 10px rgba(247,201,72,0.6)}
+  .cyan{color:#00cfff;text-shadow:0 0 10px rgba(0,207,255,0.6)}
+
+  /* SECTION */
+  .sec-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;margin-top:32px}
+  .sec-header::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,255,65,0.3),transparent)}
+  .sec-tag{font-size:10px;letter-spacing:3px;color:rgba(0,255,65,0.5);text-transform:uppercase;white-space:nowrap}
+
+  /* TASK LIST */
+  .task-list{display:flex;flex-direction:column;gap:6px;margin-bottom:32px}
+  .task-item{border:1px solid rgba(0,255,65,0.12);background:rgba(0,255,65,0.01);display:flex;align-items:center;gap:0;overflow:hidden;transition:all .2s}
+  .task-item:hover{background:rgba(0,255,65,0.03);border-color:rgba(0,255,65,0.2)}
+  .task-item.completed{border-color:rgba(0,255,65,0.3);background:rgba(0,255,65,0.04)}
+  .task-item.completed .task-status{color:#00ff41;background:rgba(0,255,65,0.08);border-color:rgba(0,255,65,0.3)}
+  .task-item.eligible{border-color:rgba(247,201,72,0.3);background:rgba(247,201,72,0.02)}
+  .task-item.eligible .task-status{color:#f7c948;background:rgba(247,201,72,0.08);border-color:rgba(247,201,72,0.3)}
+  .task-status{font-size:10px;letter-spacing:2px;padding:16px;border-right:1px solid rgba(0,255,65,0.12);white-space:nowrap;display:flex;align-items:center;font-family:'Share Tech Mono',monospace;min-width:80px;justify-content:center;color:rgba(0,255,65,0.3);background:rgba(0,0,0,0)}
+  .task-content{padding:14px 16px;flex:1;min-width:0}
+  .task-title{font-size:13px;color:#00ff41;letter-spacing:1px;margin-bottom:4px;font-family:'Rajdhani',sans-serif;font-weight:600;text-transform:uppercase}
+  .task-desc{font-size:11px;color:rgba(0,255,65,0.4);line-height:1.5}
+  .task-reward{padding:16px;border-left:1px solid rgba(0,255,65,0.12);white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:100px}
+  .task-reward-val{font-family:'VT323',monospace;font-size:20px;color:#f7c948;text-shadow:0 0 8px rgba(247,201,72,0.5)}
+  .task-reward-label{font-size:8px;color:rgba(0,255,65,0.3);letter-spacing:1px;text-transform:uppercase}
+  .task-btn{background:transparent;border:1px solid rgba(0,255,65,0.25);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px 16px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap;margin-top:6px}
+  .task-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 12px rgba(0,255,65,0.2)}
+  .task-btn:disabled{opacity:.3;cursor:not-allowed}
+  .task-btn.done{border-color:rgba(0,255,65,0.2);color:rgba(0,255,65,0.3)}
+  .task-btn.claim-ready{border-color:rgba(247,201,72,0.4);color:#f7c948;animation:pulse-claim 2s ease-in-out infinite}
+  @keyframes pulse-claim{0%,100%{box-shadow:0 0 8px rgba(247,201,72,0.3)}50%{box-shadow:0 0 16px rgba(247,201,72,0.6)}}
+
+  /* TERMINAL */
+  .terminal{background:#000;border:1px solid rgba(0,255,65,0.25);padding:clamp(20px,5vw,28px);padding-top:clamp(34px,6vw,44px);position:relative;margin-bottom:28px;box-shadow:0 0 0 1px rgba(0,255,65,0.25),inset 0 0 30px rgba(0,255,65,0.02)}
+  .terminal::before{content:'● ● ●';position:absolute;top:12px;left:16px;font-size:10px;color:rgba(0,255,65,0.3);letter-spacing:4px}
+  .log{margin-top:16px;min-height:40px;font-size:clamp(10px,2.5vw,11px);color:rgba(0,255,65,0.5);line-height:1.8;word-break:break-all}
+  .log .ok{color:#00ff41}
+  .log .err{color:#ff0040}
+  .log .info{color:#00cfff}
+
+  @media(max-width:600px){
+    .task-item{flex-wrap:wrap}
+    .task-status{min-width:60px;padding:12px}
+    .task-reward{border-left:none;border-top:1px solid rgba(0,255,65,0.12);width:100%;min-width:0;flex-direction:row;justify-content:space-between}
+  }
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="grid-bg"></div>
+
+<div class="wrap">
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="nav-logo">$HACK</a>
+    <div class="nav-right">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/checkin" class="nav-link">Check-in</a>
+      <a href="/game" class="nav-link">Game</a>
+      <a href="/farming" class="nav-link" style="color:#00ff41">Farming</a>
+      <div class="nav-status">
+        <div class="dot"></div>
+        <span id="chain-status">INK CHAIN</span>
+      </div>
+      <button class="connect-btn" id="connectBtn">CONNECT</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-title">FARMING</div>
+    <div class="hero-sub">// COMPLETE TASKS • EARN $HACK</div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="st">
+      <div class="st-label">TASKS DONE</div>
+      <div class="st-val green" id="tasksDone">0</div>
+    </div>
+    <div class="st">
+      <div class="st-label">EARNED</div>
+      <div class="st-val gold" id="totalEarned">0</div>
+    </div>
+    <div class="st">
+      <div class="st-label">AVAILABLE</div>
+      <div class="st-val cyan" id="tasksAvailable">14</div>
+    </div>
+  </div>
+
+  <!-- DAILY TASKS -->
+  <div class="sec-header"><div class="sec-tag">// DAILY TASKS</div></div>
+  <div class="task-list" id="dailyTasks">
+    <div class="task-item" data-task="daily-1">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Daily INK GM</div>
+        <div class="task-desc">Say GM on INK Chain and spread positivity</div>
+        <button class="task-btn" onclick="window.open('https://www.gm.ink/?to=kizaru.ink','_blank')">SAY GM</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+1,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="daily-2">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Daily Check-in</div>
+        <div class="task-desc">Visit the check-in page and claim your daily reward</div>
+        <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/checkin','_blank')">GO TO CHECK-IN</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+5,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="daily-3">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Play Virus Hunter</div>
+        <div class="task-desc">Play at least 1 game today</div>
+        <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/game','_blank')">PLAY GAME</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+3,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOCIAL TASKS -->
+  <div class="sec-header"><div class="sec-tag">// SOCIAL TASKS</div></div>
+  <div class="task-list" id="socialTasks">
+    <div class="task-item" data-task="social-1">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Follow on Twitter</div>
+        <div class="task-desc">Follow @HACKtokenINK on Twitter/X</div>
+        <button class="task-btn" onclick="window.open('https://twitter.com/HACKtokenINK','_blank')">FOLLOW</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+1,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="social-2">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Retweet Announcement</div>
+        <div class="task-desc">Retweet the pinned post</div>
+        <button class="task-btn" onclick="window.open('https://twitter.com/HACKtokenINK','_blank')">RETWEET</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+1,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="social-3">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Join Telegram</div>
+        <div class="task-desc">Join the official $HACK Telegram group</div>
+        <button class="task-btn">JOIN TG</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+1,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="social-4">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Share on Twitter</div>
+        <div class="task-desc">Tweet about $HACK with #HACKonINK</div>
+        <button class="task-btn">SHARE</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+3,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ON-CHAIN TASKS -->
+  <div class="sec-header"><div class="sec-tag">// ON-CHAIN TASKS</div></div>
+  <div class="task-list" id="onchainTasks">
+    <div class="task-item" data-task="onchain-1">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Claim 100K $HACK Airdrop</div>
+        <div class="task-desc">Claim your free 100,000 $HACK tokens airdrop</div>
+        <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/','_blank')">CLAIM AIRDROP</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+10,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="onchain-2">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Hold 100K+ $HACK</div>
+        <div class="task-desc">Maintain a balance of at least 100,000 $HACK tokens</div>
+        <button class="task-btn" disabled>AUTO-CHECK</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+20,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="onchain-3">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Stake $HACK</div>
+        <div class="task-desc">Stake any amount of $HACK tokens</div>
+        <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/','_blank')">GO TO STAKE</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+25,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OG TASKS -->
+  <div class="sec-header"><div class="sec-tag">// OG TASKS</div></div>
+  <div class="task-list" id="ogTasks">
+    <div class="task-item" data-task="og-1">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Hold 1 OG Genesis NFT</div>
+        <div class="task-desc">Hold at least 1 OG Genesis NFT - Weekly reward</div>
+        <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/genesis','_blank')">MINT NFT</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+200,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="og-2">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Hold 2 OG Genesis NFT</div>
+        <div class="task-desc">Hold at least 2 OG Genesis NFTs - Weekly reward</div>
+        <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/genesis','_blank')">MINT NFT</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+200,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+
+    <div class="task-item" data-task="og-3">
+      <div class="task-status">PENDING</div>
+      <div class="task-content">
+        <div class="task-title">Hold 3 OG Genesis NFT</div>
+        <div class="task-desc">Hold at least 3 OG Genesis NFTs - Weekly reward</div>
+        <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/genesis','_blank')">MINT NFT</button>
+      </div>
+      <div class="task-reward">
+        <div class="task-reward-val">+200,000</div>
+        <div class="task-reward-label">$HACK</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMINAL LOG -->
+  <div class="terminal">
+    <div class="log" id="log">
+      <div class="info">&gt; Connect wallet to start farming...</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Wallet connection
+let provider, signer, userAddress, nftContract, hackContract, stakingContract;
+const connectBtn = document.getElementById('connectBtn');
+
+// NFT Contract config
+const NFT_ADDRESS = "0x86803d50b721E5616Ed7742c55CaC65D83B10c22";
+const HACK_ADDRESS = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
+const STAKING_ADDRESS = "0x48aadA935e961849C4c96dF2bC70640358796018";
+const NFT_ABI = [
+  "function balanceOf(address) external view returns (uint256)"
+];
+const HACK_ABI = [
+  "function balanceOf(address) external view returns (uint256)",
+  "function decimals() external view returns (uint8)"
+];
+const STAKING_ABI = [
+  "function getStakes(address user) external view returns (tuple(uint256 amount, uint256 stakedAt, uint256 unlockAt, uint256 tierIndex, bool active)[])"
+];
+
+connectBtn.addEventListener('click', async () => {
+  if (typeof window.ethereum === 'undefined') {
+    log('err', 'MetaMask not detected. Please install MetaMask.');
+    return;
+  }
+  try {
+    provider = new ethers.BrowserProvider(window.ethereum);
+    const accounts = await provider.send('eth_requestAccounts', []);
+    signer = await provider.getSigner();
+    userAddress = accounts[0];
+
+    // Initialize NFT contract
+    nftContract = new ethers.Contract(NFT_ADDRESS, NFT_ABI, provider);
+    hackContract = new ethers.Contract(HACK_ADDRESS, HACK_ABI, provider);
+    stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
+
+    connectBtn.textContent = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
+    connectBtn.classList.add('connected');
+
+    log('ok', `Connected: ${userAddress}`);
+    loadTaskProgress();
+    checkOGTasks();
+    checkHackBalance();
+    checkStaking();
+  } catch (err) {
+    log('err', 'Connection failed: ' + err.message);
+  }
+});
+
+// Check OG NFT tasks
+async function checkOGTasks() {
+  if (!nftContract || !userAddress) return;
+
+  try {
+    const balance = await nftContract.balanceOf(userAddress);
+    const nftCount = Number(balance);
+
+    log('info', `NFT Balance: ${nftCount}`);
+
+    // Mark tasks as eligible for claim
+    if (nftCount >= 1) {
+      markTaskEligible('og-1');
+    }
+    if (nftCount >= 2) {
+      markTaskEligible('og-2');
+    }
+    if (nftCount >= 3) {
+      markTaskEligible('og-3');
+    }
+  } catch (err) {
+    log('err', 'Failed to check NFT balance: ' + err.message);
+  }
+}
+
+// Check $HACK balance
+async function checkHackBalance() {
+  if (!hackContract || !userAddress) return;
+
+  try {
+    const balance = await hackContract.balanceOf(userAddress);
+    const decimals = await hackContract.decimals();
+    const hackBalance = Number(balance) / (10 ** Number(decimals));
+
+    log('info', `$HACK Balance: ${hackBalance.toLocaleString()}`);
+
+    // Check if holding 100k+ $HACK
+    if (hackBalance >= 100000) {
+      markTaskEligible('onchain-2');
+    }
+  } catch (err) {
+    log('err', 'Failed to check $HACK balance: ' + err.message);
+  }
+}
+
+// Check staking
+async function checkStaking() {
+  if (!stakingContract || !userAddress) return;
+
+  try {
+    const stakes = await stakingContract.getStakes(userAddress);
+    const activeStakes = stakes.filter(s => s.active);
+
+    if (activeStakes.length > 0) {
+      let totalStaked = 0n;
+      activeStakes.forEach(s => {
+        totalStaked += s.amount;
+      });
+
+      const stakedAmount = Number(ethers.formatEther(totalStaked));
+      log('info', `Staked: ${stakedAmount.toLocaleString()} $HACK`);
+
+      if (stakedAmount > 0) {
+        markTaskEligible('onchain-3');
+      }
+    }
+  } catch (err) {
+    log('err', 'Failed to check staking: ' + err.message);
+  }
+}
+
+// Mark task as eligible for claim
+function markTaskEligible(taskId) {
+  const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+  if (completed.includes(taskId)) return;
+
+  const taskEl = document.querySelector(`[data-task="${taskId}"]`);
+  if (!taskEl) return;
+
+  taskEl.classList.add('eligible');
+  taskEl.querySelector('.task-status').textContent = 'READY';
+  const btn = taskEl.querySelector('.task-btn');
+  btn.textContent = 'CLAIM';
+  btn.classList.add('claim-ready');
+  btn.disabled = false;
+  btn.onclick = function() {
+    claimTask(taskId);
+  };
+}
+
+// Claim task reward
+function claimTask(taskId) {
+  const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+  if (completed.includes(taskId)) return;
+
+  const taskEl = document.querySelector(`[data-task="${taskId}"]`);
+  if (!taskEl) return;
+
+  completed.push(taskId);
+  localStorage.setItem('hackTasksCompleted', JSON.stringify(completed));
+
+  taskEl.classList.remove('eligible');
+  taskEl.classList.add('completed');
+  taskEl.querySelector('.task-status').textContent = 'DONE';
+  const btn = taskEl.querySelector('.task-btn');
+  btn.textContent = '✓ CLAIMED';
+  btn.classList.remove('claim-ready');
+  btn.classList.add('done');
+  btn.disabled = true;
+  btn.onclick = null;
+
+  const reward = parseInt(taskEl.querySelector('.task-reward-val').textContent.replace(/[^0-9]/g, ''));
+  log('ok', `Task claimed! +${reward.toLocaleString()} $HACK`);
+
+  loadTaskProgress();
+}
+
+// Auto-complete task
+function autoCompleteTask(taskId) {
+  const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+  if (completed.includes(taskId)) return;
+
+  const taskEl = document.querySelector(`[data-task="${taskId}"]`);
+  if (!taskEl) return;
+
+  completed.push(taskId);
+  localStorage.setItem('hackTasksCompleted', JSON.stringify(completed));
+
+  taskEl.classList.add('completed');
+  taskEl.querySelector('.task-status').textContent = 'DONE';
+  const btn = taskEl.querySelector('.task-btn');
+  btn.textContent = '✓ DONE';
+  btn.classList.add('done');
+  btn.disabled = true;
+
+  const reward = parseInt(taskEl.querySelector('.task-reward-val').textContent.replace(/[^0-9]/g, ''));
+  log('ok', `Task auto-completed! +${reward.toLocaleString()} $HACK`);
+
+  loadTaskProgress();
+}
+
+// Log function
+function log(type, msg) {
+  const logEl = document.getElementById('log');
+  logEl.innerHTML += `<div class="${type}">&gt; ${msg}</div>`;
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// Load task progress from localStorage
+function loadTaskProgress() {
+  const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+  let totalEarned = 0;
+
+  completed.forEach(taskId => {
+    const taskEl = document.querySelector(`[data-task="${taskId}"]`);
+    if (taskEl) {
+      taskEl.classList.add('completed');
+      taskEl.querySelector('.task-status').textContent = 'DONE';
+      const btn = taskEl.querySelector('.task-btn');
+      btn.textContent = '✓ CLAIMED';
+      btn.classList.add('done');
+      btn.disabled = true;
+
+      const reward = parseInt(taskEl.querySelector('.task-reward-val').textContent.replace(/[^0-9]/g, ''));
+      totalEarned += reward;
+    }
+  });
+
+  document.getElementById('tasksDone').textContent = completed.length;
+  document.getElementById('totalEarned').textContent = totalEarned.toLocaleString();
+  document.getElementById('tasksAvailable').textContent = 14 - completed.length;
+
+  if (completed.length > 0) {
+    log('info', `Loaded ${completed.length} completed tasks`);
+  }
+}
+
+// Mark task as complete (demo)
+document.querySelectorAll('.task-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    if (this.disabled || this.classList.contains('done')) return;
+
+    const taskItem = this.closest('.task-item');
+    const taskId = taskItem.dataset.task;
+
+    // Don't mark as complete for navigation buttons
+    if (this.textContent.includes('GO TO') || this.textContent.includes('PLAY') || this.textContent.includes('FOLLOW') || this.textContent.includes('RETWEET')) {
+      return;
+    }
+
+    // Mark as complete
+    const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+    if (!completed.includes(taskId)) {
+      completed.push(taskId);
+      localStorage.setItem('hackTasksCompleted', JSON.stringify(completed));
+
+      taskItem.classList.add('completed');
+      taskItem.querySelector('.task-status').textContent = 'DONE';
+      this.textContent = '✓ DONE';
+      this.classList.add('done');
+      this.disabled = true;
+
+      const reward = parseInt(taskItem.querySelector('.task-reward-val').textContent.replace(/[^0-9]/g, ''));
+      log('ok', `Task completed! +${reward.toLocaleString()} $HACK`);
+
+      loadTaskProgress();
+    }
+  });
+});
+
+// Auto-connect if previously connected
+window.addEventListener('load', () => {
+  if (window.ethereum && window.ethereum.selectedAddress) {
+    connectBtn.click();
+  }
+});
+</script>
+
+</body>
+</html>
