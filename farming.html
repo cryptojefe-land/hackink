@@ -153,11 +153,11 @@
       <div class="task-content">
         <div class="task-title">Daily Check-in</div>
         <div class="task-desc">Claim your daily check-in reward</div>
-        <button class="task-btn" id="checkinTaskBtn">CHECK-IN</button>
+        <button class="task-btn" id="checkinTaskBtn">CLAIM AIRDROP FIRST</button>
       </div>
       <div class="task-reward">
-        <div class="task-reward-val">+5,000</div>
-        <div class="task-reward-label">$HACK</div>
+        <div class="task-reward-val">AIRDROP</div>
+        <div class="task-reward-label">REQUIRED</div>
       </div>
     </div>
 
@@ -242,7 +242,7 @@
         <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/','_blank')">CLAIM AIRDROP</button>
       </div>
       <div class="task-reward">
-        <div class="task-reward-val">+10,000</div>
+        <div class="task-reward-val">+500</div>
         <div class="task-reward-label">$HACK</div>
       </div>
     </div>
@@ -255,7 +255,7 @@
         <button class="task-btn" disabled>AUTO-CHECK</button>
       </div>
       <div class="task-reward">
-        <div class="task-reward-val">+20,000</div>
+        <div class="task-reward-val">+1,000</div>
         <div class="task-reward-label">$HACK</div>
       </div>
     </div>
@@ -268,7 +268,7 @@
         <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/','_blank')">GO TO STAKE</button>
       </div>
       <div class="task-reward">
-        <div class="task-reward-val">+25,000</div>
+        <div class="task-reward-val">+1,500</div>
         <div class="task-reward-label">$HACK</div>
       </div>
     </div>
@@ -384,6 +384,7 @@ connectBtn.addEventListener('click', async () => {
     });
 
     // Check balances first, then load progress
+    resetDailyTasks();
     await checkAirdrop();
     await checkOGTasks();
     await checkHackBalance();
@@ -399,6 +400,46 @@ connectBtn.addEventListener('click', async () => {
 // Get storage key for current wallet
 function getStorageKey() {
   return `hackTasksCompleted_${userAddress}`;
+}
+
+// Get today's date string
+function getTodayDate() {
+  return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+}
+
+// Check if task was completed today
+function isCompletedToday(taskId) {
+  const key = `${getStorageKey()}_${taskId}_date`;
+  const lastDate = localStorage.getItem(key);
+  return lastDate === getTodayDate();
+}
+
+// Mark task as completed today
+function markCompletedToday(taskId) {
+  const key = `${getStorageKey()}_${taskId}_date`;
+  localStorage.setItem(key, getTodayDate());
+}
+
+// Reset daily tasks if needed
+function resetDailyTasks() {
+  const dailyTasks = ['social-4']; // Only "Share on Twitter" is daily
+  const completed = JSON.parse(localStorage.getItem(getStorageKey()) || '[]');
+  let updated = false;
+
+  dailyTasks.forEach(taskId => {
+    if (completed.includes(taskId) && !isCompletedToday(taskId)) {
+      // Remove from completed if not done today
+      const index = completed.indexOf(taskId);
+      if (index > -1) {
+        completed.splice(index, 1);
+        updated = true;
+      }
+    }
+  });
+
+  if (updated) {
+    localStorage.setItem(getStorageKey(), JSON.stringify(completed));
+  }
 }
 
 // Check airdrop claim
@@ -545,7 +586,7 @@ async function checkCheckin() {
     const canCheckin = userData.canCheckin;
     const cooldownLeft = Number(userData.cooldownLeft);
 
-    log('info', `Total Check-ins: ${totalCheckins}`);
+    log('info', `Total Check-ins: ${totalCheckins}, Can: ${canCheckin}, Cooldown: ${cooldownLeft}`);
 
     const checkinBtn = document.getElementById('checkinTaskBtn');
     if (!checkinBtn) return;
@@ -562,11 +603,14 @@ async function checkCheckin() {
       checkinBtn.style.borderColor = 'rgba(247,201,72,0.2)';
       checkinBtn.style.color = 'rgba(247,201,72,0.3)';
     } else {
-      // Can't checkin - probably need airdrop first
+      // Can't checkin and no cooldown - need airdrop
       checkinBtn.textContent = 'CLAIM AIRDROP FIRST';
-      checkinBtn.disabled = true;
-      checkinBtn.style.borderColor = 'rgba(255,0,64,0.2)';
-      checkinBtn.style.color = 'rgba(255,0,64,0.3)';
+      checkinBtn.disabled = false;
+      checkinBtn.style.borderColor = 'rgba(255,0,64,0.3)';
+      checkinBtn.style.color = '#ff0040';
+      checkinBtn.onclick = function() {
+        window.open('https://hacktokenink.xyz/', '_blank');
+      };
     }
 
     if (totalCheckins > 0) {
@@ -656,6 +700,11 @@ function claimTask(taskId) {
 
   completed.push(taskId);
   localStorage.setItem(getStorageKey(), JSON.stringify(completed));
+
+  // Mark completion date only for daily task (Share on Twitter)
+  if (taskId === 'social-4') {
+    markCompletedToday(taskId);
+  }
 
   taskEl.classList.remove('eligible');
   taskEl.classList.add('completed');
