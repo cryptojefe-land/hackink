@@ -1214,11 +1214,11 @@ async function onClaimSuccess() {
   stakeBtn2.style.cssText = 'border-color:rgba(247,201,72,0.4);color:rgba(247,201,72,0.7);font-size:clamp(14px,3vw,20px);padding:14px';
   stakeBtn2.textContent = '[ STAKE YOUR $HACK ]';
   stakeBtn2.onclick = () => switchTab('stake');
-  const checkinBtn2 = document.createElement('a');
-  checkinBtn2.href = 'checkin.html'; checkinBtn2.className = 'action-btn';
-  checkinBtn2.style.cssText = 'display:block;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
-  checkinBtn2.textContent = '[ DAILY CHECK-IN ]';
-  wrap.appendChild(mintNftBtn); wrap.appendChild(stakeBtn2); wrap.appendChild(checkinBtn2);
+  const farmingBtn = document.createElement('a');
+  farmingBtn.href = '/farming'; farmingBtn.className = 'action-btn';
+  farmingBtn.style.cssText = 'display:block;border-color:rgba(0,255,65,0.5);color:#00ff41;font-size:clamp(14px,3vw,19px);padding:14px;text-align:center;text-decoration:none;white-space:nowrap';
+  farmingBtn.textContent = '[ GET MORE $HACK ]';
+  wrap.appendChild(mintNftBtn); wrap.appendChild(stakeBtn2); wrap.appendChild(farmingBtn);
   showCheckinBtn();
   btn.parentNode.insertBefore(wrap, document.getElementById('airdropLog'));
 
