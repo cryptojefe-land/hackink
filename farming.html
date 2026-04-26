@@ -152,8 +152,8 @@
       <div class="task-status">PENDING</div>
       <div class="task-content">
         <div class="task-title">Daily Check-in</div>
-        <div class="task-desc">Visit the check-in page and claim your daily reward</div>
-        <button class="task-btn" onclick="window.open('https://hacktokenink.xyz/checkin','_blank')">GO TO CHECK-IN</button>
+        <div class="task-desc">Claim your daily check-in reward</div>
+        <button class="task-btn" id="checkinTaskBtn">CHECK-IN</button>
       </div>
       <div class="task-reward">
         <div class="task-reward-val">+5,000</div>
@@ -347,6 +347,7 @@ const STAKING_ABI = [
   "function getStakes(address user) external view returns (tuple(uint256 amount, uint256 stakedAt, uint256 unlockAt, uint256 tierIndex, bool active)[])"
 ];
 const CHECKIN_ABI = [
+  "function checkin(address referrer) external payable",
   "function getUserData(address user) external view returns (uint256 streak, uint256 lastCheckin, uint256 totalCheckins, uint256 totalEarned, uint256 nextReward, uint256 cooldownLeft, bool canCheckin)"
 ];
 
@@ -416,6 +417,25 @@ async function checkOGTasks() {
 
     if (updated) {
       localStorage.setItem('hackTasksCompleted', JSON.stringify(completed));
+    }
+
+    // Reset all OG tasks to PENDING first
+    ['og-1', 'og-2', 'og-3'].forEach(taskId => {
+      const taskEl = document.querySelector(`[data-task="${taskId}"]`);
+      if (taskEl && !completed.includes(taskId)) {
+        taskEl.classList.remove('eligible');
+        taskEl.querySelector('.task-status').textContent = 'PENDING';
+        const btn = taskEl.querySelector('.task-btn');
+        btn.textContent = 'MINT NFT';
+        btn.classList.remove('claim-ready');
+        btn.disabled = false;
+        btn.onclick = function() {
+          window.open('https://hacktokenink.xyz/genesis','_blank');
+        };
+      }
+    });
+
+    if (updated) {
       loadTaskProgress();
     }
 
@@ -492,14 +512,63 @@ async function checkCheckin() {
   try {
     const userData = await checkinContract.getUserData(userAddress);
     const totalCheckins = Number(userData.totalCheckins);
+    const canCheckin = userData.canCheckin;
+    const cooldownLeft = Number(userData.cooldownLeft);
 
     log('info', `Total Check-ins: ${totalCheckins}`);
+
+    const checkinBtn = document.getElementById('checkinTaskBtn');
+    if (!checkinBtn) return;
+
+    if (canCheckin) {
+      checkinBtn.textContent = 'CHECK-IN NOW';
+      checkinBtn.style.borderColor = 'rgba(0,255,65,0.4)';
+      checkinBtn.style.color = '#00ff41';
+      checkinBtn.onclick = executeCheckin;
+    } else if (cooldownLeft > 0) {
+      checkinBtn.textContent = 'COOLDOWN';
+      checkinBtn.disabled = true;
+      checkinBtn.style.borderColor = 'rgba(247,201,72,0.2)';
+      checkinBtn.style.color = 'rgba(247,201,72,0.3)';
+    }
 
     if (totalCheckins > 0) {
       markTaskEligible('daily-2');
     }
   } catch (err) {
     log('err', 'Failed to check checkin: ' + err.message);
+  }
+}
+
+// Execute checkin
+async function executeCheckin() {
+  if (!checkinContract || !userAddress) return;
+
+  const btn = document.getElementById('checkinTaskBtn');
+  btn.disabled = true;
+  btn.textContent = 'CHECKING IN...';
+
+  try {
+    log('info', 'Executing check-in...');
+    const tx = await checkinContract.checkin('0x0000000000000000000000000000000000000000', {
+      value: BigInt("20000000000000")
+    });
+    log('info', `TX: ${tx.hash.slice(0,20)}...`);
+
+    await tx.wait();
+    log('ok', 'Check-in complete!');
+
+    // Reload checkin status
+    await checkCheckin();
+    markTaskEligible('daily-2');
+  } catch (err) {
+    const msg = err.reason || err.message || 'failed';
+    const friendly = msg.includes('airdrop') || msg.includes('Claim')
+      ? 'Claim airdrop first at hacktokenink.xyz'
+      : msg;
+    log('err', 'Check-in failed: ' + friendly);
+    btn.disabled = false;
+    btn.textContent = 'CHECK-IN';
   }
 }
 
@@ -510,6 +579,9 @@ function markTaskEligible(taskId) {
 
   const taskEl = document.querySelector(`[data-task="${taskId}"]`);
   if (!taskEl) return;
+
+  // Don't mark again if already eligible
+  if (taskEl.classList.contains('eligible')) return;
 
   taskEl.classList.add('eligible');
   taskEl.querySelector('.task-status').textContent = 'READY';
