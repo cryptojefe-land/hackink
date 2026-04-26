@@ -66,7 +66,8 @@
   .task-reward{padding:16px;border-left:1px solid rgba(0,255,65,0.12);white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:100px}
   .task-reward-val{font-family:'VT323',monospace;font-size:20px;color:#f7c948;text-shadow:0 0 8px rgba(247,201,72,0.5)}
   .task-reward-label{font-size:8px;color:rgba(0,255,65,0.3);letter-spacing:1px;text-transform:uppercase}
-  .task-btn{background:transparent;border:1px solid rgba(0,255,65,0.25);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px 16px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap;margin-top:6px}
+  .task-btn{background:transparent;border:1px solid rgba(0,255,65,0.25);color:rgba(0,255,65,0.5);font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px 16px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .2s;white-space:nowrap;margin-top:6px;display:none}
+  .task-btn.visible{display:inline-block}
   .task-btn:hover{border-color:#00ff41;color:#00ff41;box-shadow:0 0 12px rgba(0,255,65,0.2)}
   .task-btn:disabled{opacity:.3;cursor:not-allowed}
   .task-btn.done{border-color:rgba(0,255,65,0.2);color:rgba(0,255,65,0.3)}
@@ -370,11 +371,17 @@ connectBtn.addEventListener('click', async () => {
     connectBtn.classList.add('connected');
 
     log('ok', `Connected: ${userAddress}`);
+
+    // Show all task buttons
+    document.querySelectorAll('.task-btn').forEach(btn => {
+      btn.classList.add('visible');
+    });
+
     loadTaskProgress();
-    checkOGTasks();
-    checkHackBalance();
-    checkStaking();
-    checkCheckin();
+    await checkOGTasks();
+    await checkHackBalance();
+    await checkStaking();
+    await checkCheckin();
   } catch (err) {
     log('err', 'Connection failed: ' + err.message);
   }
@@ -389,6 +396,28 @@ async function checkOGTasks() {
     const nftCount = Number(balance);
 
     log('info', `NFT Balance: ${nftCount}`);
+
+    // Remove completed OG tasks if NFT balance doesn't meet requirements
+    const completed = JSON.parse(localStorage.getItem('hackTasksCompleted') || '[]');
+    let updated = false;
+
+    if (nftCount < 1 && completed.includes('og-1')) {
+      completed.splice(completed.indexOf('og-1'), 1);
+      updated = true;
+    }
+    if (nftCount < 2 && completed.includes('og-2')) {
+      completed.splice(completed.indexOf('og-2'), 1);
+      updated = true;
+    }
+    if (nftCount < 3 && completed.includes('og-3')) {
+      completed.splice(completed.indexOf('og-3'), 1);
+      updated = true;
+    }
+
+    if (updated) {
+      localStorage.setItem('hackTasksCompleted', JSON.stringify(completed));
+      loadTaskProgress();
+    }
 
     if (nftCount === 0) {
       log('err', 'NFT not found');
