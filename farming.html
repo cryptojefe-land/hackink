@@ -327,13 +327,14 @@
 
 <script>
 // Wallet connection
-let provider, signer, userAddress, nftContract, hackContract, stakingContract;
+let provider, signer, userAddress, nftContract, hackContract, stakingContract, checkinContract;
 const connectBtn = document.getElementById('connectBtn');
 
 // NFT Contract config
 const NFT_ADDRESS = "0x86803d50b721E5616Ed7742c55CaC65D83B10c22";
 const HACK_ADDRESS = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const STAKING_ADDRESS = "0x48aadA935e961849C4c96dF2bC70640358796018";
+const CHECKIN_ADDRESS = "0xd3Cb09767006Ffca00906f7FB0fbB196A6c52dCC";
 const NFT_ABI = [
   "function balanceOf(address) external view returns (uint256)"
 ];
@@ -343,6 +344,9 @@ const HACK_ABI = [
 ];
 const STAKING_ABI = [
   "function getStakes(address user) external view returns (tuple(uint256 amount, uint256 stakedAt, uint256 unlockAt, uint256 tierIndex, bool active)[])"
+];
+const CHECKIN_ABI = [
+  "function getUserData(address user) external view returns (uint256 streak, uint256 lastCheckin, uint256 totalCheckins, uint256 totalEarned, uint256 nextReward, uint256 cooldownLeft, bool canCheckin)"
 ];
 
 connectBtn.addEventListener('click', async () => {
@@ -360,6 +364,7 @@ connectBtn.addEventListener('click', async () => {
     nftContract = new ethers.Contract(NFT_ADDRESS, NFT_ABI, provider);
     hackContract = new ethers.Contract(HACK_ADDRESS, HACK_ABI, provider);
     stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
+    checkinContract = new ethers.Contract(CHECKIN_ADDRESS, CHECKIN_ABI, provider);
 
     connectBtn.textContent = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
     connectBtn.classList.add('connected');
@@ -369,6 +374,7 @@ connectBtn.addEventListener('click', async () => {
     checkOGTasks();
     checkHackBalance();
     checkStaking();
+    checkCheckin();
   } catch (err) {
     log('err', 'Connection failed: ' + err.message);
   }
@@ -383,6 +389,11 @@ async function checkOGTasks() {
     const nftCount = Number(balance);
 
     log('info', `NFT Balance: ${nftCount}`);
+
+    if (nftCount === 0) {
+      log('err', 'NFT not found');
+      return;
+    }
 
     // Mark tasks as eligible for claim
     if (nftCount >= 1) {
@@ -442,6 +453,24 @@ async function checkStaking() {
     }
   } catch (err) {
     log('err', 'Failed to check staking: ' + err.message);
+  }
+}
+
+// Check checkin
+async function checkCheckin() {
+  if (!checkinContract || !userAddress) return;
+
+  try {
+    const userData = await checkinContract.getUserData(userAddress);
+    const totalCheckins = Number(userData.totalCheckins);
+
+    log('info', `Total Check-ins: ${totalCheckins}`);
+
+    if (totalCheckins > 0) {
+      markTaskEligible('daily-2');
+    }
+  } catch (err) {
+    log('err', 'Failed to check checkin: ' + err.message);
   }
 }
 
