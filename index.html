@@ -482,8 +482,8 @@
           <div class="airdrop-stat-value">100,000</div>
         </div>
         <div class="airdrop-stat">
-          <div class="airdrop-stat-label">Per Wallet</div>
-          <div class="airdrop-stat-value purple">1x</div>
+          <div class="airdrop-stat-label">Holders</div>
+          <div class="airdrop-stat-value purple" id="holdersCount">...</div>
         </div>
         <div class="airdrop-stat">
           <div class="airdrop-stat-label">Cost</div>
@@ -891,7 +891,8 @@ const STAKING_ABI = [
 const ERC20_ABI = [
   "function approve(address spender, uint256 amount) external returns (bool)",
   "function allowance(address owner, address spender) external view returns (uint256)",
-  "function balanceOf(address account) external view returns (uint256)"
+  "function balanceOf(address account) external view returns (uint256)",
+  "function totalHolders() external view returns (uint256)"
 ];
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
@@ -962,6 +963,7 @@ async function connectWallet() {
     document.getElementById('connectBtn').textContent = short;
     document.getElementById('connectBtn').classList.add('connected');
 
+    await loadHoldersCount();
     await checkAirdropStatus();
     const aBtn = document.getElementById('airdropBtn');
     if (!aBtn.classList.contains('claimed-state')) {
@@ -997,6 +999,20 @@ async function checkAirdropStatus() {
   } catch(e) {}
 }
 
+// Load holders count from token contract
+async function loadHoldersCount() {
+  try {
+    if (!provider) {
+      provider = new ethers.JsonRpcProvider("https://rpc-gel.inkonchain.com");
+    }
+    const hackContract = new ethers.Contract(HACK_ADDRESS, ERC20_ABI, provider);
+    const holders = await hackContract.totalHolders();
+    document.getElementById('holdersCount').textContent = Number(holders).toLocaleString();
+  } catch(e) {
+    document.getElementById('holdersCount').textContent = '...';
+  }
+}
+
 function showCheckinBtn() {
   const el = document.getElementById('checkinNavBtn');
   if (el) el.style.display = 'inline-block';
@@ -1008,10 +1024,10 @@ function showCheckinInline() {
 
   const ci = document.createElement('a');
   ci.id = 'checkinInlineBtn';
-  ci.href = 'https://hacktokenink.xyz/checkin';
+  ci.href = '/farming';
   ci.className = 'action-btn';
-  ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(247,201,72,0.5);color:#f7c948;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
-  ci.textContent = '[ DAILY CHECK-IN ]';
+  ci.style.cssText = 'display:block;margin-top:12px;border-color:rgba(0,255,65,0.5);color:#00ff41;font-size:clamp(14px,3vw,19px);padding:12px;text-align:center;text-decoration:none;animation:fadein .4s ease;white-space:nowrap';
+  ci.textContent = '[ GET MORE $HACK ]';
 
   const nftCi = document.createElement('button');
   nftCi.id = 'nftInlineBtn';
@@ -1267,6 +1283,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('tasksModal').addEventListener('click', function(e) {
     if (e.target === this) closeTasksModal();
   });
+  loadHoldersCount();
 });
 
 // ─── TOKEN SELECTOR ──────────────────────────────────────────────────────────
