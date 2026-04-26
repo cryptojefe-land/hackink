@@ -183,7 +183,7 @@
       <div class="task-content">
         <div class="task-title">Follow on Twitter</div>
         <div class="task-desc">Follow @HACKtokenINK on Twitter/X</div>
-        <button class="task-btn" onclick="window.open('https://twitter.com/HACKtokenINK','_blank')">FOLLOW</button>
+        <button class="task-btn" onclick="window.open('https://twitter.com/HACKtokenINK','_blank'); setTimeout(() => markTaskEligible('social-1'), 2000)">FOLLOW</button>
       </div>
       <div class="task-reward">
         <div class="task-reward-val">+1,000</div>
@@ -196,7 +196,7 @@
       <div class="task-content">
         <div class="task-title">Retweet Announcement</div>
         <div class="task-desc">Retweet the pinned post</div>
-        <button class="task-btn" onclick="window.open('https://twitter.com/HACKtokenINK','_blank')">RETWEET</button>
+        <button class="task-btn" onclick="window.open('https://twitter.com/HACKtokenINK','_blank'); setTimeout(() => markTaskEligible('social-2'), 2000)">RETWEET</button>
       </div>
       <div class="task-reward">
         <div class="task-reward-val">+1,000</div>
@@ -209,7 +209,7 @@
       <div class="task-content">
         <div class="task-title">Join Telegram</div>
         <div class="task-desc">Join the official $HACK Telegram group</div>
-        <button class="task-btn">JOIN TG</button>
+        <button class="task-btn" onclick="setTimeout(() => markTaskEligible('social-3'), 2000)">JOIN TG</button>
       </div>
       <div class="task-reward">
         <div class="task-reward-val">+1,000</div>
@@ -222,7 +222,7 @@
       <div class="task-content">
         <div class="task-title">Share on Twitter</div>
         <div class="task-desc">Tweet about $HACK with #HACKonINK</div>
-        <button class="task-btn">SHARE</button>
+        <button class="task-btn" id="shareTwitterBtn">SHARE</button>
       </div>
       <div class="task-reward">
         <div class="task-reward-val">+3,000</div>
@@ -575,6 +575,24 @@ async function executeCheckin() {
     btn.textContent = 'CHECK-IN';
   }
 }
+
+// Share on Twitter
+function shareOnTwitter() {
+  const refPart = userAddress
+    ? '\n\nClaim here 👉hacktokenink.xyz/?ref=' + userAddress
+    : '\n\nClaim here 👉hacktokenink.xyz';
+  const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
+  setTimeout(() => markTaskEligible('social-4'), 2000);
+}
+
+// Setup share button
+window.addEventListener('load', () => {
+  const shareBtn = document.getElementById('shareTwitterBtn');
+  if (shareBtn) {
+    shareBtn.onclick = shareOnTwitter;
+  }
+});
 
 // Mark task as eligible for claim
 function markTaskEligible(taskId) {
