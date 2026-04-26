@@ -3,8 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>$HACK — Farming Tasks</title>
-<meta name="description" content="Complete tasks and earn $HACK tokens. Daily missions, social tasks, and on-chain activities on INK Chain.">
+
+<!-- SEO -->
+<title>$HACK Farming — Complete Tasks & Earn Rewards on INK Chain</title>
+<meta name="description" content="Complete daily tasks, social missions, and on-chain activities to earn $HACK tokens. Referral program with 25% bonus. Play-to-earn on INK Chain.">
+<meta name="keywords" content="HACK, $HACK, farming, tasks, earn crypto, INK chain, play to earn, referral program, daily rewards, crypto tasks">
+<meta name="author" content="$HACK">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://hacktokenink.xyz/farming">
+
+<!-- Open Graph / Facebook / Telegram -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hacktokenink.xyz/farming">
+<meta property="og:title" content="$HACK Farming — Complete Tasks & Earn Rewards">
+<meta property="og:description" content="Complete daily tasks, social missions, and on-chain activities to earn $HACK tokens. Referral program with 25% bonus on INK Chain.">
+<meta property="og:image" content="https://hacktokenink.xyz/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="$HACK Farming — Earn rewards by completing tasks on INK Chain">
+<meta property="og:site_name" content="$HACK">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@HACKtokenINK">
+<meta name="twitter:creator" content="@HACKtokenINK">
+<meta name="twitter:url" content="https://hacktokenink.xyz/farming">
+<meta name="twitter:title" content="$HACK Farming — Complete Tasks & Earn Rewards">
+<meta name="twitter:description" content="Complete daily tasks, social missions, and on-chain activities to earn $HACK tokens. Referral program with 25% bonus on INK Chain.">
+<meta name="twitter:image" content="https://hacktokenink.xyz/og-image.png">
+<meta name="twitter:image:alt" content="$HACK Farming — Earn rewards by completing tasks">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000000'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='18' fill='%2300ff41'%3E%24H%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%23000000'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='100' fill='%2300ff41'%3E%24%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#000000">
+
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Rajdhani:wght@600;700&display=swap');
@@ -99,7 +133,6 @@
     <a href="/" class="nav-logo">$HACK</a>
     <div class="nav-right">
       <a href="/" class="nav-link">Home</a>
-      <a href="/checkin" class="nav-link">Check-in</a>
       <a href="/game" class="nav-link">Game</a>
       <a href="/farming" class="nav-link" style="color:#00ff41">Farming</a>
       <div class="nav-status">
@@ -153,7 +186,7 @@
       <div class="task-content">
         <div class="task-title">Daily INK GM</div>
         <div class="task-desc">Say GM on INK Chain and spread positivity</div>
-        <button class="task-btn" onclick="window.open('https://www.gm.ink/?to=kizaru.ink','_blank')">SAY GM</button>
+        <button class="task-btn" onclick="window.open('https://www.gm.ink/?to=kizaru.ink','_blank'); setTimeout(() => markTaskEligible('daily-1'), 2000)">SAY GM</button>
       </div>
       <div class="task-reward">
         <div class="task-reward-val">+1,000</div>
@@ -384,6 +417,7 @@ const STAKING_ADDRESS = "0x48aadA935e961849C4c96dF2bC70640358796018";
 const CHECKIN_ADDRESS = "0xd3Cb09767006Ffca00906f7FB0fbB196A6c52dCC";
 const AIRDROP_ADDRESS = "0x1647dA5c081b3804342956086cece17A352c5f28";
 const FARMING_ADDRESS = "0xB22B64bCd2079903dC54B8d1EA0c31D436B62Ed6";
+const GAME_ADDRESS = "0xA52f5416B79f2bA3e329197c4D1BdE85267deE41";
 const NFT_ABI = [
   "function balanceOf(address) external view returns (uint256)"
 ];
@@ -448,6 +482,7 @@ connectBtn.addEventListener('click', async () => {
     await checkHackBalance();
     await checkStaking();
     await checkCheckin();
+    await checkGamePlayed();
 
     await loadTaskProgress();
 
@@ -742,6 +777,39 @@ async function checkCheckin() {
     }
   } catch (err) {
     log('err', 'Failed to check checkin: ' + err.message);
+  }
+}
+
+// Check if game was played in last 24h
+async function checkGamePlayed() {
+  if (!provider || !userAddress) return;
+
+  try {
+    const currentBlock = await provider.getBlockNumber();
+    const blocksIn24h = Math.floor((24 * 60 * 60) / 2); // ~2 sec per block on INK
+    const fromBlock = currentBlock - blocksIn24h;
+
+    // Get GameRewardClaimed events from game contract
+    const filter = {
+      address: GAME_ADDRESS,
+      topics: [
+        ethers.id("GameRewardClaimed(address,uint256,uint256)"),
+        ethers.zeroPadValue(userAddress, 32)
+      ],
+      fromBlock: fromBlock,
+      toBlock: 'latest'
+    };
+
+    const logs = await provider.getLogs(filter);
+
+    if (logs.length > 0) {
+      log('info', `Game played: ${logs.length} times in 24h`);
+      markTaskEligible('daily-3');
+    } else {
+      log('info', 'No game played in last 24h');
+    }
+  } catch (err) {
+    log('err', 'Failed to check game: ' + err.message);
   }
 }
 
