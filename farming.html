@@ -328,7 +328,7 @@
 
 <script>
 // Wallet connection
-let provider, signer, userAddress, nftContract, hackContract, stakingContract, checkinContract;
+let provider, signer, userAddress, nftContract, hackContract, stakingContract, checkinContract, airdropContract;
 const connectBtn = document.getElementById('connectBtn');
 
 // NFT Contract config
@@ -336,6 +336,7 @@ const NFT_ADDRESS = "0x86803d50b721E5616Ed7742c55CaC65D83B10c22";
 const HACK_ADDRESS = "0xe6e719bf4046Db0bb849231aEf37482187fd84f4";
 const STAKING_ADDRESS = "0x48aadA935e961849C4c96dF2bC70640358796018";
 const CHECKIN_ADDRESS = "0xd3Cb09767006Ffca00906f7FB0fbB196A6c52dCC";
+const AIRDROP_ADDRESS = "0x1647dA5c081b3804342956086cece17A352c5f28";
 const NFT_ABI = [
   "function balanceOf(address) external view returns (uint256)"
 ];
@@ -349,6 +350,9 @@ const STAKING_ABI = [
 const CHECKIN_ABI = [
   "function checkin(address referrer) external payable",
   "function getUserData(address user) external view returns (uint256 streak, uint256 lastCheckin, uint256 totalCheckins, uint256 totalEarned, uint256 nextReward, uint256 cooldownLeft, bool canCheckin)"
+];
+const AIRDROP_ABI = [
+  "function claimed(address) external view returns (bool)"
 ];
 
 connectBtn.addEventListener('click', async () => {
@@ -367,6 +371,7 @@ connectBtn.addEventListener('click', async () => {
     hackContract = new ethers.Contract(HACK_ADDRESS, HACK_ABI, provider);
     stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
     checkinContract = new ethers.Contract(CHECKIN_ADDRESS, CHECKIN_ABI, signer);
+    airdropContract = new ethers.Contract(AIRDROP_ADDRESS, AIRDROP_ABI, provider);
 
     connectBtn.textContent = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
     connectBtn.classList.add('connected');
@@ -379,6 +384,7 @@ connectBtn.addEventListener('click', async () => {
     });
 
     // Check balances first, then load progress
+    await checkAirdrop();
     await checkOGTasks();
     await checkHackBalance();
     await checkStaking();
@@ -393,6 +399,23 @@ connectBtn.addEventListener('click', async () => {
 // Get storage key for current wallet
 function getStorageKey() {
   return `hackTasksCompleted_${userAddress}`;
+}
+
+// Check airdrop claim
+async function checkAirdrop() {
+  if (!airdropContract || !userAddress) return;
+
+  try {
+    const hasClaimed = await airdropContract.claimed(userAddress);
+
+    log('info', `Airdrop claimed: ${hasClaimed}`);
+
+    if (hasClaimed) {
+      markTaskEligible('onchain-1');
+    }
+  } catch (err) {
+    log('err', 'Failed to check airdrop: ' + err.message);
+  }
 }
 
 // Check OG NFT tasks
@@ -531,12 +554,19 @@ async function checkCheckin() {
       checkinBtn.textContent = 'CHECK-IN NOW';
       checkinBtn.style.borderColor = 'rgba(0,255,65,0.4)';
       checkinBtn.style.color = '#00ff41';
+      checkinBtn.disabled = false;
       checkinBtn.onclick = executeCheckin;
     } else if (cooldownLeft > 0) {
       checkinBtn.textContent = 'COOLDOWN';
       checkinBtn.disabled = true;
       checkinBtn.style.borderColor = 'rgba(247,201,72,0.2)';
       checkinBtn.style.color = 'rgba(247,201,72,0.3)';
+    } else {
+      // Can't checkin - probably need airdrop first
+      checkinBtn.textContent = 'CLAIM AIRDROP FIRST';
+      checkinBtn.disabled = true;
+      checkinBtn.style.borderColor = 'rgba(255,0,64,0.2)';
+      checkinBtn.style.color = 'rgba(255,0,64,0.3)';
     }
 
     if (totalCheckins > 0) {
