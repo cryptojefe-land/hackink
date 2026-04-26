@@ -570,10 +570,7 @@ async function executeCheckin() {
     markTaskEligible('daily-2');
   } catch (err) {
     const msg = err.reason || err.message || 'failed';
-    const friendly = msg.includes('airdrop') || msg.includes('Claim')
-      ? 'Claim airdrop first at hacktokenink.xyz'
-      : msg;
-    log('err', 'Check-in failed: ' + friendly);
+    log('err', 'Check-in failed: ' + msg);
     btn.disabled = false;
     btn.textContent = 'CHECK-IN';
   }
