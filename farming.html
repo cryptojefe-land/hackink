@@ -561,6 +561,23 @@ function setupReferralLink() {
   }
 }
 
+// Setup share button on load
+window.addEventListener('load', () => {
+  const shareRefBtn = document.getElementById('shareRefBtn');
+  if (shareRefBtn) {
+    shareRefBtn.onclick = function() {
+      if (!userAddress) {
+        log('err', 'Connect wallet first');
+        return;
+      }
+      const refLink = `${window.location.origin}/farming?ref=${userAddress}`;
+      const tweet = `Join me on $HACK Farming and earn rewards! 🖥️\n\n✅ Daily tasks\n✅ Social rewards\n✅ On-chain verification\n\nStart farming here 👉 ${refLink}\n\n#HACK #INK #Farming`;
+      window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
+      setTimeout(() => markTaskEligible('daily-0'), 2000);
+    };
+  }
+});
+
 // Get today's date string
 function getTodayDate() {
   return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
