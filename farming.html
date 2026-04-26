@@ -362,11 +362,11 @@ connectBtn.addEventListener('click', async () => {
     signer = await provider.getSigner();
     userAddress = accounts[0];
 
-    // Initialize NFT contract
+    // Initialize contracts
     nftContract = new ethers.Contract(NFT_ADDRESS, NFT_ABI, provider);
     hackContract = new ethers.Contract(HACK_ADDRESS, HACK_ABI, provider);
     stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
-    checkinContract = new ethers.Contract(CHECKIN_ADDRESS, CHECKIN_ABI, provider);
+    checkinContract = new ethers.Contract(CHECKIN_ADDRESS, CHECKIN_ABI, signer);
 
     connectBtn.textContent = userAddress.slice(0,6) + '...' + userAddress.slice(-4);
     connectBtn.classList.add('connected');
