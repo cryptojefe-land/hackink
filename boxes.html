@@ -148,7 +148,7 @@
     justify-content: center;
     align-items: center;
     min-height: 250px;
-    margin-bottom: 20px;
+    margin-bottom: 80px;
   }
 
   .box {
@@ -283,11 +283,11 @@
 
   .box-price {
     position: absolute;
-    bottom: -40px;
+    bottom: -60px;
     left: 50%;
     transform: translateX(-50%);
     font-family: 'VT323', monospace;
-    font-size: 24px;
+    font-size: clamp(18px, 4vw, 24px);
     color: #f7c948;
     white-space: nowrap;
   }
@@ -357,64 +357,64 @@
   }
 
   .odds {
-    margin-top: 60px;
+    margin-top: 40px;
     border: 1px solid rgba(0,255,65,0.15);
     background: rgba(0,255,65,0.02);
-    padding: 30px;
+    padding: 20px;
   }
 
   .odds-title {
     font-family: 'VT323', monospace;
-    font-size: 32px;
+    font-size: clamp(20px, 4vw, 32px);
     color: #00ff41;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     letter-spacing: 4px;
   }
 
   .odds-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
   }
 
   .odds-item {
     border: 1px solid rgba(0,255,65,0.2);
-    padding: 20px;
+    padding: 15px 10px;
     background: rgba(0,0,0,0.3);
   }
 
   .odds-rarity {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 20px;
+    font-size: clamp(14px, 3vw, 20px);
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 2px;
   }
 
   .odds-chance {
-    font-size: 12px;
+    font-size: clamp(10px, 2vw, 12px);
     color: rgba(0,255,65,0.5);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
 
   .odds-range {
     font-family: 'VT323', monospace;
-    font-size: 24px;
+    font-size: clamp(16px, 3vw, 24px);
     color: #00ff41;
   }
 
   .history {
-    margin-top: 60px;
+    margin-top: 40px;
   }
 
   .history-title {
     font-family: 'VT323', monospace;
-    font-size: 32px;
+    font-size: clamp(20px, 4vw, 32px);
     color: #00ff41;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     letter-spacing: 4px;
   }
 
@@ -428,18 +428,42 @@
 
   .history-item {
     border: 1px solid rgba(0,255,65,0.15);
-    padding: 15px;
+    padding: 12px;
     background: rgba(0,255,65,0.02);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px);
   }
 
   .history-rarity {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
+  }
+
+  .connect-btn {
+    background: transparent;
+    border: 2px solid #00ff41;
+    color: #00ff41;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(14px, 3vw, 18px);
+    padding: clamp(12px, 3vw, 15px) clamp(30px, 8vw, 40px);
+    cursor: pointer;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    margin-top: 30px;
+  }
+
+  .connect-btn:hover {
+    background: rgba(0,255,65,0.1);
+    box-shadow: 0 0 20px rgba(0,255,65,0.3);
+  }
+
+  .connect-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
 </style>
 </head>
@@ -486,8 +510,11 @@
     </div>
 
     <div style="text-align: center;">
-      <button class="open-btn" id="buyBtn" onclick="buyBox()">BUY BOX</button>
-      <button class="open-btn" id="openBtn" onclick="openBox()" style="display: none;">OPEN BOX</button>
+      <button class="connect-btn" id="connectBtn" onclick="connectWallet()">CONNECT WALLET</button>
+      <div id="walletConnected" style="display: none;">
+        <button class="open-btn" id="buyBtn" onclick="buyBox()">BUY BOX</button>
+        <button class="open-btn" id="openBtn" onclick="openBox()" style="display: none;">OPEN BOX</button>
+      </div>
     </div>
 
     <div class="odds">
@@ -583,25 +610,38 @@
     const urlParams = new URLSearchParams(window.location.search);
     const refAddress = urlParams.get('ref') || '';
 
-    // Connect wallet on load
-    window.addEventListener('load', async () => {
-      if (window.ethereum) {
-        try {
-          provider = new ethers.BrowserProvider(window.ethereum);
-          const accounts = await provider.send('eth_requestAccounts', []);
-          signer = await provider.getSigner();
-          userAddress = accounts[0];
-
-          boxContract = new ethers.Contract(BOX_CONTRACT_ADDRESS, BOX_ABI, signer);
-
-          setupReferralLink();
-          await checkReferrer();
-          await loadUserStats();
-        } catch (err) {
-          console.error('Wallet connection failed:', err);
-        }
+    // Don't auto-connect, wait for user to click button
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert('Please install MetaMask!');
+        return;
       }
-    });
+
+      const connectBtn = document.getElementById('connectBtn');
+      connectBtn.disabled = true;
+      connectBtn.textContent = 'CONNECTING...';
+
+      try {
+        provider = new ethers.BrowserProvider(window.ethereum);
+        const accounts = await provider.send('eth_requestAccounts', []);
+        signer = await provider.getSigner();
+        userAddress = accounts[0];
+
+        boxContract = new ethers.Contract(BOX_CONTRACT_ADDRESS, BOX_ABI, signer);
+
+        connectBtn.style.display = 'none';
+        document.getElementById('walletConnected').style.display = 'block';
+
+        setupReferralLink();
+        await checkReferrer();
+        await loadUserStats();
+      } catch (err) {
+        console.error('Wallet connection failed:', err);
+        alert('Failed to connect wallet: ' + err.message);
+        connectBtn.disabled = false;
+        connectBtn.textContent = 'CONNECT WALLET';
+      }
+    }
 
     async function checkReferrer() {
       if (!boxContract || !userAddress) return;
