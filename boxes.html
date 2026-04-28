@@ -486,7 +486,8 @@
     </div>
 
     <div style="text-align: center;">
-      <button class="open-btn" id="openBtn" onclick="openBox()">OPEN BOX</button>
+      <button class="open-btn" id="buyBtn" onclick="buyBox()">BUY BOX</button>
+      <button class="open-btn" id="openBtn" onclick="openBox()" style="display: none;">OPEN BOX</button>
     </div>
 
     <div class="odds">
@@ -553,18 +554,22 @@
   <script>
     let totalOpened = 0;
     let totalWon = 0;
+    let pendingBoxes = 0;
     let history = [];
     let userAddress = null;
     let lastReward = 0;
     let provider, signer, boxContract;
 
-    const BOX_CONTRACT_ADDRESS = '0x076c2C5c3ACa39E716A11D8b3ce6784829D7cd5B';
+    const BOX_CONTRACT_ADDRESS = '0xf51c30767fe453C8D47804B6392896e9f9CABB4f';
     const BOX_ABI = [
-      "function openBox() external payable returns (uint256 reward, string memory rarity)",
+      "function purchaseBox() external payable",
+      "function openBox() external",
       "function setReferrer(address referrer) external",
-      "function getUserStats(address user) external view returns (uint256 opened, uint256 won, uint256 refCount, uint256 refEarned)",
+      "function getUserStats(address user) external view returns (uint256 opened, uint256 won, uint256 refCount, uint256 refEarned, uint256 pending)",
       "function boxPrice() external view returns (uint256)",
-      "function referrers(address user) external view returns (address)"
+      "function referrers(address user) external view returns (address)",
+      "event BoxPurchased(address indexed user)",
+      "event BoxOpened(address indexed user, uint256 reward, string rarity, address indexed referrer, uint256 referralBonus)"
     ];
 
     const rarities = [
@@ -622,11 +627,20 @@
         const stats = await boxContract.getUserStats(userAddress);
         totalOpened = Number(stats.opened);
         totalWon = Number(ethers.formatEther(stats.won));
+        pendingBoxes = Number(stats.pending);
 
         document.getElementById('totalOpened').textContent = totalOpened;
         document.getElementById('totalWon').textContent = Math.floor(totalWon).toLocaleString();
         document.getElementById('refCount').textContent = Number(stats.refCount);
         document.getElementById('refEarned').textContent = Math.floor(Number(ethers.formatEther(stats.refEarned))).toLocaleString();
+
+        // Show/hide open button based on pending boxes
+        const openBtn = document.getElementById('openBtn');
+        if (pendingBoxes > 0) {
+          openBtn.style.display = 'inline-block';
+        } else {
+          openBtn.style.display = 'none';
+        }
       } catch (err) {
         console.error('Failed to load stats:', err);
       }
@@ -679,38 +693,66 @@
       }
     }
 
+    async function buyBox() {
+      if (!boxContract || !userAddress) {
+        alert('Please connect your wallet first');
+        return;
+      }
+
+      const btn = document.getElementById('buyBtn');
+      btn.disabled = true;
+      btn.textContent = 'BUYING...';
+
+      try {
+        const boxPrice = await boxContract.boxPrice();
+
+        const tx = await boxContract.purchaseBox({ value: boxPrice });
+        console.log('Purchase transaction sent:', tx.hash);
+
+        await tx.wait();
+        console.log('Purchase confirmed');
+
+        alert('Box purchased! Click OPEN BOX to reveal your reward.');
+
+        await loadUserStats();
+
+      } catch (err) {
+        console.error('Failed to buy box:', err);
+        alert('Failed to buy box: ' + (err.reason || err.message));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'BUY BOX';
+      }
+    }
+
     async function openBox() {
       if (!boxContract || !userAddress) {
         alert('Please connect your wallet first');
         return;
       }
 
+      if (pendingBoxes === 0) {
+        alert('No pending boxes! Buy a box first.');
+        return;
+      }
+
       const box = document.getElementById('mysteryBox');
       const btn = document.getElementById('openBtn');
+      const buyBtn = document.getElementById('buyBtn');
       const rewardDisplay = document.getElementById('rewardDisplay');
 
       btn.disabled = true;
+      buyBtn.disabled = true;
       btn.textContent = 'OPENING...';
       box.classList.add('opening');
       createParticles();
 
       try {
-        const boxPrice = await boxContract.boxPrice();
-
-        // Estimate gas and calculate total cost
-        const gasEstimate = await boxContract.openBox.estimateGas({ value: boxPrice });
-        const feeData = await provider.getFeeData();
-        const gasCost = gasEstimate * (feeData.gasPrice || feeData.maxFeePerGas);
-
-        console.log('Box price:', ethers.formatEther(boxPrice), 'ETH');
-        console.log('Gas cost:', ethers.formatEther(gasCost), 'ETH');
-
-        const tx = await boxContract.openBox({ value: boxPrice });
-
-        console.log('Transaction sent:', tx.hash);
+        const tx = await boxContract.openBox();
+        console.log('Open transaction sent:', tx.hash);
 
         const receipt = await tx.wait();
-        console.log('Transaction confirmed:', receipt);
+        console.log('Open confirmed:', receipt);
 
         // Parse event to get reward
         const event = receipt.logs.find(log => {
@@ -742,6 +784,7 @@
 
         box.style.display = 'none';
         btn.style.display = 'none';
+        buyBtn.style.display = 'none';
         rewardDisplay.classList.remove('hidden');
 
         addToHistory(rarityName, lastReward);
@@ -752,19 +795,29 @@
         alert('Failed to open box: ' + (err.reason || err.message));
         box.classList.remove('opening');
         btn.disabled = false;
+        buyBtn.disabled = false;
         btn.textContent = 'OPEN BOX';
       }
     }
 
     function resetBox() {
       const box = document.getElementById('mysteryBox');
-      const btn = document.getElementById('openBtn');
+      const buyBtn = document.getElementById('buyBtn');
+      const openBtn = document.getElementById('openBtn');
       const rewardDisplay = document.getElementById('rewardDisplay');
 
       box.style.display = 'block';
-      btn.style.display = 'inline-block';
-      btn.disabled = false;
-      btn.textContent = 'OPEN BOX';
+      buyBtn.style.display = 'inline-block';
+      buyBtn.disabled = false;
+
+      if (pendingBoxes > 0) {
+        openBtn.style.display = 'inline-block';
+        openBtn.disabled = false;
+        openBtn.textContent = 'OPEN BOX';
+      } else {
+        openBtn.style.display = 'none';
+      }
+
       rewardDisplay.classList.add('hidden');
     }
 
