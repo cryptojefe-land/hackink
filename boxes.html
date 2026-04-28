@@ -85,25 +85,25 @@
     z-index: 10;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 20px 15px;
   }
 
   .hero {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 30px;
   }
 
   .hero-title {
     font-family: 'VT323', monospace;
-    font-size: clamp(48px, 10vw, 100px);
+    font-size: clamp(32px, 8vw, 100px);
     color: #00ff41;
     letter-spacing: 8px;
     text-shadow: 0 0 20px rgba(0,255,65,0.5);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
 
   .hero-sub {
-    font-size: clamp(12px, 2.5vw, 16px);
+    font-size: clamp(10px, 2vw, 16px);
     color: rgba(0,255,65,0.5);
     letter-spacing: 4px;
     text-transform: uppercase;
@@ -111,14 +111,14 @@
 
   .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 2px;
-    margin-bottom: 60px;
+    margin-bottom: 30px;
     border: 1px solid rgba(0,255,65,0.15);
   }
 
   .stat {
-    padding: 20px;
+    padding: 15px 10px;
     border-right: 1px solid rgba(0,255,65,0.15);
     text-align: center;
     background: rgba(0,255,65,0.02);
@@ -129,16 +129,16 @@
   }
 
   .stat-label {
-    font-size: 10px;
+    font-size: 9px;
     color: rgba(0,255,65,0.4);
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
   }
 
   .stat-value {
     font-family: 'VT323', monospace;
-    font-size: 32px;
+    font-size: clamp(20px, 5vw, 32px);
     color: #00ff41;
     text-shadow: 0 0 10px rgba(0,255,65,0.5);
   }
@@ -147,13 +147,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 400px;
-    margin-bottom: 60px;
+    min-height: 250px;
+    margin-bottom: 20px;
   }
 
   .box {
-    width: 300px;
-    height: 300px;
+    width: clamp(200px, 60vw, 300px);
+    height: clamp(200px, 60vw, 300px);
     position: relative;
     transform-style: preserve-3d;
     cursor: pointer;
@@ -235,7 +235,7 @@
   }
 
   .box-icon {
-    font-size: 120px;
+    font-size: clamp(80px, 20vw, 120px);
     position: relative;
     z-index: 2;
     filter: drop-shadow(0 0 20px rgba(0,255,65,0.8));
@@ -337,13 +337,13 @@
     border: 2px solid #00ff41;
     color: #00ff41;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 18px;
-    padding: 15px 40px;
+    font-size: clamp(14px, 3vw, 18px);
+    padding: clamp(12px, 3vw, 15px) clamp(30px, 8vw, 40px);
     cursor: pointer;
     letter-spacing: 3px;
     text-transform: uppercase;
     transition: all 0.3s;
-    margin-top: 30px;
+    margin-top: 20px;
   }
 
   .open-btn:hover {
