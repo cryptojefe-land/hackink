@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://hacktokenink.xyz/boxes">
 <meta property="og:title" content="$HACK Mystery Boxes — Win up to 2M $HACK">
 <meta property="og:description" content="Open Mystery Boxes for 0.0002 ETH and win $HACK tokens! Up to 2M per box. 25% referral bonus. Try your luck on INK Chain!">
-<meta property="og:image" content="https://hacktokenink.xyz/box-image.png">
+<meta property="og:image" content="https://hacktokenink.xyz/og-image.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -31,7 +31,7 @@
 <meta name="twitter:url" content="https://hacktokenink.xyz/boxes">
 <meta name="twitter:title" content="$HACK Mystery Boxes — Win up to 2M $HACK">
 <meta name="twitter:description" content="Open Mystery Boxes for 0.0002 ETH and win $HACK tokens! Up to 2M per box. 25% referral bonus. Try your luck on INK Chain!">
-<meta name="twitter:image" content="https://hacktokenink.xyz/box-image.png">
+<meta name="twitter:image" content="https://hacktokenink.xyz/og-image.png">
 <meta name="twitter:image:alt" content="$HACK Mystery Boxes — Win up to 2M $HACK tokens">
 
 <!-- Favicon -->
@@ -294,11 +294,12 @@
 
   .reward-display {
     text-align: center;
-    min-height: 200px;
+    min-height: 250px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin-bottom: 80px;
   }
 
   .reward-display.hidden {
@@ -505,7 +506,7 @@
       <div class="reward-rarity" id="rewardRarity">COMMON</div>
       <div class="reward-amount" id="rewardAmount">+50,000</div>
       <div class="reward-label">$HACK TOKENS</div>
-      <button class="open-btn" onclick="shareReward()" style="margin-top: 20px; border-color: #00cfff; color: #00cfff;">SHARE & EARN 10%</button>
+      <button class="open-btn" onclick="shareReward()" style="margin-top: 20px; border-color: #00cfff; color: #00cfff;">SHARE & EARN 25%</button>
       <button class="open-btn" onclick="resetBox()">OPEN ANOTHER</button>
     </div>
 
@@ -705,7 +706,7 @@
       if (!userAddress) return;
 
       const refLink = `${window.location.origin}/boxes?ref=${userAddress}`;
-      const tweet = `Just won ${lastReward.toLocaleString()} $HACK from Mystery Box! 🎁🖥️\n\nOpen yours and win up to 2M $HACK!\n25% bonus for your referrals.\n\nTry your luck 👉 ${refLink}\n\n#HACK #INKChain #MysteryBox`;
+      const tweet = `Just won ${lastReward.toLocaleString()} $HACK from Mystery Box! 🎁🖥️\n\nOpen yours and win up to 2M $HACK!\n25% bonus for your referrals.\n\nTry your luck 👉 ${refLink}\n\n@HACKtokenINK #HACK #INKChain #MysteryBox`;
 
       window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
     }
