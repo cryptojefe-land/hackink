@@ -1,0 +1,32 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/checkin",
+      "destination": "/checkin.html"
+    },
+    {
+      "source": "/genesis",
+      "destination": "/genesis.html"
+    },
+    {
+      "source": "/game",
+      "destination": "/game.html"
+    },
+    {
+      "source": "/leaderboard",
+      "destination": "/leaderboard.html"
+    },
+    {
+      "source": "/farming",
+      "destination": "/farming.html"
+    },
+    {
+      "source": "/boxes",
+      "destination": "/boxes.html"
+    }
+  ]
+}
