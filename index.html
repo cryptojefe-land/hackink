@@ -1052,7 +1052,7 @@ function showCheckinInline() {
 
   // compact ref block under buttons
   if (!document.getElementById('inlineRefBlock') && walletAddress) {
-    const refUrl = 'https://hacktokenink.xyz/?ref=' + walletAddress;
+    const refUrl = 'https://hacktokenink.vercel.app/?ref=' + walletAddress;
     const refBlock = document.createElement('div');
     refBlock.id = 'inlineRefBlock';
     refBlock.style.cssText = 'margin-top:12px;border:1px solid rgba(0,255,65,0.1);background:rgba(0,255,65,0.02);padding:10px 12px;animation:fadein .4s ease';
@@ -1110,8 +1110,8 @@ function modalTask(id, btn) {
 
 function modalShare(btn) {
   const refPart = walletAddress
-    ? '\n\nClaim here 👉hacktokenink.xyz/?ref=' + walletAddress
-    : '\n\nClaim here 👉hacktokenink.xyz';
+    ? '\n\nClaim here 👉hacktokenink.vercel.app/?ref=' + walletAddress
+    : '\n\nClaim here 👉hacktokenink.vercel.app';
   const tweet = 'Just found $HACK on @HACKtokenINK 🖥️\n\nFree airdrop — 100,000 $HACK per wallet.\nNo KYC. No bullshit. On-chain only.' + refPart + '\n\n#HACK #INK #INKChain #Airdrop';
   window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweet), '_blank');
   modalTask('share', btn);
